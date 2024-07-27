@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical">
+
+       <codes.side.andcolorpicker.view.swatch.SwatchView
+           android:id="@+id/swatchView"
+           android:layout_width="match_parent"
+           android:layout_height="100dp" />
+
+       <codes.side.andcolorpicker.hsl.HSLColorPickerSeekBar
+           android:id="@+id/hueSeekBar"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           app:hslColoringMode="pure"
+           app:hslMode="hue" />
+       <codes.side.andcolorpicker.hsl.HSLColorPickerSeekBar
+           android:id="@+id/saturationSeekBar"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           app:hslColoringMode="pure"
+           app:hslMode="saturation" />
+       <codes.side.andcolorpicker.hsl.HSLColorPickerSeekBar
+           android:id="@+id/lightnessSeekBar"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           app:hslColoringMode="pure"
+           app:hslMode="lightness" />
+
+       <codes.side.andcolorpicker.alpha.HSLAlphaColorPickerSeekBar
+           android:id="@+id/alphaSeekBar"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content" />
+   </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <ImageView
+            android:id="@+id/iv_qrcode"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center"/>
+        <Space
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <EditText
+            android:id="@+id/edit_input"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content" />
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/btn_create"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create"/>
+
+        <Button
+            android:id="@+id/btn_colorpicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose Color"/>
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
+
+
+
+
+
+
+</LinearLayout>
