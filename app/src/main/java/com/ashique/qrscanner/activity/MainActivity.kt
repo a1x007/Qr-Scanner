@@ -50,6 +50,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.isseiaoki.simplecropview.CropImageView
 import com.isseiaoki.simplecropview.callback.CropCallback
 import com.isseiaoki.simplecropview.callback.LoadCallback
+import gun0912.tedimagepicker.builder.TedImagePicker
 import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
@@ -195,7 +196,6 @@ class MainActivity : AppCompatActivity() {
             } else if (ui.cropImageView.drawable != null) {
                 // Remove the bitmap
                 ui.cropImageView.setImageDrawable(null)
-                getImageLauncher.unregister()
                 ui.cropBackground.visibility = GONE
                 ui.toolbar.visibility = GONE
             } else {
@@ -334,11 +334,75 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun launchGallery() {
-        Intent(Intent.ACTION_PICK).apply {
+     /* Intent(Intent.ACTION_PICK).apply {
             type = "image/*"
         }.also { pickIntent ->
             getImageLauncher.launch(pickIntent)
         }
+
+
+      */
+      */
+
+
+
+
+
+        TedImagePicker.with(this)
+            .start { uri ->   // Use a cropping library or your own cropping logic here
+                ui.cropImageView.load(uri).execute(object : LoadCallback {
+                    override fun onError(e: Throwable?) {
+                        Log.e(TAG, "Error loading image", e)
+                    }
+
+                    override fun onSuccess() {
+                        ui.cropBackground.visibility = VISIBLE
+                        ui.toolbar.visibility = VISIBLE
+                        // rotation
+                        ui.rotateLeft.setOnClickListener {
+                            ui.cropImageView.rotateImage(
+                                CropImageView.RotateDegrees.ROTATE_M90D
+                            )
+                        }
+                        ui.rotateRight.setOnClickListener {
+                            ui.cropImageView.rotateImage(
+                                CropImageView.RotateDegrees.ROTATE_90D
+                            )
+                        }
+
+                        // Set up cropping
+                        ui.crop.setOnClickListener {
+                            ui.cropImageView.crop(uri)
+                                .execute(object : CropCallback {
+                                    override fun onSuccess(bitmap: Bitmap) {
+                                        val grayscaleBitmap =
+                                            if (isGrayscale(bitmap)) {
+                                                BitmapHelper.resizeBitmap(
+                                                    bitmap,
+                                                    300,
+                                                    300
+                                                )
+                                            } else {
+                                                showToast("Colored Qr Detected !")
+                                                invertColors(
+                                                    bitmap
+                                                )
+                                            }
+
+                                        Log.i(TAG, "onSuccess: crop: $bitmap")
+                                        processBitmap(grayscaleBitmap)
+                                    }
+
+                                    override fun onError(e: Throwable) {
+                                        Log.e(TAG, "Error cropping image", e)
+                                        showToast("Error: $e")
+                                    }
+                                })
+                        }
+                    }
+                })
+            }
+
     }
 
 
@@ -375,6 +439,7 @@ class MainActivity : AppCompatActivity() {
                                     ui.cropImageView.crop(uri)
                                         .execute(object : CropCallback {
                                             override fun onSuccess(bitmap: Bitmap) {
+
                                                 val grayscaleBitmap =
                                                     if (isGrayscale(bitmap)) {
                                                         BitmapHelper.resizeBitmap(
@@ -383,6 +448,7 @@ class MainActivity : AppCompatActivity() {
                                                             400
                                                         )
                                                     } else {
+                                                        showToast("Colored Qr Detected !")
                                                         invertColors(
                                                             bitmap
                                                         )
@@ -394,6 +460,7 @@ class MainActivity : AppCompatActivity() {
 
                                             override fun onError(e: Throwable) {
                                                 Log.e(TAG, "Error cropping image", e)
+                                                showToast("Error: $e")
                                             }
                                         })
                                 }
@@ -422,6 +489,7 @@ class MainActivity : AppCompatActivity() {
             }
             .addOnFailureListener { error ->
                 error.printStackTrace()
+                showToast("Error: $error")
             }
     }
 
@@ -451,6 +519,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 .addOnFailureListener { error ->
                     error.printStackTrace()
+                    showToast("Error: $error")
                 }
                 .addOnCompleteListener {
                     imageProxy.close()

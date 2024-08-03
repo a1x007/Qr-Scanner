@@ -2,6 +2,9 @@
     <!-- Base application theme. -->
     <style name="Theme.QrScanner" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
+        <item name="android:textColor">@color/white</item>
+        <item name="android:windowBackground">#0c0c0c</item>
+
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/black</item>

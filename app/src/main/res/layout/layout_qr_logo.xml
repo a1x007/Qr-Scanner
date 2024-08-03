@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/qr_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:padding="10dp">
+
+        <!-- Padding Slider -->
+        <TextView
+            android:id="@+id/paddingLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="Padding" />
+
+        <SeekBar
+            android:id="@+id/paddingSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/paddingLabel"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="10" />
+
+        <!-- Logo Size Slider -->
+        <TextView
+            android:id="@+id/logoSizeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/paddingSlider"
+            android:layout_marginTop="16dp"
+            android:text="Logo Size" />
+
+        <SeekBar
+            android:id="@+id/logoSizeSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/logoSizeLabel"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="25" />
+
+        <!-- Dark Pixel Roundness Slider -->
+        <TextView
+            android:id="@+id/darkPixelRoundnessLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/logoSizeSlider"
+            android:layout_marginTop="16dp"
+            android:text="Dark Pixel Roundness" />
+
+        <SeekBar
+            android:id="@+id/darkPixelRoundnessSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/darkPixelRoundnessLabel"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="10" />
+
+        <!-- Ball Roundness Slider -->
+        <TextView
+            android:id="@+id/ballRoundnessLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/darkPixelRoundnessSlider"
+            android:layout_marginTop="16dp"
+            android:text="Ball Roundness" />
+
+        <SeekBar
+            android:id="@+id/ballRoundnessSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ballRoundnessLabel"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="25" />
+
+        <!-- Frame Roundness Slider -->
+        <TextView
+            android:id="@+id/frameRoundnessLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ballRoundnessSlider"
+            android:layout_marginTop="16dp"
+            android:text="Frame Roundness" />
+
+        <SeekBar
+            android:id="@+id/frameRoundnessSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/frameRoundnessLabel"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progress="25" />
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -33,6 +33,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        dataBinding = true
     }
 
     kotlinOptions {
@@ -41,7 +42,6 @@ android {
 }
 
 dependencies {
-
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
@@ -66,5 +66,15 @@ dependencies {
 
     implementation("me.jfenn.ColorPickerDialog:base:0.2.2")
     implementation("codes.side:andcolorpicker:0.6.2")
+    implementation("io.github.ParkSangGwon:tedimagepicker:1.4.2") {
+        exclude(group = "com.android.support")
+        exclude(group = "androidx.core")
+    }
+
+
+    implementation("com.github.SimformSolutionsPvtLtd:SSImagePicker:2.3")
+
+
+    // implementation 'net.mm2d.color-chooser:color-chooser:<version>'
 
 }

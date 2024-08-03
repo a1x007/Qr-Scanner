@@ -3,15 +3,18 @@ package com.ashique.qrscanner.helper
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.media.MediaScannerConnection
+import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import java.io.File
 import java.io.FileOutputStream
 
 object BitmapHelper {
 
      fun invertColors(bitmap: Bitmap): Bitmap {
-        val width = 400
-        val height = 400
+        val width = 300
+        val height = 300
         val resizedBitmap = resizeBitmap(bitmap, width, height)
         val grayscaleBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
 
@@ -66,6 +69,21 @@ object BitmapHelper {
         }
         Log.d("saveBitmapToFile", "Bitmap saved to: ${file.absolutePath}")
     }
+
+    fun Context.saveBitmap(bitmap: Bitmap, format: Bitmap.CompressFormat, fileName: String) {
+        val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), fileName)
+        FileOutputStream(file).use { out ->
+            bitmap.compress(format, 100, out)
+        }
+
+        // Notify the media scanner about the new file
+        MediaScannerConnection.scanFile(this, arrayOf(file.toString()), null) { path, uri ->
+            // Notify completion if needed
+            Toast.makeText(this, "QR code saved to $path", Toast.LENGTH_SHORT).show()
+        }
+     //   Toast.makeText(this, "QR code saved to ${file.absolutePath}", Toast.LENGTH_SHORT).show()
+    }
+
 
     fun resizeBitmap(original: Bitmap, width: Int, height: Int): Bitmap {
         return Bitmap.createScaledBitmap(original, width, height, true)

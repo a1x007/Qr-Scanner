@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.ashique.qrscanner.custom.Frame
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:backgroundColor="#121212"
+        app:cornerRadius="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioGroup
+            android:id="@+id/radioGroupDarkPixelShape"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/radioButtonDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Default" />
+
+            <RadioButton
+                android:id="@+id/radioButtonCircle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Circle" />
+
+            <RadioButton
+                android:id="@+id/radioButtonRoundCorners25"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Round Corners 25%" />
+
+            <RadioButton
+                android:id="@+id/radioButtonStar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Star" />
+
+            <RadioButton
+                android:id="@+id/radioButtonRhombus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rhombus" />
+
+            <RadioButton
+                android:id="@+id/radioButtonRoundCornersHorizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Round Corners Horizontal" />
+
+            <RadioButton
+                android:id="@+id/radioButtonRoundCornersVertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Round Corners Vertical" />
+        </RadioGroup>
+
+    </com.ashique.qrscanner.custom.Frame>
+
+
+
+</LinearLayout>
