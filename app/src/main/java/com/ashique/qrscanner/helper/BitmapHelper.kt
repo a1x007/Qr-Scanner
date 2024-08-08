@@ -88,4 +88,7 @@ object BitmapHelper {
     fun resizeBitmap(original: Bitmap, width: Int, height: Int): Bitmap {
         return Bitmap.createScaledBitmap(original, width, height, true)
     }
+
+
+
 }

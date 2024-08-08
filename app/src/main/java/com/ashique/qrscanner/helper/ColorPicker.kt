@@ -1,19 +1,19 @@
 package com.ashique.qrscanner.helper
 
+//import codes.side.andcolorpicker.hsl.HSLColorPickerSeekBar
 import android.util.Log
 import android.view.View
 import codes.side.andcolorpicker.converter.IntegerHSLColorConverter
 import codes.side.andcolorpicker.group.PickerGroup
 import codes.side.andcolorpicker.group.registerPickers
-//import codes.side.andcolorpicker.hsl.HSLColorPickerSeekBar
-import com.ashique.qrscanner.custom.HSLColorPickerSeekBar
 import codes.side.andcolorpicker.model.IntegerHSLColor
 import codes.side.andcolorpicker.view.picker.ColorSeekBar
 import codes.side.andcolorpicker.view.picker.OnIntegerHSLColorPickListener
+import com.ashique.qrscanner.custom.HSLColorPickerSeekBar
 
 object ColorPicker {
     enum class QrColorType {
-        BALL, FRAME, DARK
+        QR,BALL, FRAME, DARK, COLOR0,COLOR1
     }
 
 
@@ -53,5 +53,8 @@ object ColorPicker {
             }
         })
     }
+
+
+
 
 }

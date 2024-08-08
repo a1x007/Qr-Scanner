@@ -49,8 +49,12 @@
 
         <activity
             android:name=".activity.QrGenerator"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true" />
 
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:exported="true" />
     </application>
 
 

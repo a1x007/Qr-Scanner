@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:background="@null"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+
+    <com.ashique.qrscanner.custom.Frame
+        android:id="@+id/frame"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        app:backgroundColor="#50ffffff"
+        app:borderColor="#00ffffff"
+        app:cornerRadius="3dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.ashique.qrscanner.colorpicker.ColorPicker
+                android:id="@+id/colorPickerView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                app:sliderThumbSize="15dp" />
+
+            <com.ashique.qrscanner.colorpicker.HueSlider
+                android:id="@+id/hueSlider"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="-15dp"
+                app:sliderBarStrokeCap="Square"
+                app:sliderThumbSize="11dp" />
+
+
+            <com.ashique.qrscanner.colorpicker.ColorAlphaSlider
+                android:id="@+id/colorAlphaSlider"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="-25.5dp"
+                android:layout_marginBottom="-12.5dp"
+                app:sliderThumbSize="11dp" />
+
+        </LinearLayout>
+
+    </com.ashique.qrscanner.custom.Frame>
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/preview_button"
+            android:layout_width="75dp"
+            android:layout_height="36dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/console"
+            android:text="PICK"
+            app:_borderColor="#20ffffff"
+            app:_borderWidth="0dp"
+            app:_fillColor="#3A3A3A"
+            app:_radius="6dp" />
+    </LinearLayout>
+</LinearLayout>

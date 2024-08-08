@@ -39,6 +39,8 @@ import com.ashique.qrscanner.helper.Extensions.applyDayNightTheme
 import com.ashique.qrscanner.helper.Extensions.navigateTo
 import com.ashique.qrscanner.helper.Extensions.setOnBackPressedAction
 import com.ashique.qrscanner.helper.Extensions.showToast
+import com.ashique.qrscanner.helper.Prefs
+import com.ashique.qrscanner.helper.Prefs.useZxing
 import com.ashique.qrscanner.services.PermissionManager.initPermissionManager
 import com.ashique.qrscanner.services.PermissionManager.isAllFilesAccessGranted
 import com.ashique.qrscanner.services.PermissionManager.isCameraPermissionGranted
@@ -47,6 +49,12 @@ import com.ashique.qrscanner.services.PermissionManager.requestExternalStoragePe
 import com.ashique.qrscanner.services.PermissionManager.requestManageAllFilesPermission
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.DecodeHintType
+import com.google.zxing.MultiFormatReader
+import com.google.zxing.NotFoundException
+import com.google.zxing.RGBLuminanceSource
+import com.google.zxing.common.HybridBinarizer
 import com.isseiaoki.simplecropview.CropImageView
 import com.isseiaoki.simplecropview.callback.CropCallback
 import com.isseiaoki.simplecropview.callback.LoadCallback
@@ -95,6 +103,8 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(ui.root)
 
+        Prefs.initialize(this)
+
         initPermissionManager()
 
         // Set initial state based on current mode
@@ -111,8 +121,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
         ui.upload.setOnClickListener { openGalleryAndScanQR() }
+        ui.gallery.setOnClickListener { openGalleryAndScanQR() }
         ui.overlay.setViewFinder()
-        ui.resultBtn.setOnClickListener { displayResult("this is test") }
+        ui.settingBtn.setOnClickListener { navigateTo<SettingsActivity>() }
 
         ui.generateBtn.setOnClickListener {
             navigateTo<QrGenerator>()
@@ -334,15 +345,15 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun launchGallery() {
-     /* Intent(Intent.ACTION_PICK).apply {
-            type = "image/*"
-        }.also { pickIntent ->
-            getImageLauncher.launch(pickIntent)
-        }
+        /* Intent(Intent.ACTION_PICK).apply {
+               type = "image/*"
+           }.also { pickIntent ->
+               getImageLauncher.launch(pickIntent)
+           }
 
 
-      */
-      */
+         */
+         */
 
 
 
@@ -390,7 +401,20 @@ class MainActivity : AppCompatActivity() {
                                             }
 
                                         Log.i(TAG, "onSuccess: crop: $bitmap")
-                                        processBitmap(grayscaleBitmap)
+
+                                        if (useZxing()) {
+                                            val content = scanQrCodeFromImage2(grayscaleBitmap)
+                                            content?.let {
+                                                openResultActivity(it)
+                                            } ?: {
+                                                showToast("Error: couldn't scan the photo! retrying..")
+                                                processBitmap(grayscaleBitmap)
+
+                                            }
+                                        } else {
+                                            processBitmap(grayscaleBitmap)
+                                        }
+
                                     }
 
                                     override fun onError(e: Throwable) {
@@ -469,6 +493,58 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+    }
+
+
+    fun scanQrCodeFromImage2(bitmap: Bitmap): String? {
+        return try {
+            val width = bitmap.width
+            val height = bitmap.height
+            val pixels = IntArray(width * height)
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+
+            val source = RGBLuminanceSource(width, height, pixels)
+            val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
+
+            val reader = MultiFormatReader()
+            val hints = mutableMapOf<DecodeHintType, Any>(DecodeHintType.TRY_HARDER to true)
+            val result = reader.decode(binaryBitmap, hints)
+
+            result.text
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun scanQrCodeFromImage(bitmap: Bitmap): String? {
+        try {
+            // Resize the image if necessary
+            val scaledBitmap =
+                Bitmap.createScaledBitmap(bitmap, bitmap.width / 2, bitmap.height / 2, true)
+
+            val width = scaledBitmap.width
+            val height = scaledBitmap.height
+            val pixels = IntArray(width * height)
+            scaledBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+
+            val source = RGBLuminanceSource(width, height, pixels)
+            val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
+
+
+            val reader = MultiFormatReader()
+            val hints = mutableMapOf<DecodeHintType, Any>(DecodeHintType.TRY_HARDER to true)
+            reader.decode(binaryBitmap, hints)
+
+            val result = reader.decode(binaryBitmap)
+
+            return result.text
+        } catch (e: NotFoundException) {
+            // Handle case where no QR code is found
+            return null
+        } catch (e: Exception) {
+            // Handle other exceptions
+            return null
+        }
     }
 
 

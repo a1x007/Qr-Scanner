@@ -11,4 +11,10 @@
     <dimen name="acp_thumb_size_default">20dp</dimen>
     <dimen name="acp_thumb_ripple_radius">16dp</dimen>
 
+    <dimen name="tab_size">20dp</dimen>
+    <dimen name="tab_space">20dp</dimen>
+
+    <dimen name="colorSlider_padding">0dp</dimen>
+    <dimen name="colorSlider_wrapContent_size">48dp</dimen>
+    <dimen name="colorSlider_thumbStroke_size">2dp</dimen>
 </resources>

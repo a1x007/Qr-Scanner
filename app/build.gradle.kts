@@ -74,7 +74,6 @@ dependencies {
 
     implementation("com.github.SimformSolutionsPvtLtd:SSImagePicker:2.3")
 
-
     // implementation 'net.mm2d.color-chooser:color-chooser:<version>'
 
 }

@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <declare-styleable name="ColorSlider">
+        <attr name="sliderBarStrokeCap" format="enum">
+            <enum name="Butt" value="0" />
+            <enum name="Round" value="1" />
+            <enum name="Square" value="2" />
+        </attr>
+        <attr name="sliderThumbSize" format="dimension"/>
+        <attr name="sliderStrokeSize" format="dimension"/>
+        <attr name="sliderStrokeColor" format="color"/>
+
+    </declare-styleable>
+
     <declare-styleable name="Button">
         <attr name="_radius" format="dimension" />
         <attr name="_fillColor" format="color" />
@@ -16,11 +29,28 @@
         <attr name="_checked" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="CustomRadioButton">
+        <attr name="customBackgroundColor" format="color" />
+        <attr name="customCornerRadius" format="dimension" />
+        <attr name="customIcon" format="reference" />
+        <attr name="customIconColor" format="color" />
+        <attr name="customIconWidth" format="dimension" />
+        <attr name="customIconHeight" format="dimension" />
+        <attr name="customBorderColor" format="color" />
+        <attr name="customBorderWidth" format="dimension" />
+        <attr name="customActiveColor" format="color" />
+        <attr name="customActiveIconColor" format="color" />
+
+    </declare-styleable>
+
     <declare-styleable name="Frame">
         <attr name="cornerRadius" format="dimension" />
         <attr name="borderWidth" format="dimension" />
         <attr name="borderColor" format="color" />
         <attr name="backgroundColor" format="color" />
     </declare-styleable>
+
+
+
 
 </resources>

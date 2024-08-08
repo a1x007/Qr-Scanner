@@ -1,143 +1,269 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:padding="10dp">
 
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <RadioGroup
+        android:id="@+id/radioGroupColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:gravity="center"
-        >
-
-        <com.ashique.qrscanner.custom.Button
-            android:id="@+id/btn_qr_color"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:layout_marginEnd="24dp"
-            android:gravity="center"
-            android:padding="4dp"
-            app:_fillColor="#15ffffff"
-            app:_icon="@drawable/qr"
-            app:_iconColor="@color/white"
-            app:_iconHeight="30dp"
-            app:_iconWidth="30dp"
-            app:_radius="3dp" />
-
-        <com.ashique.qrscanner.custom.Button
-            android:id="@+id/btn_ball_color"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:gravity="center"
-            android:padding="4dp"
-            app:_fillColor="#15ffffff"
-            app:_icon="@drawable/qr"
-            app:_iconColor="@color/white"
-            app:_iconHeight="30dp"
-            app:_iconWidth="30dp"
-            app:_radius="3dp" />
-
-        <com.ashique.qrscanner.custom.Button
-            android:id="@+id/btn_frame_color"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="4dp"
-            app:_fillColor="#15ffffff"
-            app:_icon="@drawable/qr"
-            app:_iconColor="@color/white"
-            app:_iconHeight="30dp"
-            app:_iconWidth="30dp"
-            app:_radius="3dp" />
-
-
-    </LinearLayout>
-
-
-    <com.ashique.qrscanner.custom.Frame
-        android:visibility="gone"
-        android:id="@+id/colorPicker"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:backgroundColor="#121212"
-        app:cornerRadius="6dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <com.ashique.qrscanner.custom.RadioButtons
+            android:id="@+id/qr_color"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="20dp"
+            app:customActiveColor="#FFFFFF"
+            app:customActiveIconColor="#000000"
+            app:customBackgroundColor="#10ffffff"
+            app:customBorderColor="#10ffffff"
+            app:customBorderWidth="1dp"
+            app:customCornerRadius="3dp"
+            app:customIcon="@drawable/qr"
+            app:customIconWidth="35dp" />
+
+        <com.ashique.qrscanner.custom.RadioButtons
+            android:id="@+id/qr_darkpixel_color"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="20dp"
+            app:customActiveColor="#FFFFFF"
+            app:customActiveIconColor="#000000"
+            app:customBackgroundColor="#10ffffff"
+            app:customBorderColor="#10ffffff"
+            app:customBorderWidth="1dp"
+            app:customCornerRadius="3dp"
+            app:customIcon="@drawable/qr_darkpixel"
+            app:customIconWidth="35dp" />
+
+        <com.ashique.qrscanner.custom.RadioButtons
+            android:id="@+id/qr_eye_color"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="20dp"
+            app:customActiveColor="#FFFFFF"
+            app:customActiveIconColor="#000000"
+            app:customBackgroundColor="#10ffffff"
+            app:customBorderColor="#10ffffff"
+            app:customBorderWidth="1dp"
+            app:customCornerRadius="3dp"
+            app:customIcon="@drawable/qr_eye"
+            app:customIconWidth="35dp" />
+
+        <com.ashique.qrscanner.custom.RadioButtons
+            android:id="@+id/qr_frame_color"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:customActiveColor="#FFFFFF"
+            app:customActiveIconColor="#000000"
+            app:customBackgroundColor="#10ffffff"
+            app:customBorderColor="#10ffffff"
+            app:customBorderWidth="1dp"
+            app:customCornerRadius="3dp"
+            app:customIcon="@drawable/qr_frame"
+            app:customIconWidth="35dp" />
+    </RadioGroup>
+
+
+
+
+
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroupColor"
+        tools:layout_editor_absoluteX="10dp">
+
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/btn_solid_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="4dp"
+            app:_fillColor="#15ffffff"
+            app:_icon="@drawable/ic_solid"
+            app:_iconColor="@color/white"
+            app:_iconHeight="30dp"
+            app:_iconWidth="30dp"
+            app:_radius="3dp" />
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/btn_gradient_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/btn_solid_color"
+            android:gravity="center"
+            android:padding="4dp"
+            app:_fillColor="#15ffffff"
+            app:_icon="@drawable/ic_gradient"
+            app:_iconColor="@color/white"
+            app:_iconHeight="30dp"
+            app:_iconWidth="30dp"
+            app:_radius="3dp" />
+
+
+        <RadioGroup
+            android:id="@+id/radioGroupGradient"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btn_gradient_color"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.ashique.qrscanner.custom.RadioButtons
+                android:id="@+id/gradient_bottom"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="20dp"
+                android:rotation="180"
+                app:customActiveColor="#FFFFFF"
+                app:customActiveIconColor="#000000"
+                app:customBackgroundColor="#10ffffff"
+                app:customBorderColor="#10ffffff"
+                app:customBorderWidth="1dp"
+                app:customCornerRadius="3dp"
+                app:customIcon="@drawable/ic_arrow_up"
+                app:customIconWidth="24dp" />
+
+            <com.ashique.qrscanner.custom.RadioButtons
+                android:id="@+id/gradient_right"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="20dp"
+                android:rotation="90"
+                app:customActiveColor="#FFFFFF"
+                app:customActiveIconColor="#000000"
+                app:customBackgroundColor="#10ffffff"
+                app:customBorderColor="#10ffffff"
+                app:customBorderWidth="1dp"
+                app:customCornerRadius="3dp"
+                app:customIcon="@drawable/ic_arrow_up"
+                app:customIconWidth="24dp" />
+
+            <com.ashique.qrscanner.custom.RadioButtons
+                android:id="@+id/gradient_bottom_right"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="20dp"
+                app:customActiveColor="#FFFFFF"
+                app:customActiveIconColor="#000000"
+                app:customBackgroundColor="#10ffffff"
+                app:customBorderColor="#10ffffff"
+                app:customBorderWidth="1dp"
+                app:customCornerRadius="3dp"
+                app:customIcon="@drawable/ic_arrow_right_down"
+                app:customIconWidth="24dp" />
+
+            <com.ashique.qrscanner.custom.RadioButtons
+                android:id="@+id/gradient_top_right"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="20dp"
+                android:rotation="270"
+                app:customActiveColor="#FFFFFF"
+                app:customActiveIconColor="#000000"
+                app:customBackgroundColor="#10ffffff"
+                app:customBorderColor="#10ffffff"
+                app:customBorderWidth="1dp"
+                app:customCornerRadius="3dp"
+                app:customIcon="@drawable/ic_arrow_right_down"
+                app:customIconWidth="24dp" />
+
+            <com.ashique.qrscanner.custom.RadioButtons
+                android:id="@+id/radial"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="20dp"
+                android:button="@null"
+                app:customActiveColor="#FFFFFF"
+                app:customActiveIconColor="#000000"
+                app:customBackgroundColor="#10ffffff"
+                app:customBorderColor="#10ffffff"
+                app:customBorderWidth="1dp"
+                app:customCornerRadius="3dp"
+                app:customIcon="@drawable/ic_radial"
+                app:customIconWidth="40dp" />
+
+
+            <com.ashique.qrscanner.custom.RadioButtons
+                android:id="@+id/sweep"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:rotation="180"
+                app:customActiveColor="#FFFFFF"
+                app:customActiveIconColor="#000000"
+                app:customBackgroundColor="#10ffffff"
+                app:customBorderColor="#10ffffff"
+                app:customBorderWidth="1dp"
+                app:customCornerRadius="3dp"
+                app:customIcon="@drawable/ic_gradient_sweep"
+                app:customIconWidth="24dp" />
+
+
+        </RadioGroup>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_below="@+id/radioGroupGradient"
+            android:layout_marginTop="20dp">
 
-
-            <com.ashique.qrscanner.custom.HSLColorPickerSeekBar
-                android:id="@+id/hueSeekBar"
-                android:layout_width="match_parent"
+            <com.ashique.qrscanner.custom.Buttons
+                android:id="@+id/btn_gradient_color0"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="10dp"
-                app:hslColoringMode="pure"
-                app:hslMode="hue" />
+                android:gravity="center"
+                android:padding="4dp"
+                app:_fillColor="#15ffffff"
+                app:_icon="@drawable/ic_palette"
+                app:_iconColor="@color/white"
+                app:_iconHeight="30dp"
+                app:_iconWidth="30dp"
+                app:_radius="3dp" />
 
-            <codes.side.andcolorpicker.hsl.HSLColorPickerSeekBar
-                android:id="@+id/saturationSeekBar"
-                android:layout_width="match_parent"
+            <com.ashique.qrscanner.custom.Buttons
+                android:id="@+id/btn_gradient_color1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                app:hslColoringMode="pure"
-                app:hslMode="saturation" />
-
-            <codes.side.andcolorpicker.hsl.HSLColorPickerSeekBar
-                android:id="@+id/lightnessSeekBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                app:hslColoringMode="pure"
-                app:hslMode="lightness" />
-
-            <codes.side.andcolorpicker.alpha.HSLAlphaColorPickerSeekBar
-                android:id="@+id/alphaSeekBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp" />
-
-            <com.ashique.qrscanner.custom.Frame
-                android:id="@+id/btn_confirm_color"
-                android:layout_width="80dp"
-                android:layout_height="30dp"
-                android:layout_gravity="end"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="15dp"
-                app:borderColor="#1E1E1E"
-                app:borderWidth="2dp"
-                app:cornerRadius="5dp">
-
-                <codes.side.andcolorpicker.view.swatch.SwatchView
-                    android:id="@+id/swatchView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="Confirm"
-                    android:textAllCaps="true"
-                    android:textColor="@color/white" />
-            </com.ashique.qrscanner.custom.Frame>
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="50dp"
+                android:gravity="center"
+                android:padding="4dp"
+                app:_fillColor="#15ffffff"
+                app:_icon="@drawable/ic_palette"
+                app:_iconColor="@color/white"
+                app:_iconHeight="30dp"
+                app:_iconWidth="30dp"
+                app:_radius="3dp" />
         </LinearLayout>
-    </com.ashique.qrscanner.custom.Frame>
+
+    </RelativeLayout>
 
 
-</LinearLayout>
+    <com.ashique.qrscanner.helper.ColorPickerView
+        android:id="@+id/colorPickerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

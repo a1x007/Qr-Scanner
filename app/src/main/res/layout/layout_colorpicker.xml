@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.ashique.qrscanner.custom.Frame
+        android:id="@+id/colorPicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:backgroundColor="#121212"
+        app:cornerRadius="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <com.ashique.qrscanner.custom.HSLColorPickerSeekBar
+                android:id="@+id/hueSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp"
+                app:hslColoringMode="pure"
+                app:hslMode="hue" />
+
+            <codes.side.andcolorpicker.hsl.HSLColorPickerSeekBar
+                android:id="@+id/saturationSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                app:hslColoringMode="pure"
+                app:hslMode="saturation" />
+
+            <codes.side.andcolorpicker.hsl.HSLColorPickerSeekBar
+                android:id="@+id/lightnessSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                app:hslColoringMode="pure"
+                app:hslMode="lightness" />
+
+            <codes.side.andcolorpicker.alpha.HSLAlphaColorPickerSeekBar
+                android:id="@+id/alphaSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp" />
+
+            <com.ashique.qrscanner.custom.Frame
+                android:id="@+id/btn_confirm_color"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="15dp"
+                app:borderColor="#1E1E1E"
+                app:borderWidth="2dp"
+                app:cornerRadius="5dp">
+
+                <codes.side.andcolorpicker.view.swatch.SwatchView
+                    android:id="@+id/swatchView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="Confirm"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white" />
+            </com.ashique.qrscanner.custom.Frame>
+        </LinearLayout>
+    </com.ashique.qrscanner.custom.Frame>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,7 +14,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.ashique.qrscanner.R
 
-class Button @JvmOverloads constructor(
+class Buttons @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -185,5 +185,16 @@ class Button @JvmOverloads constructor(
 
     }
 
+    fun setBgColor(color: Int){
+        fillColor = color
+        fillPaint.color = color
+        invalidate()
+    }
+
+    fun setIconColor(color: Int){
+        iconColor = color
+        iconDrawable?.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN);
+        invalidate()
+    }
 
 }

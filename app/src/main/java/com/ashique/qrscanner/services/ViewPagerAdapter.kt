@@ -35,7 +35,7 @@ class ViewPagerAdapter(private val context: Context) : RecyclerView.Adapter<View
         }
 
         when (position) {
-            0 -> QrUiSetup.pixelShapeSetting(binding as LayoutQrShapeBinding) {
+            0 -> QrUiSetup.shapeSetting(binding as LayoutQrShapeBinding) {
                 (context as? QrGenerator)?.updateQrCode()
             }
             1 -> QrUiSetup.logoSetting(binding as LayoutQrLogoBinding) {
