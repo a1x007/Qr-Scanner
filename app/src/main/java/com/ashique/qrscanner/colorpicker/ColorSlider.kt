@@ -2,6 +2,7 @@ package com.ashique.qrscanner.colorpicker
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.BitmapShader
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,10 +11,13 @@ import android.graphics.Shader
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import com.ashique.qrscanner.R
+import com.ashique.qrscanner.helper.BitmapHelper.saveBitmapToFile
 import com.ashique.qrscanner.helper.Extensions.dp
 import kotlin.math.floor
 import kotlin.math.max
@@ -33,8 +37,11 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
         color = Color.RED
     }
 
+   private var isPatternBitmapCreated = false
+
+ //  private val patternBitmap: Bitmap by lazy {   BitmapFactory.decodeResource(context.resources, R.drawable.transparent) }
     private val patternPaint = Paint().apply {
-        shader = BitmapShader(createPatternBitmap(), Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+     // shader = BitmapShader(patternBitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
     }
 
     protected var isAlpha = false
@@ -57,6 +64,7 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
 
     protected var circleColor: Int = Color.TRANSPARENT
     var circleSize = dp(10)
+    var thickness = dp(0)
 
     protected var isFirstTimeLaying = true
     protected var isRestoredState = false
@@ -99,6 +107,8 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
 
                 circleSize = getDimension(R.styleable.ColorSlider_sliderThumbSize, circleSize)
 
+                thickness = getDimension(R.styleable.ColorSlider_sliderThickness, thickness)
+
             } finally {
                 recycle()
             }
@@ -107,6 +117,13 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
 
     }
 
+
+    private fun initializePatternPaint() {
+        if (!isPatternBitmapCreated) {
+            patternPaint.shader = BitmapShader(createPatternBitmap(), Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+            isPatternBitmapCreated = true
+        }
+    }
 
 
     protected open fun changePositionOfCircle(ex: Float, ey: Float) {
@@ -128,12 +145,7 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
 
     }
 
-    // Setting padding programmatically
-    fun setPaddings(start: Int, top: Int, end: Int, bottom: Int) {
-        setPadding(start, top, end, bottom)
-        // Recalculate bounds if needed
-        requestLayout()
-    }
+
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event?.let { e ->
@@ -164,6 +176,7 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
             calculateBounds(w.toFloat(), h.toFloat())
 
             initializeSliderPaint()
+            initializePatternPaint()
         }
     }
 
@@ -216,7 +229,7 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
         }
 
         heightHalf = heightF * 0.5f
-        linePaint.strokeWidth = heightHalf
+        linePaint.strokeWidth = if (thickness == 0f) heightHalf else thickness
 
         widthF = targetWidth //- paddingEnd - heightHalf
 
@@ -262,6 +275,7 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
         // Draw transparent pattern
         if (isAlpha) { canvas.drawRect(drawingStart, drawingTop - circleSize - 0.5f , widthF, drawingTop + circleSize + 4, patternPaint) }
 
+
         canvas.drawLine(
             drawingStart,
             drawingTop,
@@ -290,19 +304,39 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
     }
 
     private fun createPatternBitmap(): Bitmap {
-        val squareSize = 20 // Size of each square
-        val bitmapSize = squareSize * 2 // Size of the bitmap (2x2 squares)
+        val density = context.resources.displayMetrics.density
+        val smallSquareSizeDp = 7 // Size of each square in dp
+        val numColumns = 4
+        val numRows = 4
+        val smallSquareSizePx = (smallSquareSizeDp * density).toInt()
+        val bitmapSize = smallSquareSizePx * numColumns
         val bitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val paint = Paint()
 
         // Draw the checkerboard pattern
         paint.color = "#50ffffff".toColorInt() // Color for the checkerboard squares
-        canvas.drawRect(0f, 0f, squareSize.toFloat(), squareSize.toFloat(), paint) // Top-left square
-        canvas.drawRect(squareSize.toFloat(), squareSize.toFloat(), bitmapSize.toFloat(), bitmapSize.toFloat(), paint) // Bottom-right square
+        for (row in 0 until numRows) {
+            for (col in 0 until numColumns) {
+                if ((row + col) % 2 == 0) {
+                    canvas.drawRect(
+                        (col * smallSquareSizePx).toFloat(),
+                        (row * smallSquareSizePx).toFloat(),
+                        ((col + 1) * smallSquareSizePx).toFloat(),
+                        ((row + 1) * smallSquareSizePx).toFloat(),
+                        paint
+                    )
+                }
+            }
+        }
 
+        Log.i("ColorSlider", "createPatternBitmap: pattern bitmap created.")
+      //  context.saveBitmapToFile(bitmap,"transparent")
         return bitmap
     }
+
+
+
     override fun onSaveInstanceState(): Parcelable? {
         return Bundle().apply {
             // Save current position of circle as factors to later restore it's state.
@@ -332,6 +366,11 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
         private const val CIRCLE_X_KEY = "circleX"
         private const val CIRCLE_Y_KEY = "circleY"
         private const val STATE_KEY = "p"
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+
     }
 
 }

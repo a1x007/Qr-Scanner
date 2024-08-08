@@ -94,36 +94,7 @@ object Extensions {
     }
 
 
-    fun View.animateViewFromBottom(show: Boolean) {
-        val translationY = if (show) 0f else 50f
-        val animator = ObjectAnimator.ofFloat(this, "translationY", translationY)
-        animator.duration = 300 // Adjust duration as needed
-        animator.interpolator = AccelerateDecelerateInterpolator()
 
-        animator.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {
-                if (show) {
-                    this@animateViewFromBottom.visibility = View.VISIBLE
-                }
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-                if (!show) {
-                   this@animateViewFromBottom.visibility = View.GONE
-                }
-            }
-
-            override fun onAnimationCancel(animation: Animator) {
-                // Handle cancellation if needed
-            }
-
-            override fun onAnimationRepeat(animation: Animator) {
-                // Not used
-            }
-        })
-
-        animator.start()
-    }
 
 
     @RequiresApi(Build.VERSION_CODES.O)

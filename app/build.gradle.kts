@@ -61,19 +61,14 @@ dependencies {
     implementation("androidx.camera:camera-view:1.3.4")
 
     implementation("com.github.yalantis:ucrop:2.2.8")
+
     implementation("com.isseiaoki:simplecropview:1.1.8")
 
 
-    implementation("me.jfenn.ColorPickerDialog:base:0.2.2")
-    implementation("codes.side:andcolorpicker:0.6.2")
     implementation("io.github.ParkSangGwon:tedimagepicker:1.4.2") {
         exclude(group = "com.android.support")
         exclude(group = "androidx.core")
     }
 
-
-    implementation("com.github.SimformSolutionsPvtLtd:SSImagePicker:2.3")
-
-    // implementation 'net.mm2d.color-chooser:color-chooser:<version>'
 
 }

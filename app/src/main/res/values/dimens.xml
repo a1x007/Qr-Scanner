@@ -2,15 +2,7 @@
 <resources>
     <dimen name="barcode_reticle_stroke_width">4dp</dimen>
     <dimen name="barcode_reticle_corner_radius">8dp</dimen>
-
-    <dimen name="acp_seek_progress_corner_radius">4dp</dimen>
-    <dimen name="acp_seek_progress_padding">8dp</dimen>
-    <dimen name="acp_seek_progress_height">10dp</dimen>
-    <dimen name="acp_thumb_stroke_width">2dp</dimen>
-    <dimen name="acp_thumb_size_full">18dp</dimen>
-    <dimen name="acp_thumb_size_default">20dp</dimen>
-    <dimen name="acp_thumb_ripple_radius">16dp</dimen>
-
+    
     <dimen name="tab_size">20dp</dimen>
     <dimen name="tab_space">20dp</dimen>
 

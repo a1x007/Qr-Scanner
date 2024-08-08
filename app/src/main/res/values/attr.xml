@@ -7,6 +7,7 @@
             <enum name="Round" value="1" />
             <enum name="Square" value="2" />
         </attr>
+        <attr name="sliderThickness" format="dimension"/>
         <attr name="sliderThumbSize" format="dimension"/>
         <attr name="sliderStrokeSize" format="dimension"/>
         <attr name="sliderStrokeColor" format="color"/>

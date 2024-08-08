@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="ColorPickerDialog.Dark" parent="Theme.AppCompat.Dialog">
-        <item name="redColor">#FF5252</item>
-        <item name="greenColor">#69F0AE</item>
-        <item name="blueColor">#536DFE</item>
-    </style>
+
 
 </resources>

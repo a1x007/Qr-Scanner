@@ -15,9 +15,6 @@ import kotlinx.coroutines.withContext
 
 object QrHelper {
 
-
-
-
      suspend fun scanQrCodeMl(bitmap: Bitmap): String? {
         return withContext(Dispatchers.IO) {
             val barcodeScanner = BarcodeScanning.getClient()

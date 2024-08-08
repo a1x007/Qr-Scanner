@@ -3,6 +3,7 @@ package com.ashique.qrscanner.colorpicker
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import com.ashique.qrscanner.R
 import kotlin.math.floor
 
@@ -78,6 +79,7 @@ class HueSlider(context: Context, attributeSet: AttributeSet?) :
 
         linePaint.shader = hueBitmapShader
         isAlpha = false
+        Log.i("HueSlider", "initializeSliderPaint: hue slider created.")
     }
 
     fun setOnHueChangedListener(onHueChangedListener: OnHueChangedListener) {

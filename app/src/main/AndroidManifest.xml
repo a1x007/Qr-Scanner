@@ -18,6 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QrScanner"
+        android:largeHeap="true"
         tools:targetApi="31">
 
         <meta-data
@@ -40,8 +41,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.app.imagepickerlibrary.ui.activity.ImagePickerActivity"
-            android:configChanges="orientation|screenSize" android:theme="@style/SSImagePicker" />
 
         <activity
             android:name=".activity.ResultActivity"

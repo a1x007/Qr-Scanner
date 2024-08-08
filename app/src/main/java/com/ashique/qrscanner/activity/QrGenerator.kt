@@ -13,9 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import com.ashique.qrscanner.R
 import com.ashique.qrscanner.databinding.QrGeneratorBinding
 import com.ashique.qrscanner.helper.BitmapHelper.saveBitmap
-import com.ashique.qrscanner.helper.ColorPicker.QrColorType
 import com.ashique.qrscanner.helper.QrHelper
 import com.ashique.qrscanner.helper.QrHelper.scanQrCodeMl
+import com.ashique.qrscanner.helper.QrUiSetup
 import com.ashique.qrscanner.services.ViewPagerAdapter
 import com.github.alexzhirkevich.customqrgenerator.QrErrorCorrectionLevel
 import com.github.alexzhirkevich.customqrgenerator.style.QrShape
@@ -44,7 +44,7 @@ class QrGenerator : AppCompatActivity() {
 
     companion object {
 
-        var currentColorType: QrColorType? = null
+        var currentColorType: QrUiSetup.QrColorType? = null
 
         var qrBackground: Drawable? = null
         var qrLogo: Drawable? = null

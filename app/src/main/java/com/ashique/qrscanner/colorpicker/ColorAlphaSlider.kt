@@ -80,55 +80,6 @@ class ColorAlphaSlider(context: Context, attributeSet: AttributeSet?) :
         return (ex - drawingStart) / (widthF - drawingStart)
     }
 
-    fun initializeSliderPaint0() {
-        // Create or load your pattern bitmap
-        val patternBitmap: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.transparent)
-
-        // Calculate scale and translate to achieve center crop
-        val bitmapWidth = patternBitmap.width
-        val bitmapHeight = patternBitmap.height
-
-        val scaleX = widthF / bitmapWidth
-        val scaleY = heightF / bitmapHeight
-        val scale = maxOf(scaleX, scaleY)
-
-        val scaledWidth = bitmapWidth * scale
-        val scaledHeight = bitmapHeight * scale
-
-        val translateX = (widthF - scaledWidth) / 2f
-        val translateY = (heightF - scaledHeight) / 2f
-
-        // Create a new bitmap that is scaled to the required size
-        val scaledBitmap = Bitmap.createScaledBitmap(patternBitmap, scaledWidth.toInt(), scaledHeight.toInt(), true)
-
-        // Create a BitmapShader from the scaled bitmap
-        val patternShader = BitmapShader(scaledBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-
-        // Create your alpha gradient shader
-        alphaLinearGradient = LinearGradient(
-            drawingStart,
-            0f,
-            widthF,
-            0f,
-            Color.argb(
-                0,
-                Color.red(selectedColor),
-                Color.green(selectedColor),
-                Color.blue(selectedColor)
-            ),
-            selectedColor,
-            Shader.TileMode.MIRROR
-        )
-
-        // Combine the shaders
-        val composeShader = ComposeShader(alphaLinearGradient, patternShader, PorterDuff.Mode.MULTIPLY)
-
-        // Set the shader to the paint
-        linePaint.shader = composeShader
-
-        // Initialize circle color
-        circleColor = calculateCircleColor()
-    }
 
    override fun initializeSliderPaint() {
         alphaLinearGradient =
