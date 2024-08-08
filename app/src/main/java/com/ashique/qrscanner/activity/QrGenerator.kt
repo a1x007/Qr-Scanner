@@ -123,6 +123,7 @@ class QrGenerator : AppCompatActivity() {
 
             viewPagerShapes.adapter = ViewPagerAdapter(this@QrGenerator)
 
+            navigationMenu.setViewPager(viewPagerShapes)
 
 
             btnSaveQr.setOnClickListener {

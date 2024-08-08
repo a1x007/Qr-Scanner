@@ -1,3 +1,5 @@
+import java.util.regex.Pattern.compile
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -70,5 +72,6 @@ dependencies {
         exclude(group = "androidx.core")
     }
 
+  //  implementation("com.github.devlight.navigationtabstrip:navigationtabstrip:1.0.4")
 
 }

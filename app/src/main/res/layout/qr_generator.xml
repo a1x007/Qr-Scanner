@@ -72,13 +72,33 @@
     </LinearLayout>
 
 
-    <androidx.viewpager2.widget.ViewPager2
+    <com.ashique.qrscanner.custom.NavigationTabStrip
+        android:id="@+id/navigation_menu"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        app:nts_active_color="#fff"
+        app:nts_animation_duration="300"
+        app:nts_color="#fff"
+        app:nts_corners_radius="6dp"
+        app:nts_factor="2.5"
+        app:nts_gravity="bottom"
+        app:nts_inactive_color="#50ffffff"
+        app:nts_size="15sp"
+        app:nts_titles="@array/titles"
+        app:nts_type="point"
+        app:nts_typeface="fonts/typeface.otf"
+        app:nts_weight="6dp" />
+
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPagerShapes"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/navigation_menu" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

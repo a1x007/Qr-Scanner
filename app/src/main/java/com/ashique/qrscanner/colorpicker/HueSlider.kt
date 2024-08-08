@@ -3,12 +3,11 @@ package com.ashique.qrscanner.colorpicker
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import com.ashique.qrscanner.R
 import kotlin.math.floor
 
 class HueSlider(context: Context, attributeSet: AttributeSet?) :
-   ColorSlider(context, attributeSet) {
+    ColorSlider(context, attributeSet) {
 
     constructor(context: Context) : this(context, null)
 
@@ -16,16 +15,16 @@ class HueSlider(context: Context, attributeSet: AttributeSet?) :
 
     private lateinit var hueBitmapShader: BitmapShader
 
-
-    /**
-     * Bitmap that is 360 pixels and each pixels represents a degree in hue.
-     */
-    private val hueBitmap: Bitmap = BitmapFactory.decodeResource(
-        resources,
-        R.drawable.full_hue_bitmap,
-        BitmapFactory.Options().apply {
-            inScaled = false
-        })
+    // Load the bitmap only once and recycle when not needed
+    private val hueBitmap: Bitmap by lazy {
+        BitmapFactory.decodeResource(
+            resources,
+            R.drawable.full_hue_bitmap,
+            BitmapFactory.Options().apply {
+                inScaled = false
+            }
+        )
+    }
 
     private val hueMatrix = Matrix()
 
@@ -33,11 +32,10 @@ class HueSlider(context: Context, attributeSet: AttributeSet?) :
     private var onHueChangedListener: OnHueChangedListener? = null
 
     val hue: Float
-        get() =
-            hsvHolder[0]
+        get() = hsvHolder[0]
 
     override fun onCirclePositionChanged(circlePositionX: Float, circlePositionY: Float) {
-        circleColor = calculateColorAt(circleX)
+        circleColor = calculateColorAt(circlePositionX)
 
         callListeners(hsvHolder[0], circleColor)
 
@@ -46,8 +44,7 @@ class HueSlider(context: Context, attributeSet: AttributeSet?) :
 
     private fun calculateColorAt(ex: Float): Int {
         // Closer the indicator (handle) to the end of view the higher is hue value.
-        hsvHolder[0] =
-            floor(360f * (ex - drawingStart) / (widthF - drawingStart))
+        hsvHolder[0] = floor(360f * (ex - drawingStart) / (widthF - drawingStart))
 
         // Brightness and saturation is left untouched.
         hsvHolder[1] = 1f
@@ -62,24 +59,20 @@ class HueSlider(context: Context, attributeSet: AttributeSet?) :
     }
 
     override fun initializeSliderPaint() {
-        hueBitmapShader =
-            BitmapShader(hueBitmap, Shader.TileMode.MIRROR, Shader.TileMode.REPEAT).apply {
-                setLocalMatrix(hueMatrix.apply {
-                    // Resize the bitmap to match width of hue bitmap (360) to whatever width of view is.
-                    setTranslate(drawingStart, 0f)
+        hueMatrix.setTranslate(drawingStart, 0f)
+        hueMatrix.postScale(
+            (widthF - drawingStart) / hueBitmap.width,
+            1f,
+            drawingStart,
+            0f
+        )
 
-                    postScale(
-                        (widthF - drawingStart) / hueBitmap.width,
-                        1f,
-                        drawingStart,
-                        0f
-                    )
-                })
-            }
+        hueBitmapShader = BitmapShader(hueBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP).apply {
+            setLocalMatrix(hueMatrix)
+        }
 
         linePaint.shader = hueBitmapShader
         isAlpha = false
-        Log.i("HueSlider", "initializeSliderPaint: hue slider created.")
     }
 
     fun setOnHueChangedListener(onHueChangedListener: OnHueChangedListener) {
@@ -95,9 +88,7 @@ class HueSlider(context: Context, attributeSet: AttributeSet?) :
         onHueChangedListener?.onHueChanged(hue, argbColor)
     }
 
-
     interface OnHueChangedListener {
         fun onHueChanged(hue: Float, argbColor: Int)
     }
-
 }

@@ -5,9 +5,11 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginTop="32dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,7 +42,7 @@
                     android:id="@+id/hueSlider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
+                    android:layout_marginTop="-5dp"
                     app:sliderStrokeSize="3dp"
                     app:sliderThickness="30dp"
                     app:sliderThumbSize="13dp" />
@@ -50,8 +52,8 @@
                     android:id="@+id/colorAlphaSlider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="0dp"
+                    android:layout_marginTop="-1dp"
+                    android:layout_marginBottom="-1dp"
                     app:sliderStrokeSize="3dp"
                     app:sliderThickness="30dp"
                     app:sliderThumbSize="13dp" />
@@ -60,18 +62,23 @@
 
         </com.ashique.qrscanner.custom.Frame>
 
-        <com.ashique.qrscanner.custom.Buttons
-            android:id="@+id/preview_button"
-            android:layout_width="75dp"
-            android:layout_height="36dp"
-            android:layout_gravity="end"
-            android:layout_marginTop="5dp"
-            android:fontFamily="@font/console"
-            android:text="PICK"
-            app:_borderColor="#20ffffff"
-            app:_borderWidth="0dp"
-            app:_fillColor="#3A3A3A"
-            app:_radius="6dp" />
+
     </LinearLayout>
 
+    <com.ashique.qrscanner.custom.Buttons
+        android:id="@+id/preview_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/console"
+        app:_borderColor="#20ffffff"
+        app:_borderWidth="3dp"
+        app:_fillColor="#000000"
+        app:_icon="@drawable/ic_done"
+        app:_iconHeight="32dp"
+        app:_iconWidth="32dp"
+        app:_radius="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

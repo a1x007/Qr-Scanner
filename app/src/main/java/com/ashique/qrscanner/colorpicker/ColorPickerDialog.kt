@@ -36,12 +36,12 @@ class ColorPickerDialog : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.colorPickerView.alphaSliderView = binding.colorAlphaSlider
-        binding.colorPickerView.hueSliderViews = binding.hueSlider
+        binding.colorPickerView.hueSliderView = binding.hueSlider
 
         binding.colorPickerView.setOnColorChangedListener { color ->
             onColorChanged?.invoke(color)
 
-            binding.previewButton.setBgColor(color)
+            binding.previewButton.setIconColor(color)
 
 
         }

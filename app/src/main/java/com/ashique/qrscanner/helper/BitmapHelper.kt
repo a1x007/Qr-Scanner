@@ -2,11 +2,14 @@ package com.ashique.qrscanner.helper
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.media.MediaScannerConnection
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
+import androidx.core.graphics.toColorInt
 import java.io.File
 import java.io.FileOutputStream
 
@@ -62,6 +65,39 @@ object BitmapHelper {
         return true
     }
 
+
+    fun Context.createPatternBitmap(): Bitmap {
+        val density = resources.displayMetrics.density
+        val smallSquareSizeDp = 7 // Size of each square in dp
+        val numColumns = 4
+        val numRows = 4
+        val smallSquareSizePx = (smallSquareSizeDp * density).toInt()
+        val bitmapSize = smallSquareSizePx * numColumns
+        val bitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint()
+
+        // Draw the checkerboard pattern
+        paint.color = "#50ffffff".toColorInt() // Color for the checkerboard squares
+        for (row in 0 until numRows) {
+            for (col in 0 until numColumns) {
+                if ((row + col) % 2 == 0) {
+                    canvas.drawRect(
+                        (col * smallSquareSizePx).toFloat(),
+                        (row * smallSquareSizePx).toFloat(),
+                        ((col + 1) * smallSquareSizePx).toFloat(),
+                        ((row + 1) * smallSquareSizePx).toFloat(),
+                        paint
+                    )
+                }
+            }
+        }
+
+        Log.i("ColorSlider", "createPatternBitmap: pattern bitmap created.")
+        //  context.saveBitmapToFile(bitmap,"transparent")
+        return bitmap
+    }
+
      fun Context.saveBitmapToFile(bitmap: Bitmap, filename: String) {
         val file = File(getExternalFilesDir(null), filename)
         FileOutputStream(file).use {
@@ -88,6 +124,8 @@ object BitmapHelper {
     fun resizeBitmap(original: Bitmap, width: Int, height: Int): Bitmap {
         return Bitmap.createScaledBitmap(original, width, height, true)
     }
+
+
 
 
 
