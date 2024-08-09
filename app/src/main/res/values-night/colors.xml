@@ -10,5 +10,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="overlay_color">#99000000</color>
     <color name="barcode_overlay_stroke">#ffffff</color>
-
+    <color name="nts_inactive">#50ffffff</color>
+    <color name="nts_line_inactive">#20ffffff</color>
+    <color name="icon_active">@color/black</color>
+    <color name="radio_buttons_border">#10ffffff</color>
 </resources>

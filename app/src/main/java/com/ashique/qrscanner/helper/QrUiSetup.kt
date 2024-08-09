@@ -1,9 +1,10 @@
 package com.ashique.qrscanner.helper
 
-import android.graphics.Color
+
 import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.ashique.qrscanner.R
 import com.ashique.qrscanner.activity.QrGenerator.Companion.ballColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.ballRoundness
@@ -26,22 +27,29 @@ import com.ashique.qrscanner.activity.QrGenerator.Companion.useRadialGradient
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useSolidColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useSweepGradient
 import com.ashique.qrscanner.colorpicker.ColorPickerDialog
+import com.ashique.qrscanner.databinding.LayoutQrBackgroundBinding
 import com.ashique.qrscanner.databinding.LayoutQrColorBinding
 import com.ashique.qrscanner.databinding.LayoutQrLogoBinding
+import com.ashique.qrscanner.databinding.LayoutQrSaveBinding
 import com.ashique.qrscanner.databinding.LayoutQrShapeBinding
+import com.ashique.qrscanner.databinding.LayoutQrTextBinding
+import com.ashique.qrscanner.helper.Extensions.animateLayout
 import com.github.alexzhirkevich.customqrgenerator.style.QrShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorBallShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorColor
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorFrameShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorPixelShape
 
+
 object QrUiSetup {
 
     enum class QrColorType {
-        QR,BALL, FRAME, DARK, COLOR0,COLOR1
+        QR, BALL, FRAME, DARK, COLOR0, COLOR1
     }
 
     private var circleSize: Float = 0.20f
+    private var setColorType: QrColorType = QrColorType.QR
+
     fun shapeSetting(binding: LayoutQrShapeBinding, onUpdate: () -> Unit) {
 
         binding.radioGroupQrShape.setOnCheckedChangeListener { _, checkedId ->
@@ -159,26 +167,25 @@ object QrUiSetup {
     }
 
 
-
-
     fun qrColorSetting(binding: LayoutQrColorBinding, onUpdate: () -> Unit) {
         // Color pickers
         with(binding) {
             val activity = binding.root.context as? AppCompatActivity
 
-            val colorPickerDialog = ColorPickerDialog().apply {
+            val colorPickerDialog = ColorPickerDialog(binding).apply {
                 onColorChanged = { newColor ->
 
                     if (useSolidColor) {
                         when (currentColorType) {
                             QrColorType.BALL -> ballColor = newColor
                             QrColorType.FRAME -> frameColor = newColor
-                           QrColorType.DARK -> darkColor = newColor
+                            QrColorType.DARK -> darkColor = newColor
                             QrColorType.QR -> {
                                 darkColor = newColor
                                 frameColor = newColor
                                 ballColor = newColor
                             }
+
                             else -> Unit
                         }
                     } else if (useLinearGradient) {
@@ -202,38 +209,31 @@ object QrUiSetup {
             }
 
 
-
             radioGroupColor.setOnCheckedChangeListener { _, checkedId ->
                 when (checkedId) {
                     R.id.qr_color -> {
-                        currentColorType = QrColorType.QR
-                        activity?.supportFragmentManager?.let {
-                            colorPickerDialog.show(it, "ColorPickerDialog")
-                        }
+                        // currentColorType = QrColorType.QR
+                        setColorType = QrColorType.QR
+
 
                     }
 
                     R.id.qr_darkpixel_color -> {
-                        currentColorType = QrColorType.DARK
-                        activity?.supportFragmentManager?.let {
-                            colorPickerDialog.show(it, "ColorPickerDialog")
-                        }
+                        //  currentColorType = QrColorType.DARK
+                        setColorType = QrColorType.DARK
+
 
                     }
 
                     R.id.qr_eye_color -> {
-                        currentColorType = QrColorType.BALL
-                        activity?.supportFragmentManager?.let {
-                            colorPickerDialog.show(it, "ColorPickerDialog")
-                        }
+                        // currentColorType = QrColorType.BALL
+                        setColorType = QrColorType.BALL
 
                     }
 
                     R.id.qr_frame_color -> {
-                        currentColorType = QrColorType.FRAME
-                        activity?.supportFragmentManager?.let {
-                            colorPickerDialog.show(it, "ColorPickerDialog")
-                        }
+                        // currentColorType = QrColorType.FRAME
+                        setColorType = QrColorType.FRAME
 
                     }
                 }
@@ -250,7 +250,12 @@ object QrUiSetup {
 
                 when (checkedId) {
                     R.id.gradient_bottom, R.id.gradient_right, R.id.gradient_bottom_right, R.id.gradient_top_right -> {
-                        setGradientFlags(solid = false, linear = true, radial = false, sweep = false)
+                        setGradientFlags(
+                            solid = false,
+                            linear = true,
+                            radial = false,
+                            sweep = false
+                        )
                     }
 
                     R.id.radial -> {
@@ -284,40 +289,56 @@ object QrUiSetup {
             }
 
 
+            // show hide gradientFrame with animation
+            root.animateLayout()
 
 
-
-            btnSolidColor.setOnClickListener {
+            if (btnSolidColor.isChecked) {
                 setGradientFlags(solid = true, linear = false, radial = false, sweep = false)
-                onUpdate()
             }
 
-            btnGradientColor.setOnClickListener {
-                setGradientFlags(solid = false, linear = true, radial = false, sweep = false)
-                onUpdate()
+            btnSolidColor.setOnCheckedListener { isCheck ->
+                if (isCheck) {
+                    btnGradientColor.isChecked = false
+                    setGradientFlags(solid = true, linear = false, radial = false, sweep = false)
+                    onUpdate()
+                }
             }
 
-            btnGradientColor0.setOnCheckedListener { isChecked ->
-                if (isChecked) {
-                    btnGradientColor0.apply {
-                        setBgColor(Color.WHITE)
-                        setIconColor(Color.BLACK)
+            btnGradientColor.setOnCheckedListener { isCheck ->
+
+                if (isCheck) {
+                    gradientFrame.isVisible = true
+                    btnSolidColor.isChecked = false
+                    setGradientFlags(solid = false, linear = true, radial = false, sweep = false)
+                    onUpdate()
+                } else {
+                    gradientFrame.isVisible = false
+                }
+            }
+
+            btnGradientColor0.setOnCheckedListener { isCheck ->
+
+                if (isCheck) {
+                    btnGradientColor1.isChecked = false
+                    currentColorType =
+                        if (btnGradientColor.isChecked) QrColorType.COLOR0 else setColorType
+                    activity?.supportFragmentManager?.let {
+                        colorPickerDialog.show(it, "ColorPickerDialog")
                     }
-                    currentColorType =QrColorType.COLOR0
-
+                    onUpdate()
                 }
 
             }
 
 
-            btnGradientColor1.setOnCheckedListener { isChecked ->
-                if (isChecked) {
-                    btnGradientColor1.apply {
-                        setBgColor(Color.WHITE)
-                        setIconColor(Color.BLACK)
+            btnGradientColor1.setOnCheckedListener { isCheck ->
+                if (isCheck) {
+                    btnGradientColor0.isChecked = false
+                    currentColorType = QrColorType.COLOR1
+                    activity?.supportFragmentManager?.let {
+                        colorPickerDialog.show(it, "ColorPickerDialog")
                     }
-                    currentColorType =QrColorType.COLOR1
-
                 }
 
             }
@@ -339,8 +360,24 @@ object QrUiSetup {
     private fun setGradientFlags(solid: Boolean, linear: Boolean, radial: Boolean, sweep: Boolean) {
         useSolidColor = solid
         useLinearGradient = linear
+
         useRadialGradient = radial
         useSweepGradient = sweep
     }
+
+    fun textSetting(binding: LayoutQrTextBinding, function: () -> Unit?) {
+
+    }
+
+
+    fun backgroundSetting(binding: LayoutQrBackgroundBinding, function: () -> Unit?) {
+
+    }
+
+
+    fun saveSetting(binding: LayoutQrSaveBinding, function: () -> Unit) {
+
+    }
+
 
 }

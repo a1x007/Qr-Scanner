@@ -2,6 +2,7 @@ package com.ashique.qrscanner.helper
 
 import android.animation.Animator
 import android.animation.AnimatorSet
+import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
@@ -14,7 +15,9 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.Interpolator
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
@@ -68,31 +71,44 @@ object Extensions {
         Toast.makeText(this, message, duration).show()
     }
 
-    fun View.showHide(visible: Boolean) {
-        val slideAnimator = ObjectAnimator.ofFloat(this, "translationY",
-            if (visible) 100f else 0f, if (visible) 0f else 100f
-        ).setDuration(300)
+    fun ViewGroup.animateLayout(
+        appearDuration: Long = 600,
+        disappearDuration: Long = 100,
+        changeDuration: Long = 300,
+        enableAppearing: Boolean = true,
+        enableDisappearing: Boolean = true,
+        enableChanging: Boolean = true,
+        appearInterpolator: Interpolator = AccelerateDecelerateInterpolator(),
+        disappearInterpolator: Interpolator = AccelerateDecelerateInterpolator(),
+        changeInterpolator: Interpolator = AccelerateDecelerateInterpolator()
+    ) {
 
-        val fadeAnimator = ObjectAnimator.ofFloat(this, "alpha",
-            if (visible) 0f else 1f, if (visible) 1f else 0f
-        ).setDuration(300)
-
-        val animatorSet = AnimatorSet().apply {
-            playTogether(slideAnimator, fadeAnimator)
-            if (!visible) {
-                addListener(object : android.animation.AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        this@showHide.visibility = View.GONE
-                    }
-                })
+        val layoutTransition = LayoutTransition().apply {
+            if (enableAppearing) {
+                setDuration(LayoutTransition.APPEARING, appearDuration)
+                setInterpolator(LayoutTransition.APPEARING, appearInterpolator)
             } else {
-                this@showHide.visibility = View.VISIBLE
+                disableTransitionType(LayoutTransition.APPEARING)
+            }
+
+            if (enableDisappearing) {
+                setDuration(LayoutTransition.DISAPPEARING, disappearDuration)
+                setInterpolator(LayoutTransition.DISAPPEARING, disappearInterpolator)
+            } else {
+                disableTransitionType(LayoutTransition.DISAPPEARING)
+            }
+
+            if (enableChanging) {
+                setDuration(LayoutTransition.CHANGING, changeDuration)
+                setInterpolator(LayoutTransition.CHANGING, changeInterpolator)
+            } else {
+                disableTransitionType(LayoutTransition.CHANGING)
             }
         }
 
-        animatorSet.start()
-    }
 
+        this.layoutTransition = layoutTransition
+    }
 
 
 
@@ -109,11 +125,7 @@ object Extensions {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, number.toFloat(), metric)
     }
 
-    /**
-     * This method returns DisplayMetric of current device.
-     * If Context is null the default system display metric would be returned which has default
-     * density etc...
-     */
+
     fun getDisplayMetric(context: Context?): DisplayMetrics {
         return if (context != null) context.resources.displayMetrics else Resources.getSystem().displayMetrics
     }

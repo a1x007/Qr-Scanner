@@ -21,6 +21,8 @@
         <attr name="_borderWidth" format="dimension" />
         <attr name="_icon" format="reference" />
         <attr name="_iconColor" format="color" />
+        <attr name="_activeIconColor" format="color" />
+        <attr name="_activeColor" format="color" />
         <attr name="_iconWidth" format="dimension" />
         <attr name="_iconHeight" format="dimension" />
         <attr name="_textMarginTop" format="dimension" />
@@ -28,6 +30,7 @@
         <attr name="_textMarginLeft" format="dimension" />
         <attr name="_textMarginRight" format="dimension" />
         <attr name="_checked" format="boolean" />
+
     </declare-styleable>
 
     <declare-styleable name="CustomRadioButton">
@@ -58,7 +61,7 @@
         <attr name="nts_weight" format="dimension"/>
         <attr name="nts_factor" format="float"/>
         <attr name="nts_titles" format="reference"/>
-        <attr name="nts_bold" value="true"/>
+        <attr name="nts_bolds" value="true"/>
 
         <attr name="nts_type" format="enum">
             <enum name="line" value="0"/>
@@ -69,7 +72,7 @@
             <enum name="top" value="1"/>
         </attr>
 
-        <attr name="nts_typeface" format="string"/>
+        <attr name="nts_typeface" format="reference"/>
         <attr name="nts_corners_radius" format="dimension"/>
         <attr name="nts_animation_duration" format="integer"/>
 

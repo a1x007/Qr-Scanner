@@ -9,8 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="0dp"
         android:minHeight="300dp"
-        android:padding="10dp"
-        app:backgroundColor="#121212"
+        app:borderColor="@android:color/transparent"
         app:cornerRadius="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,6 +24,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:gravity="start|center"
                 android:orientation="vertical">
 
@@ -34,8 +34,9 @@
                     android:layout_marginBottom="10dp"
                     android:fontFamily="@font/console"
                     android:text="Qr Shape"
+                    android:textAllCaps="true"
                     android:textColor="@color/text"
-                    android:textSize="18sp" />
+                    android:textSize="14sp" />
 
 
                 <RadioGroup
@@ -66,12 +67,20 @@
 
                 </RadioGroup>
 
+
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shape_line" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
                 android:gravity="start|center"
                 android:orientation="vertical">
 
@@ -82,8 +91,9 @@
                     android:layout_marginBottom="10dp"
                     android:fontFamily="@font/console"
                     android:text="Dark Pixels Shape"
+                    android:textAllCaps="true"
                     android:textColor="@color/text"
-                    android:textSize="18sp" />
+                    android:textSize="14sp" />
 
                 <RadioGroup
                     android:id="@+id/radioGroupDarkPixelShape"
@@ -136,7 +146,7 @@
                         android:layout_height="20dp"
                         android:layout_marginEnd="35dp"
                         android:background="@drawable/shape_rhombus"
-                        android:backgroundTint="@color/white"
+                        android:backgroundTint="@color/text"
                         android:button="@null" />
 
                     <RadioButton
@@ -157,12 +167,20 @@
                         android:button="@null"
                         android:rotation="90" />
                 </RadioGroup>
+
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shape_line" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
                 android:gravity="start|center"
                 android:orientation="vertical">
 
@@ -172,8 +190,9 @@
                     android:layout_marginBottom="10dp"
                     android:fontFamily="@font/console"
                     android:text="Frame Shape"
+                    android:textAllCaps="true"
                     android:textColor="@color/text"
-                    android:textSize="18sp" />
+                    android:textSize="14sp" />
 
 
                 <RadioGroup
@@ -226,7 +245,7 @@
                         android:layout_height="20dp"
                         android:layout_marginEnd="35dp"
                         android:background="@drawable/shape_rhombus"
-                        android:backgroundTint="@color/white"
+                        android:backgroundTint="@color/text"
                         android:button="@null" />
 
                     <RadioButton
@@ -240,13 +259,20 @@
 
                 </RadioGroup>
 
+
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shape_line" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
                 android:gravity="start|center"
                 android:orientation="vertical">
 
@@ -256,8 +282,9 @@
                     android:layout_marginBottom="10dp"
                     android:fontFamily="@font/console"
                     android:text="Eye Ball Shape"
+                    android:textAllCaps="true"
                     android:textColor="@color/text"
-                    android:textSize="18sp" />
+                    android:textSize="14sp" />
 
 
                 <RadioGroup
@@ -310,7 +337,7 @@
                         android:layout_height="20dp"
                         android:layout_marginEnd="35dp"
                         android:background="@drawable/shape_rhombus"
-                        android:backgroundTint="@color/white"
+                        android:backgroundTint="@color/text"
                         android:button="@null" />
 
                     <RadioButton
@@ -324,13 +351,22 @@
 
                 </RadioGroup>
 
+
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shape_line" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical">
+
                 <SeekBar
                     android:id="@+id/circleSizeSlider"
                     android:layout_width="match_parent"

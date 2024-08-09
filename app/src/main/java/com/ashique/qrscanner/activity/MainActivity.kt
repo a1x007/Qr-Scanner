@@ -1,11 +1,11 @@
 package com.ashique.qrscanner.activity
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -41,6 +41,8 @@ import com.ashique.qrscanner.helper.Extensions.setOnBackPressedAction
 import com.ashique.qrscanner.helper.Extensions.showToast
 import com.ashique.qrscanner.helper.Prefs
 import com.ashique.qrscanner.helper.Prefs.useZxing
+import com.ashique.qrscanner.helper.QrHelper
+import com.ashique.qrscanner.helper.QrHelper.scanBitmap
 import com.ashique.qrscanner.services.PermissionManager.initPermissionManager
 import com.ashique.qrscanner.services.PermissionManager.isAllFilesAccessGranted
 import com.ashique.qrscanner.services.PermissionManager.isCameraPermissionGranted
@@ -58,7 +60,6 @@ import com.google.zxing.common.HybridBinarizer
 import com.isseiaoki.simplecropview.CropImageView
 import com.isseiaoki.simplecropview.callback.CropCallback
 import com.isseiaoki.simplecropview.callback.LoadCallback
-import gun0912.tedimagepicker.builder.TedImagePicker
 import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
@@ -83,6 +84,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var analysisUseCase: ImageAnalysis
 
     private lateinit var getImageLauncher: ActivityResultLauncher<Intent>
+    private lateinit var photoPickerLauncher: ActivityResultLauncher<String>
 
 
     private var flashEnabled = false
@@ -140,10 +142,18 @@ class MainActivity : AppCompatActivity() {
             ui.scanner.visibility = GONE
         }
 
-
+        // Initialize the ActivityResultLauncher
+        photoPickerLauncher = registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+            // Handle the image URI
+            uri?.let {
+                onImagePicked(it)
+            }
+        }
 
         checkCameraPermission()
-        onImagePicked()
+
         onBackPress()
 
 
@@ -345,229 +355,82 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun launchGallery() {
-        /* Intent(Intent.ACTION_PICK).apply {
-               type = "image/*"
-           }.also { pickIntent ->
-               getImageLauncher.launch(pickIntent)
-           }
+        photoPickerLauncher.launch("image/*")
+    }
 
 
-         */
-         */
+    private fun onImagePicked(uri: Uri) {
+        ui.cropImageView.load(uri).execute(object : LoadCallback {
+            override fun onError(e: Throwable?) {
+                Log.e(TAG, "Error loading image", e)
+            }
 
+            override fun onSuccess() {
+                ui.cropBackground.visibility = VISIBLE
+                ui.toolbar.visibility = VISIBLE
+                // rotation
+                ui.rotateLeft.setOnClickListener {
+                    ui.cropImageView.rotateImage(
+                        CropImageView.RotateDegrees.ROTATE_M90D
+                    )
+                }
+                ui.rotateRight.setOnClickListener {
+                    ui.cropImageView.rotateImage(
+                        CropImageView.RotateDegrees.ROTATE_90D
+                    )
+                }
 
-
-
-
-        TedImagePicker.with(this)
-            .start { uri ->   // Use a cropping library or your own cropping logic here
-                ui.cropImageView.load(uri).execute(object : LoadCallback {
-                    override fun onError(e: Throwable?) {
-                        Log.e(TAG, "Error loading image", e)
-                    }
-
-                    override fun onSuccess() {
-                        ui.cropBackground.visibility = VISIBLE
-                        ui.toolbar.visibility = VISIBLE
-                        // rotation
-                        ui.rotateLeft.setOnClickListener {
-                            ui.cropImageView.rotateImage(
-                                CropImageView.RotateDegrees.ROTATE_M90D
-                            )
-                        }
-                        ui.rotateRight.setOnClickListener {
-                            ui.cropImageView.rotateImage(
-                                CropImageView.RotateDegrees.ROTATE_90D
-                            )
-                        }
-
-                        // Set up cropping
-                        ui.crop.setOnClickListener {
-                            ui.cropImageView.crop(uri)
-                                .execute(object : CropCallback {
-                                    override fun onSuccess(bitmap: Bitmap) {
-                                        val grayscaleBitmap =
-                                            if (isGrayscale(bitmap)) {
-                                                BitmapHelper.resizeBitmap(
-                                                    bitmap,
-                                                    300,
-                                                    300
-                                                )
-                                            } else {
-                                                showToast("Colored Qr Detected !")
-                                                invertColors(
-                                                    bitmap
-                                                )
-                                            }
-
-                                        Log.i(TAG, "onSuccess: crop: $bitmap")
-
-                                        if (useZxing()) {
-                                            val content = scanQrCodeFromImage2(grayscaleBitmap)
-                                            content?.let {
-                                                openResultActivity(it)
-                                            } ?: {
-                                                showToast("Error: couldn't scan the photo! retrying..")
-                                                processBitmap(grayscaleBitmap)
-
-                                            }
-                                        } else {
-                                            processBitmap(grayscaleBitmap)
-                                        }
-
+                // Set up cropping
+                ui.crop.setOnClickListener {
+                    ui.cropImageView.crop(uri)
+                        .execute(object : CropCallback {
+                            override fun onSuccess(bitmap: Bitmap) {
+                                val grayscaleBitmap =
+                                    if (isGrayscale(bitmap)) {
+                                        BitmapHelper.resizeBitmap(
+                                            bitmap,
+                                            300,
+                                            300
+                                        )
+                                    } else {
+                                        showToast("Colored Qr Detected !")
+                                        invertColors(
+                                            bitmap
+                                        )
                                     }
 
-                                    override fun onError(e: Throwable) {
-                                        Log.e(TAG, "Error cropping image", e)
-                                        showToast("Error: $e")
+                                Log.i(TAG, "onSuccess: crop: $bitmap")
+
+                                // start qr scanning process
+                                scanBitmap(grayscaleBitmap, object : QrHelper.QrScanCallback {
+                                    override fun onBarcodeScanned(contents: String) {
+                                        // Handle the scanned barcode value
+                                        openResultActivity(contents)
+                                        showToast("Scanned barcode: $contents")
+                                    }
+
+                                    override fun onScanError(errorMessage: String) {
+                                        // Handle the error
+                                        showToast(errorMessage)
                                     }
                                 })
-                        }
-                    }
-                })
-            }
-
-    }
 
 
-    private fun onImagePicked() {
-        // Initialize the image selection launcher
-        getImageLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                    val imageUri = result.data?.data
-                    imageUri?.let { uri ->
-                        // Use a cropping library or your own cropping logic here
-                        ui.cropImageView.load(uri).execute(object : LoadCallback {
-                            override fun onError(e: Throwable?) {
-                                Log.e(TAG, "Error loading image", e)
+
                             }
 
-                            override fun onSuccess() {
-                                ui.cropBackground.visibility = VISIBLE
-                                ui.toolbar.visibility = VISIBLE
-                                // rotation
-                                ui.rotateLeft.setOnClickListener {
-                                    ui.cropImageView.rotateImage(
-                                        CropImageView.RotateDegrees.ROTATE_M90D
-                                    )
-                                }
-                                ui.rotateRight.setOnClickListener {
-                                    ui.cropImageView.rotateImage(
-                                        CropImageView.RotateDegrees.ROTATE_90D
-                                    )
-                                }
-
-                                // Set up cropping
-                                ui.crop.setOnClickListener {
-                                    ui.cropImageView.crop(uri)
-                                        .execute(object : CropCallback {
-                                            override fun onSuccess(bitmap: Bitmap) {
-
-                                                val grayscaleBitmap =
-                                                    if (isGrayscale(bitmap)) {
-                                                        BitmapHelper.resizeBitmap(
-                                                            bitmap,
-                                                            400,
-                                                            400
-                                                        )
-                                                    } else {
-                                                        showToast("Colored Qr Detected !")
-                                                        invertColors(
-                                                            bitmap
-                                                        )
-                                                    }
-
-                                                Log.i(TAG, "onSuccess: crop: $bitmap")
-                                                processBitmap(grayscaleBitmap)
-                                            }
-
-                                            override fun onError(e: Throwable) {
-                                                Log.e(TAG, "Error cropping image", e)
-                                                showToast("Error: $e")
-                                            }
-                                        })
-                                }
+                            override fun onError(e: Throwable) {
+                                Log.e(TAG, "Error cropping image", e)
+                                showToast("Error: $e")
                             }
                         })
-                    }
                 }
             }
+        })
+
     }
 
 
-    fun scanQrCodeFromImage2(bitmap: Bitmap): String? {
-        return try {
-            val width = bitmap.width
-            val height = bitmap.height
-            val pixels = IntArray(width * height)
-            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-
-            val source = RGBLuminanceSource(width, height, pixels)
-            val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
-
-            val reader = MultiFormatReader()
-            val hints = mutableMapOf<DecodeHintType, Any>(DecodeHintType.TRY_HARDER to true)
-            val result = reader.decode(binaryBitmap, hints)
-
-            result.text
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    fun scanQrCodeFromImage(bitmap: Bitmap): String? {
-        try {
-            // Resize the image if necessary
-            val scaledBitmap =
-                Bitmap.createScaledBitmap(bitmap, bitmap.width / 2, bitmap.height / 2, true)
-
-            val width = scaledBitmap.width
-            val height = scaledBitmap.height
-            val pixels = IntArray(width * height)
-            scaledBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-
-            val source = RGBLuminanceSource(width, height, pixels)
-            val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
-
-
-            val reader = MultiFormatReader()
-            val hints = mutableMapOf<DecodeHintType, Any>(DecodeHintType.TRY_HARDER to true)
-            reader.decode(binaryBitmap, hints)
-
-            val result = reader.decode(binaryBitmap)
-
-            return result.text
-        } catch (e: NotFoundException) {
-            // Handle case where no QR code is found
-            return null
-        } catch (e: Exception) {
-            // Handle other exceptions
-            return null
-        }
-    }
-
-
-    private fun processBitmap(bitmap: Bitmap) {
-        val barcodeScanner = BarcodeScanning.getClient()
-
-        val inputImage = InputImage.fromBitmap(bitmap, 0) // Rotation is 0 for bitmap
-
-        barcodeScanner.process(inputImage)
-            .addOnSuccessListener { barcodes ->
-                barcodes.forEach { barcode ->
-                    barcode.rawValue?.let {
-                        Log.d("TAG", "QR Code content: $it")
-                        // You can call your function to handle the QR code result here
-                        openResultActivity(it)
-                    }
-                }
-            }
-            .addOnFailureListener { error ->
-                error.printStackTrace()
-                showToast("Error: $error")
-            }
-    }
 
 
     @OptIn(ExperimentalGetImage::class)

@@ -41,7 +41,7 @@ class RadioButtons @JvmOverloads constructor(
                 backgroundColor = getColor(R.styleable.CustomRadioButton_customBackgroundColor, Color.TRANSPARENT)
                 cornerRadius = getDimension(R.styleable.CustomRadioButton_customCornerRadius, 0f)
                 icon = getDrawable(R.styleable.CustomRadioButton_customIcon)
-                iconColor = getColor(R.styleable.CustomRadioButton_customIconColor, context.getColor(R.color.white))
+                iconColor = getColor(R.styleable.CustomRadioButton_customIconColor, Color.WHITE)
                 iconWidth = getDimensionPixelSize(R.styleable.CustomRadioButton_customIconWidth, icon?.intrinsicWidth ?: 0)
                 iconHeight = getDimensionPixelSize(R.styleable.CustomRadioButton_customIconWidth, icon?.intrinsicHeight ?: 0)
                 borderColor = getColor(R.styleable.CustomRadioButton_customBorderColor, Color.TRANSPARENT)

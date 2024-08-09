@@ -2,9 +2,12 @@
 <resources>
 
     <string-array name="titles">
+        <item>Text</item>
         <item>Shape</item>
-        <item>Logo</item>
         <item>Color</item>
+        <item>Logo</item>
+        <item>Bg</item>
+        <item>Save</item>
     </string-array>
 
 </resources>

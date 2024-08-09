@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import com.ashique.qrscanner.R
 import com.ashique.qrscanner.databinding.DialogColorPickerBinding
+import com.ashique.qrscanner.databinding.LayoutQrColorBinding
 
-class ColorPickerDialog : DialogFragment() {
+class ColorPickerDialog(private val ui: LayoutQrColorBinding) : DialogFragment() {
 
     private var _binding: DialogColorPickerBinding? = null
     private val binding get() = _binding!!
@@ -27,7 +29,7 @@ class ColorPickerDialog : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = DialogColorPickerBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -42,10 +44,12 @@ class ColorPickerDialog : DialogFragment() {
             onColorChanged?.invoke(color)
 
             binding.previewButton.setIconColor(color)
-
-
         }
+
+
         binding.previewButton.setOnClickListener {
+            ui.btnGradientColor0.isChecked = false
+            ui.btnGradientColor1.isChecked = false
             dismiss()
         }
 

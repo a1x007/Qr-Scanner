@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0c0c0c"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
@@ -72,33 +71,46 @@
     </LinearLayout>
 
 
-    <com.ashique.qrscanner.custom.NavigationTabStrip
-        android:id="@+id/navigation_menu"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        app:nts_active_color="#fff"
-        app:nts_animation_duration="300"
-        app:nts_color="#fff"
-        app:nts_corners_radius="6dp"
-        app:nts_factor="2.5"
-        app:nts_gravity="bottom"
-        app:nts_inactive_color="#50ffffff"
-        app:nts_size="15sp"
-        app:nts_titles="@array/titles"
-        app:nts_type="point"
-        app:nts_typeface="fonts/typeface.otf"
-        app:nts_weight="6dp" />
+   <LinearLayout
+       android:id="@+id/menu_frame"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical"
+       app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+       <com.ashique.qrscanner.custom.NavigationTabStrip
+           android:id="@+id/navigation_menu"
+           android:layout_width="match_parent"
+           android:layout_height="50dp"
+           app:nts_active_color="@color/text"
+           app:nts_animation_duration="200"
+           app:nts_color="@color/text"
+           app:nts_corners_radius="6dp"
+           app:nts_factor="2.5"
+           app:nts_gravity="bottom"
+           app:nts_inactive_color="@color/nts_inactive"
+           app:nts_size="15sp"
+           app:nts_titles="@array/titles"
+           app:nts_type="point"
+           app:nts_typeface="@font/console"
+           app:nts_weight="6dp" />
+
+       <View
+           android:layout_width="match_parent"
+           android:layout_height="2dp"
+           android:layout_marginTop="-4.5dp"
+           android:background="@drawable/shape_line"/>
+   </LinearLayout>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPagerShapes"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/navigation_menu" />
+        app:layout_constraintTop_toBottomOf="@+id/menu_frame" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

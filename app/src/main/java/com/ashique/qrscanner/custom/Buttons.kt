@@ -2,6 +2,7 @@ package com.ashique.qrscanner.custom
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -11,9 +12,9 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.Gravity
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.content.ContextCompat
 import com.ashique.qrscanner.R
 
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 class Buttons @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -32,7 +33,17 @@ class Buttons @JvmOverloads constructor(
     private val borderRect = RectF()
     private var iconWidth: Int = 0
     private var iconHeight: Int = 0
-    private var isChecked: Boolean = false // Add this line for checked state
+
+    var isChecked: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                updateCheckedState()
+                onCheckedChangeListener?.invoke(value) // Notify listener
+            }
+        }
+
+
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
     }
@@ -48,6 +59,9 @@ class Buttons @JvmOverloads constructor(
     private var textMarginLeft: Int = 0
     private var textMarginRight: Int = 0
 
+    private var activeColor: Int = 0
+    private var activeIconColor: Int = 0
+
     init {
         context.theme.obtainStyledAttributes(
             attrs,
@@ -56,18 +70,30 @@ class Buttons @JvmOverloads constructor(
         ).apply {
             try {
                 radius = getDimension(R.styleable.Button__radius, 0f)
-                fillColor = getColor(R.styleable.Button__fillColor, ContextCompat.getColor(context, android.R.color.transparent))
-                borderColor = getColor(R.styleable.Button__borderColor, ContextCompat.getColor(context, android.R.color.black))
+                fillColor = getColor(R.styleable.Button__fillColor, Color.TRANSPARENT)
+                borderColor = getColor(
+                    R.styleable.Button__borderColor,
+                    Color.BLACK
+                )
                 borderWidth = getDimension(R.styleable.Button__borderWidth, 0f)
                 iconDrawable = getDrawable(R.styleable.Button__icon)
-                iconColor = getColor(R.styleable.Button__iconColor, context.getColor(R.color.white))
-                iconWidth = getDimensionPixelSize(R.styleable.Button__iconWidth, iconDrawable?.intrinsicWidth ?: 0)
-                iconHeight = getDimensionPixelSize(R.styleable.Button__iconHeight, iconDrawable?.intrinsicHeight ?: 0)
+                iconColor = getColor(R.styleable.Button__iconColor, Color.WHITE)
+                iconWidth = getDimensionPixelSize(
+                    R.styleable.Button__iconWidth,
+                    iconDrawable?.intrinsicWidth ?: 0
+                )
+                iconHeight = getDimensionPixelSize(
+                    R.styleable.Button__iconHeight,
+                    iconDrawable?.intrinsicHeight ?: 0
+                )
                 textMarginTop = getDimensionPixelSize(R.styleable.Button__textMarginTop, 0)
                 textMarginBottom = getDimensionPixelSize(R.styleable.Button__textMarginBottom, 0)
                 textMarginLeft = getDimensionPixelSize(R.styleable.Button__textMarginLeft, 0)
                 textMarginRight = getDimensionPixelSize(R.styleable.Button__textMarginRight, 0)
-                isChecked = getBoolean(R.styleable.Button__checked, false) // Read the checked attribute
+                isChecked =
+                    getBoolean(R.styleable.Button__checked, false)
+                activeColor = getColor(R.styleable.Button__activeColor, Color.TRANSPARENT)
+                activeIconColor = getColor(R.styleable.Button__activeIconColor, Color.TRANSPARENT)
             } finally {
                 recycle()
             }
@@ -91,7 +117,6 @@ class Buttons @JvmOverloads constructor(
             toggle()
         }
     }
-
 
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -130,6 +155,8 @@ class Buttons @JvmOverloads constructor(
         rect.set(borderWidthHalf, borderWidthHalf, rectRight, rectBottom)
 
         // Draw the rounded rectangle
+        fillPaint.color = if (isChecked) activeColor else fillColor
+
         canvas.drawRoundRect(rect, radius, radius, fillPaint)
 
         // Draw border if borderWidth is greater than 0
@@ -160,20 +187,9 @@ class Buttons @JvmOverloads constructor(
         canvas.drawText(text.toString(), textX, textY, paint)
     }
 
-    fun setChecked(checked: Boolean) {
-        if (isChecked != checked) {
-            isChecked = checked
-            updateCheckedState()
-            onCheckedChangeListener?.invoke(isChecked)
-        }
-    }
 
-    fun isChecked(): Boolean {
-        return isChecked
-    }
-
-    private fun toggle() {
-        setChecked(!isChecked)
+    fun toggle() {
+        isChecked = !isChecked
     }
 
     fun setOnCheckedListener(listener: (Boolean) -> Unit) {
@@ -181,19 +197,22 @@ class Buttons @JvmOverloads constructor(
     }
 
     private fun updateCheckedState() {
-         invalidate()
-
+        iconDrawable?.colorFilter = PorterDuffColorFilter(
+            if (isChecked) activeIconColor else iconColor,
+            PorterDuff.Mode.SRC_IN
+        )
+        invalidate()
     }
 
-    fun setBgColor(color: Int){
+    fun setBgColor(color: Int) {
         fillColor = color
         fillPaint.color = color
         invalidate()
     }
 
-    fun setIconColor(color: Int){
+    fun setIconColor(color: Int) {
         iconColor = color
-        iconDrawable?.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN);
+        iconDrawable?.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
         invalidate()
     }
 
