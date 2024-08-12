@@ -22,12 +22,24 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <ImageView
-            android:id="@+id/iv_qrcode"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:layout_gravity="center"
-            android:contentDescription="@string/image" />
+      <FrameLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+          <ImageView
+              android:id="@+id/gifView"
+              android:layout_width="300dp"
+              android:layout_height="300dp"
+              android:layout_gravity="center"
+              android:contentDescription="@string/image" />
+          <ImageView
+              android:id="@+id/iv_qrcode"
+              android:layout_width="300dp"
+              android:layout_height="300dp"
+              android:background="@android:color/transparent"
+              android:layout_gravity="center"
+              android:contentDescription="@string/image" />
+
+      </FrameLayout>
 
         <Space
             android:layout_width="wrap_content"

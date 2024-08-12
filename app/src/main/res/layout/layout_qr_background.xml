@@ -1,6 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/console"
+            android:gravity="start|center"
+            android:text="Import background"
+            android:textAllCaps="true"
+            android:textColor="@color/text"
+            android:textSize="14sp" />
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/btn_importBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="4dp"
+            app:_activeColor="@color/text"
+            app:_activeIconColor="@color/icon_active"
+            app:_borderColor="@color/radio_buttons_border"
+            app:_borderWidth="1dp"
+            app:_fillColor="@color/radio_buttons_border"
+            app:_icon="@drawable/ic_import"
+            app:_iconColor="@color/text"
+            app:_iconHeight="30dp"
+            app:_iconWidth="30dp"
+            app:_radius="3dp" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/shape_line" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/console"
+        android:text="Change Color"
+        android:textAllCaps="true"
+        android:textColor="@color/text"
+        android:textSize="14sp"
+        android:layout_marginStart="10dp"
+        android:gravity="start|center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        >
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/btn_color"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:padding="4dp"
+            app:_activeColor="@color/text"
+            app:_activeIconColor="@color/icon_active"
+            app:_borderColor="@color/radio_buttons_border"
+            app:_borderWidth="1dp"
+            app:_fillColor="@color/radio_buttons_border"
+            app:_icon="@drawable/ic_color_pallete"
+            app:_iconColor="@color/text"
+            app:_iconHeight="34dp"
+            app:_iconWidth="34dp"
+            app:_radius="3dp" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/shape_line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/paddingLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/console"
+            android:gravity="start|center"
+            android:text="Padding"
+            android:textAllCaps="true"
+            android:textColor="@color/text"
+            android:textSize="14sp" />
+
+        <SeekBar
+            android:id="@+id/paddingSlider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:max="100" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/shape_line" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/console"
+        android:text="Scale Type"
+        android:textAllCaps="true"
+        android:textColor="@color/text"
+        android:textSize="14sp"
+        android:layout_marginStart="10dp"
+        android:gravity="start|center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        >
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/btn_centerCrop"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:padding="4dp"
+            app:_activeColor="@color/text"
+            app:_activeIconColor="@color/icon_active"
+            app:_borderColor="@color/radio_buttons_border"
+            app:_borderWidth="1dp"
+            app:_fillColor="@color/radio_buttons_border"
+            app:_icon="@drawable/ic_center_crop"
+            app:_iconColor="@color/text"
+            app:_iconHeight="24dp"
+            app:_iconWidth="24dp"
+            app:_radius="3dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,98 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
 
-        <!-- Padding Slider -->
         <TextView
-            android:id="@+id/paddingLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:text="Padding" />
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/console"
+            android:gravity="start|center"
+            android:text="Import logo"
+            android:textAllCaps="true"
+            android:textColor="@color/text"
+            android:textSize="14sp" />
 
-        <SeekBar
-            android:id="@+id/paddingSlider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/paddingLabel"
-            android:layout_marginTop="8dp"
-            android:max="100"
-            android:progress="10" />
-
-        <!-- Logo Size Slider -->
-        <TextView
-            android:id="@+id/logoSizeLabel"
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/btn_importLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/paddingSlider"
-            android:layout_marginTop="16dp"
-            android:text="Logo Size" />
+            android:gravity="center"
+            android:padding="4dp"
+            app:_activeColor="@color/text"
+            app:_activeIconColor="@color/icon_active"
+            app:_borderColor="@color/radio_buttons_border"
+            app:_borderWidth="1dp"
+            app:_fillColor="@color/radio_buttons_border"
+            app:_icon="@drawable/ic_import"
+            app:_iconColor="@color/text"
+            app:_iconHeight="30dp"
+            app:_iconWidth="30dp"
+            app:_radius="3dp" />
+    </LinearLayout>
+    <!-- Padding Slider -->
 
-        <SeekBar
-            android:id="@+id/logoSizeSlider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/logoSizeLabel"
-            android:layout_marginTop="8dp"
-            android:max="100"
-            android:progress="25" />
+    <TextView
+        android:id="@+id/paddingLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/console"
+        android:gravity="start|center"
+        android:text="Padding"
+        android:textAllCaps="true"
+        android:textColor="@color/text"
+        android:textSize="14sp" />
 
-        <!-- Dark Pixel Roundness Slider -->
-        <TextView
-            android:id="@+id/darkPixelRoundnessLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/logoSizeSlider"
-            android:layout_marginTop="16dp"
-            android:text="Dark Pixel Roundness" />
+    <SeekBar
+        android:id="@+id/paddingSlider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/paddingLabel"
+        android:layout_marginTop="8dp"
+        android:max="100"
+        android:progress="10" />
 
-        <SeekBar
-            android:id="@+id/darkPixelRoundnessSlider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/darkPixelRoundnessLabel"
-            android:layout_marginTop="8dp"
-            android:max="100"
-            android:progress="10" />
+    <!-- Logo Size Slider -->
+    <TextView
+        android:id="@+id/logoSizeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/paddingSlider"
+        android:layout_marginTop="16dp"
+        android:text="Logo Size" />
 
-        <!-- Ball Roundness Slider -->
-        <TextView
-            android:id="@+id/ballRoundnessLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/darkPixelRoundnessSlider"
-            android:layout_marginTop="16dp"
-            android:text="Ball Roundness" />
+    <SeekBar
+        android:id="@+id/logoSizeSlider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/logoSizeLabel"
+        android:layout_marginTop="8dp"
+        android:max="100"
+        android:progress="25" />
 
-        <SeekBar
-            android:id="@+id/ballRoundnessSlider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/ballRoundnessLabel"
-            android:layout_marginTop="8dp"
-            android:max="100"
-            android:progress="25" />
+    <!-- Dark Pixel Roundness Slider -->
+    <TextView
+        android:id="@+id/darkPixelRoundnessLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/logoSizeSlider"
+        android:layout_marginTop="16dp"
+        android:text="Dark Pixel Roundness" />
 
-        <!-- Frame Roundness Slider -->
-        <TextView
-            android:id="@+id/frameRoundnessLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/ballRoundnessSlider"
-            android:layout_marginTop="16dp"
-            android:text="Frame Roundness" />
+    <SeekBar
+        android:id="@+id/darkPixelRoundnessSlider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/darkPixelRoundnessLabel"
+        android:layout_marginTop="8dp"
+        android:max="100"
+        android:progress="10" />
 
-        <SeekBar
-            android:id="@+id/frameRoundnessSlider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/frameRoundnessLabel"
-            android:layout_marginTop="8dp"
-            android:max="100"
-            android:progress="25" />
+    <!-- Ball Roundness Slider -->
+    <TextView
+        android:id="@+id/ballRoundnessLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/darkPixelRoundnessSlider"
+        android:layout_marginTop="16dp"
+        android:text="Ball Roundness" />
+
+    <SeekBar
+        android:id="@+id/ballRoundnessSlider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ballRoundnessLabel"
+        android:layout_marginTop="8dp"
+        android:max="100"
+        android:progress="25" />
+
+    <!-- Frame Roundness Slider -->
+    <TextView
+        android:id="@+id/frameRoundnessLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ballRoundnessSlider"
+        android:layout_marginTop="16dp"
+        android:text="Frame Roundness" />
+
+    <SeekBar
+        android:id="@+id/frameRoundnessSlider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/frameRoundnessLabel"
+        android:layout_marginTop="8dp"
+        android:max="100"
+        android:progress="25" />
 
 
-</RelativeLayout>
+</LinearLayout>

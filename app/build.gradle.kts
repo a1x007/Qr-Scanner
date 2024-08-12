@@ -1,23 +1,33 @@
-import java.util.regex.Pattern.compile
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.chaquo.python")
 }
 
 android {
     namespace = "com.ashique.qrscanner"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.ashique.qrscanner"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
+
+        // for chaquopy
+        ndk {
+            // On Apple silicon, you can omit x86_64.
+            abiFilters += listOf("arm64-v8a", "x86_64")
+        }
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+
+
+
 
     buildTypes {
         release {
@@ -41,13 +51,38 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    // for chaquopy
+    flavorDimensions += "pyVersion"
+    productFlavors {
+        create("py310") { dimension = "pyVersion" }
+        create("py311") { dimension = "pyVersion" }
+    }
 }
+
+
+chaquopy {
+    productFlavors {
+        getByName("py310") { version = "3.10" }
+        getByName("py311") { version = "3.11" }
+    }
+
+    sourceSets {
+
+    }
+
+    defaultConfig {
+        pip {
+            install("pillow")
+        }
+    }
+}
+
 
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
-
 
 
     implementation("com.airbnb.android:lottie:6.4.0")
@@ -64,16 +99,19 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.3.4")
     implementation("androidx.camera:camera-view:1.3.4")
 
-    implementation("com.github.yalantis:ucrop:2.2.8")
 
     implementation("com.isseiaoki:simplecropview:1.1.8")
 
-
-    implementation("io.github.ParkSangGwon:tedimagepicker:1.4.2") {
-        exclude(group = "com.android.support")
-        exclude(group = "androidx.core")
+    implementation("com.github.SumiMakito:AwesomeQRCode:1.2.0") {
+        exclude(group = "com.waynejo", module = "androidndkgif")
     }
 
-  //  implementation("com.github.devlight.navigationtabstrip:navigationtabstrip:1.0.4")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
+
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+
+    implementation("io.github.waynejo:androidndkgif:1.0.1")
 }

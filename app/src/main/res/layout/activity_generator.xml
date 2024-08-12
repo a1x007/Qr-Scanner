@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.GeneratorActivity">
+
+
+    <ImageView
+        android:id="@+id/qrPreview"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/verify_qr_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/console"
+        android:text="Qr: "
+        android:textColor="@color/text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qrPreview" />
+
+    <EditText
+        android:id="@+id/edit_input"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/verify_qr_text" />
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/edit_input">
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/generate_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Generate"
+            android:textColor="@color/text"
+            app:_fillColor="@color/radio_buttons_border" />
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/upload_logo_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Logo"
+            android:textColor="@color/text"
+            app:_fillColor="@color/radio_buttons_border" />
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/upload_stillBg_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Still Bg"
+            android:textColor="@color/text"
+            app:_fillColor="@color/radio_buttons_border" />
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/upload_blendBg_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Blend Bg"
+            android:textColor="@color/text"
+            app:_fillColor="@color/radio_buttons_border" />
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/upload_gifBg_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Gif Bg"
+            android:textColor="@color/text"
+            app:_fillColor="@color/radio_buttons_border" />
+
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/save_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Save"
+            android:textColor="@color/text"
+            app:_fillColor="@color/radio_buttons_border" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

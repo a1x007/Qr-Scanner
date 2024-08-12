@@ -3,6 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
 
     <com.ashique.qrscanner.custom.Frame
         android:layout_width="match_parent"
@@ -46,24 +51,37 @@
                     android:layout_gravity="center"
                     android:gravity="start|center"
                     android:orientation="horizontal">
-
-                    <RadioButton
+                    
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/qrDefault"
-                        android:layout_width="19dp"
-                        android:layout_height="19dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_square"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_square"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp"
+                        android:checked="true"/>
 
-                    <RadioButton
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/qrCircle"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_circle"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
                 </RadioGroup>
 
@@ -104,69 +122,150 @@
                     android:orientation="horizontal">
 
 
-                    <RadioButton
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/pixelDefault"
-                        android:layout_width="19dp"
-                        android:layout_height="19dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_square"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_square"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp"
+                        android:checked="true"/>
 
-                    <RadioButton
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/pixelCircle"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_circle"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
-                    <RadioButton
+
+                    
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/pixelRoundCorners25"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_rounded_corner"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_rounded_corner"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
-                    <RadioButton
+
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/pixelStar"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_star"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
-
-                    <RadioButton
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_star"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
+                    
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/pixelRhombus"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_rhombus"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_rhombus"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
-                    <RadioButton
+                    
+
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/pixelRoundCornersHorizontal"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_rounded_line"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_rounded_line"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
+                    
 
-                    <RadioButton
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/radioButtonRoundCornersVertical"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:background="@drawable/shape_rounded_line"
-                        android:backgroundTint="@color/text"
-                        android:button="@null"
-                        android:rotation="90" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_rounded_line"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp"
+                        android:rotation="90"/>
                 </RadioGroup>
+
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shape_line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/pixelCircleSizeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="15dp"
+                    android:text="0.20" />
+
+
+                <SeekBar
+                    android:id="@+id/pixelCircleSizeSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible" />
+
 
             </LinearLayout>
 
@@ -203,61 +302,134 @@
                     android:gravity="start|center"
                     android:orientation="horizontal">
 
-                    <RadioButton
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/frameDefault"
-                        android:layout_width="19dp"
-                        android:layout_height="19dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_square"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_square"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
-                    <RadioButton
+
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/frameCircle"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_circle"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
-                    <RadioButton
+
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/frameRoundCorners25"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_rounded_corner"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_rounded_corner"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp"
+                        android:checked="true"/>
 
-                    <RadioButton
+
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/frameStar"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_star"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_star"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
-                    <RadioButton
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/frameRhombus"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_rhombus"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_rhombus"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
-                    <RadioButton
+
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/frameCircleMini"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_circle"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="15dp" />
 
                 </RadioGroup>
+
+
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/shape_line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/frameCircleSizeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="15dp"
+                    android:text="0.20" />
+
+
+                <SeekBar
+                    android:id="@+id/frameCircleSizeSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible" />
 
 
             </LinearLayout>
@@ -295,59 +467,101 @@
                     android:gravity="start|center"
                     android:orientation="horizontal">
 
-                    <RadioButton
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/eyeDefault"
-                        android:layout_width="19dp"
-                        android:layout_height="19dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_square"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_square"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp"
+                        android:checked="true"/>
 
-                    <RadioButton
+
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/eyeCircle"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_circle"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
-                    <RadioButton
+
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/eyeRoundCorners25"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_rounded_corner"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_rounded_corner"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp"
+                        />
 
-                    <RadioButton
+
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/eyeStar"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_star"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_star"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
-                    <RadioButton
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/eyeRhombus"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_rhombus"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_rhombus"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
-                    <RadioButton
+
+                    <com.ashique.qrscanner.custom.RadioButtons
                         android:id="@+id/eyeCircleMini"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:layout_marginEnd="35dp"
-                        android:background="@drawable/shape_circle"
-                        android:backgroundTint="@color/text"
-                        android:button="@null" />
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_circle"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="15dp" />
 
                 </RadioGroup>
 
@@ -365,23 +579,28 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
                 android:orientation="vertical">
 
-                <SeekBar
-                    android:id="@+id/circleSizeSlider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone" />
-
                 <TextView
-                    android:id="@+id/circleSizeText"
+                    android:id="@+id/eyeCircleSizeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Circle Size: 0.20" />
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="15dp"
+                    android:text="0.20" />
+
+
+                <SeekBar
+                    android:id="@+id/eyeCircleSizeSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible" />
+
+
             </LinearLayout>
 
         </LinearLayout>
     </com.ashique.qrscanner.custom.Frame>
-
-
+    </ScrollView>
 </LinearLayout>

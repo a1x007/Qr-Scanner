@@ -1,7 +1,6 @@
 package com.ashique.qrscanner.activity
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -40,7 +39,6 @@ import com.ashique.qrscanner.helper.Extensions.navigateTo
 import com.ashique.qrscanner.helper.Extensions.setOnBackPressedAction
 import com.ashique.qrscanner.helper.Extensions.showToast
 import com.ashique.qrscanner.helper.Prefs
-import com.ashique.qrscanner.helper.Prefs.useZxing
 import com.ashique.qrscanner.helper.QrHelper
 import com.ashique.qrscanner.helper.QrHelper.scanBitmap
 import com.ashique.qrscanner.services.PermissionManager.initPermissionManager
@@ -51,12 +49,6 @@ import com.ashique.qrscanner.services.PermissionManager.requestExternalStoragePe
 import com.ashique.qrscanner.services.PermissionManager.requestManageAllFilesPermission
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
-import com.google.zxing.BinaryBitmap
-import com.google.zxing.DecodeHintType
-import com.google.zxing.MultiFormatReader
-import com.google.zxing.NotFoundException
-import com.google.zxing.RGBLuminanceSource
-import com.google.zxing.common.HybridBinarizer
 import com.isseiaoki.simplecropview.CropImageView
 import com.isseiaoki.simplecropview.callback.CropCallback
 import com.isseiaoki.simplecropview.callback.LoadCallback
@@ -83,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var previewUseCase: Preview
     private lateinit var analysisUseCase: ImageAnalysis
 
-    private lateinit var getImageLauncher: ActivityResultLauncher<Intent>
+
     private lateinit var photoPickerLauncher: ActivityResultLauncher<String>
 
 
@@ -126,6 +118,7 @@ class MainActivity : AppCompatActivity() {
         ui.gallery.setOnClickListener { openGalleryAndScanQR() }
         ui.overlay.setViewFinder()
         ui.settingBtn.setOnClickListener { navigateTo<SettingsActivity>() }
+        ui.generatorBtn.setOnClickListener { navigateTo<GeneratorActivity>() }
 
         ui.generateBtn.setOnClickListener {
             navigateTo<QrGenerator>()
@@ -339,7 +332,7 @@ class MainActivity : AppCompatActivity() {
     private fun openGalleryAndScanQR() {
         if (isAllFilesAccessGranted()) {
             // Permissions are already granted
-            launchGallery()
+            photoPickerLauncher.launch("image/*")
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 // Log the condition for debugging
@@ -351,11 +344,6 @@ class MainActivity : AppCompatActivity() {
                 requestExternalStoragePermissions()
             }
         }
-    }
-
-
-    private fun launchGallery() {
-        photoPickerLauncher.launch("image/*")
     }
 
 
@@ -416,7 +404,6 @@ class MainActivity : AppCompatActivity() {
                                 })
 
 
-
                             }
 
                             override fun onError(e: Throwable) {
@@ -429,8 +416,6 @@ class MainActivity : AppCompatActivity() {
         })
 
     }
-
-
 
 
     @OptIn(ExperimentalGetImage::class)
@@ -475,7 +460,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        getImageLauncher.unregister()
+        photoPickerLauncher.unregister()
     }
 
 }

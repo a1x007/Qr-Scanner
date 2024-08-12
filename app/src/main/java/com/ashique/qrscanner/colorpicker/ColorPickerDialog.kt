@@ -6,11 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.ashique.qrscanner.R
 import com.ashique.qrscanner.databinding.DialogColorPickerBinding
+import com.ashique.qrscanner.databinding.LayoutQrBackgroundBinding
 import com.ashique.qrscanner.databinding.LayoutQrColorBinding
 
-class ColorPickerDialog(private val ui: LayoutQrColorBinding) : DialogFragment() {
+class ColorPickerDialog(private val ui: LayoutQrColorBinding? = null, private val ui2: LayoutQrBackgroundBinding? = null) : DialogFragment() {
 
     private var _binding: DialogColorPickerBinding? = null
     private val binding get() = _binding!!
@@ -48,8 +48,8 @@ class ColorPickerDialog(private val ui: LayoutQrColorBinding) : DialogFragment()
 
 
         binding.previewButton.setOnClickListener {
-            ui.btnGradientColor0.isChecked = false
-            ui.btnGradientColor1.isChecked = false
+            ui?.btnGradientColor0?.isChecked = false
+            ui?.btnGradientColor1?.isChecked = false
             dismiss()
         }
 

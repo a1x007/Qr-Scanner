@@ -2,16 +2,23 @@ package com.ashique.qrscanner.helper
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Rect
 import android.media.MediaScannerConnection
+import android.net.Uri
+import android.os.Build
 import android.os.Environment
+import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.core.graphics.toColorInt
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 
 object BitmapHelper {
 
@@ -117,7 +124,7 @@ object BitmapHelper {
             // Notify completion if needed
             Toast.makeText(this, "QR code saved to $path", Toast.LENGTH_SHORT).show()
         }
-     //   Toast.makeText(this, "QR code saved to ${file.absolutePath}", Toast.LENGTH_SHORT).show()
+          // Toast.makeText(this, "QR code saved to ${file.absolutePath}", Toast.LENGTH_SHORT).show()
     }
 
 
@@ -125,7 +132,77 @@ object BitmapHelper {
         return Bitmap.createScaledBitmap(original, width, height, true)
     }
 
+    fun Uri.toBitmap(context: Context): Bitmap? {
+        return context.contentResolver.openInputStream(this)?.use { inputStream ->
+            BitmapFactory.decodeStream(inputStream)
+        }
+    }
 
+    fun Bitmap.toMutableBitmap(): Bitmap {
+        return this.copy(Bitmap.Config.ARGB_8888, true)
+    }
+
+    fun Bitmap.crop(cropRect: Rect): Bitmap {
+        return Bitmap.createBitmap(
+            this,
+            cropRect.left,
+            cropRect.top,
+            cropRect.width(),
+            cropRect.height()
+        )
+    }
+
+
+    fun Uri.toPath(context: Context): String? {
+        // Check for "file://" scheme
+        if (scheme == "file") {
+            return path
+        }
+
+        // Check for "content://" scheme
+        if (scheme == "content") {
+            // Handle different document types
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, this)) {
+                // DocumentProvider
+                val docId = DocumentsContract.getDocumentId(this)
+                val split = docId.split(":").toTypedArray()
+                val type = split[0]
+
+                if ("image" == type) {
+                    val contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                    val selection = "_id=?"
+                    val selectionArgs = arrayOf(split[1])
+                    val projection = arrayOf(MediaStore.Images.Media.DATA)
+
+                    context.contentResolver.query(contentUri, projection, selection, selectionArgs, null)?.use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            val columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
+                            return cursor.getString(columnIndex)
+                        }
+                    }
+                }
+            }
+
+            // Default to querying the content resolver
+            context.contentResolver.query(this, arrayOf(MediaStore.Images.Media.DATA), null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
+                    return cursor.getString(columnIndex)
+                }
+            }
+        }
+
+        return null
+    }
+
+    fun Uri.toInputStream(context: Context): InputStream? {
+        return try {
+            context.contentResolver.openInputStream(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
 
 

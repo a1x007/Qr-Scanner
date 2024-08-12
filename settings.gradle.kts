@@ -12,11 +12,13 @@ dependencyResolutionManagement {
         mavenCentral()
         jcenter()
         maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://chaquo.com/maven") }
         flatDir {
             dirs("libs")
         }
     }
 }
+
 
 rootProject.name = "Qr Scanner"
 include(":app")

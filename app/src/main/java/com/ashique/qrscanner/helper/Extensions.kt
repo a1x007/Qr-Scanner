@@ -1,15 +1,19 @@
 package com.ashique.qrscanner.helper
 
-import android.animation.Animator
-import android.animation.AnimatorSet
 import android.animation.LayoutTransition
-import android.animation.ObjectAnimator
-import android.app.Activity
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -23,7 +27,9 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import java.io.IOException
 
 object Extensions {
 
@@ -52,6 +58,7 @@ object Extensions {
                 // Night mode is active
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             }
+
             Configuration.UI_MODE_NIGHT_NO -> {
                 // Day mode is active
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -67,7 +74,7 @@ object Extensions {
         startActivity(intent)
     }
 
-     fun Context.showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
+    fun Context.showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(this, message, duration).show()
     }
 
@@ -111,7 +118,58 @@ object Extensions {
     }
 
 
+    fun Uri.toDrawable(context: Context): Drawable? {
+        return context.contentResolver.openInputStream(this)?.use { inputStream ->
+            Drawable.createFromStream(inputStream, toString())
+        }
+    }
 
+    fun Uri.toBitmapDrawable(context: Context): BitmapDrawable? {
+        return try {
+            // Convert URI to InputStream
+            val inputStream = context.contentResolver.openInputStream(this) ?: return null
+
+            // Decode InputStream to Bitmap
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+
+            // Return BitmapDrawable
+            BitmapDrawable(context.resources, bitmap)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+
+    fun Uri.toBitmap(context: Context): Bitmap? {
+        return try {
+            // Convert URI to InputStream
+            val inputStream = context.contentResolver.openInputStream(this) ?: return null
+
+            // Decode InputStream to Bitmap
+            BitmapFactory.decodeStream(inputStream)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun Drawable.drawableFilter(color: Int) : Drawable{
+       this.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+        return this
+    }
+
+     fun applyColorFilter(drawable: Drawable?, color: Int): Drawable? {
+        if (drawable == null) return null
+
+        // Create a copy of the drawable to avoid modifying the original
+        val newDrawable = drawable.constantState?.newDrawable()?.mutate()
+
+        // Apply the color filter
+        newDrawable?.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+
+        return newDrawable
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun Int.intToColor(): Color {

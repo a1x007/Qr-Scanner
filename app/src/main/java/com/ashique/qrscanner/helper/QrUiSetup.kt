@@ -1,22 +1,33 @@
 package com.ashique.qrscanner.helper
 
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.drawable.BitmapDrawable
 import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.ashique.qrscanner.R
+import com.ashique.qrscanner.activity.QrGenerator
 import com.ashique.qrscanner.activity.QrGenerator.Companion.ballColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.ballRoundness
+import com.ashique.qrscanner.activity.QrGenerator.Companion.centerCrop
 import com.ashique.qrscanner.activity.QrGenerator.Companion.currentColorType
 import com.ashique.qrscanner.activity.QrGenerator.Companion.darkColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.darkPixelRoundness
+import com.ashique.qrscanner.activity.QrGenerator.Companion.drawableBgColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.frameColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.frameRoundness
 import com.ashique.qrscanner.activity.QrGenerator.Companion.gradientColor0
 import com.ashique.qrscanner.activity.QrGenerator.Companion.gradientColor1
 import com.ashique.qrscanner.activity.QrGenerator.Companion.logoPadding
 import com.ashique.qrscanner.activity.QrGenerator.Companion.logoSize
+import com.ashique.qrscanner.activity.QrGenerator.Companion.qrBackground
+import com.ashique.qrscanner.activity.QrGenerator.Companion.qrPadding
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedDarkPixelShape
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedEyeBallShape
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedFrameShape
@@ -40,130 +51,175 @@ import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorColor
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorFrameShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorPixelShape
 
-
 object QrUiSetup {
 
     enum class QrColorType {
         QR, BALL, FRAME, DARK, COLOR0, COLOR1
     }
 
-    private var circleSize: Float = 0.20f
+
+    private var darkPixelCircleSize: Float = 0.1f
+    private var frameCircleSize: Float = 0.40f
+    private var eyeCircleMiniSize: Float = 0.40f
+    private var eyeCircleSize: Float = 0.90f
     private var setColorType: QrColorType = QrColorType.QR
 
     fun shapeSetting(binding: LayoutQrShapeBinding, onUpdate: () -> Unit) {
 
-        binding.radioGroupQrShape.setOnCheckedChangeListener { _, checkedId ->
-            selectedQrShape = when (checkedId) {
-                R.id.qrDefault -> QrShape.Default
-                R.id.qrCircle -> QrShape.Circle()
-                else -> QrShape.Default
-            }
-            onUpdate()
-        }
-
-        binding.radioGroupDarkPixelShape.setOnCheckedChangeListener { _, checkedId ->
-            selectedDarkPixelShape = when (checkedId) {
-                R.id.pixelDefault -> QrVectorPixelShape.Default
-                R.id.pixelCircle -> QrVectorPixelShape.Circle()
-                R.id.pixelRoundCorners25 -> QrVectorPixelShape.RoundCorners(0.25f)
-                R.id.pixelStar -> QrVectorPixelShape.Star
-                R.id.pixelRhombus -> QrVectorPixelShape.Rhombus()
-                R.id.pixelRoundCornersHorizontal -> QrVectorPixelShape.RoundCornersHorizontal()
-                R.id.radioButtonRoundCornersVertical -> QrVectorPixelShape.RoundCornersVertical()
-                else -> QrVectorPixelShape.Default // Default fallback
-            }
-            onUpdate()
-        }
-
-        binding.radioGroupFrameShape.setOnCheckedChangeListener { _, checkedId ->
-            selectedFrameShape = when (checkedId) {
-                R.id.frameDefault -> QrVectorFrameShape.Default
-                R.id.frameCircle -> QrVectorFrameShape.Circle()
-                R.id.frameRoundCorners25 -> QrVectorFrameShape.RoundCorners(0.25f)
-                R.id.frameStar -> QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Star)
-                R.id.frameRhombus -> QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Rhombus())
-                R.id.frameCircleMini -> QrVectorFrameShape.AsPixelShape(
-                    QrVectorPixelShape.Circle(
-                        .20f
-                    )
-                )
-
-                else -> QrVectorFrameShape.Default// Default fallback
-            }
-            onUpdate()
-        }
-
-        binding.radioGroupEyeShape.setOnCheckedChangeListener { _, checkedId ->
-            selectedEyeBallShape = when (checkedId) {
-                R.id.eyeDefault -> QrVectorBallShape.Default
-                R.id.eyeCircle -> QrVectorBallShape.Circle(0.30f)
-                R.id.eyeRoundCorners25 -> QrVectorBallShape.RoundCorners(0.25f)
-                R.id.eyeStar -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Star)
-                R.id.eyeRhombus -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Rhombus())
-                R.id.eyeCircleMini -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Circle(.20f))
-                else -> QrVectorBallShape.Default// Default fallback
-            }
-
-            onUpdate()
-            // Hide the slider when other shapes are selected
-            binding.circleSizeSlider.visibility = if (checkedId == R.id.eyeCircleMini)
-                View.VISIBLE
-            else View.GONE
-        }
-
-        binding.circleSizeSlider.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                circleSize = progress / 100f // Convert progress to a float between 0.0 and 1.0
-                binding.circleSizeText.text = "Circle Size: %.2f".format(circleSize)
-
-                // Update the selected shape live to reflect the new size
-                if (binding.radioGroupEyeShape.checkedRadioButtonId == R.id.eyeCircleMini) {
-                    selectedEyeBallShape =
-                        QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Circle(circleSize))
-                    onUpdate()
+        with(binding) {
+            binding.radioGroupQrShape.setOnCheckedChangeListener { _, checkedId ->
+                selectedQrShape = when (checkedId) {
+                    R.id.qrDefault -> QrShape.Default
+                    R.id.qrCircle -> QrShape.Circle()
+                    else -> QrShape.Default
                 }
+                onUpdate()
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            binding.radioGroupDarkPixelShape.setOnCheckedChangeListener { _, checkedId ->
+                selectedDarkPixelShape = when (checkedId) {
+                    R.id.pixelDefault -> QrVectorPixelShape.Default
+                    R.id.pixelCircle -> QrVectorPixelShape.Circle(darkPixelCircleSize)
+                    R.id.pixelRoundCorners25 -> QrVectorPixelShape.RoundCorners(0.25f)
+                    R.id.pixelStar -> QrVectorPixelShape.Star
+                    R.id.pixelRhombus -> QrVectorPixelShape.Rhombus()
+                    R.id.pixelRoundCornersHorizontal -> QrVectorPixelShape.RoundCornersHorizontal()
+                    R.id.radioButtonRoundCornersVertical -> QrVectorPixelShape.RoundCornersVertical()
+                    else -> QrVectorPixelShape.Default // Default fallback
+                }
+                onUpdate()
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
+                pixelCircleSizeSlider.visibility = if (checkedId == R.id.pixelCircle)
+                    View.VISIBLE
+                else View.GONE
+            }
+
+            binding.radioGroupFrameShape.setOnCheckedChangeListener { _, checkedId ->
+                selectedFrameShape = when (checkedId) {
+                    R.id.frameDefault -> QrVectorFrameShape.Default
+                    R.id.frameCircle -> QrVectorFrameShape.Circle()
+                    R.id.frameRoundCorners25 -> QrVectorFrameShape.RoundCorners(0.25f)
+                    R.id.frameStar -> QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Star)
+                    R.id.frameRhombus -> QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Rhombus())
+                    R.id.frameCircleMini -> QrVectorFrameShape.AsPixelShape(
+                        QrVectorPixelShape.Circle(
+                            frameCircleSize
+                        )
+                    )
+
+                    else -> QrVectorFrameShape.Default// Default fallback
+                }
+                onUpdate()
+
+                frameCircleSizeSlider.visibility = if (checkedId == R.id.frameCircleMini)
+                    View.VISIBLE
+                else View.GONE
+
+            }
+
+            binding.radioGroupEyeShape.setOnCheckedChangeListener { _, checkedId ->
+                selectedEyeBallShape = when (checkedId) {
+                    R.id.eyeDefault -> QrVectorBallShape.Default
+                    R.id.eyeCircle -> QrVectorBallShape.Circle(eyeCircleSize)
+                    R.id.eyeRoundCorners25 -> QrVectorBallShape.RoundCorners(0.25f)
+                    R.id.eyeStar -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Star)
+                    R.id.eyeRhombus -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Rhombus())
+                    R.id.eyeCircleMini -> QrVectorBallShape.AsPixelShape(
+                        QrVectorPixelShape.Circle(
+                            eyeCircleMiniSize
+                        )
+                    )
+
+                    else -> QrVectorBallShape.Default// Default fallback
+                }
+
+                onUpdate()
+                // Hide the slider when other shapes are selected
+                binding.eyeCircleSizeSlider.visibility = if (checkedId == R.id.eyeCircleMini || checkedId == R.id.eyeCircle)
+                    View.VISIBLE
+                else View.GONE
+            }
+
+            pixelCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+                // Update padding in the context of the activity
+                darkPixelCircleSize = progress / 100f
+                pixelCircleSizeText.text = progress.toString()
+                selectedDarkPixelShape = QrVectorPixelShape.Circle(darkPixelCircleSize)
+                onUpdate()
+            })
+
+            frameCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+                // Update padding in the context of the activity
+                frameCircleSize = progress / 100f
+                frameCircleSizeText.text = progress.toString()
+                selectedFrameShape =
+                    QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Circle(frameCircleSize))
+                onUpdate()
+            })
+
+            eyeCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+                // Update padding in the context of the activity
+                if (radioGroupEyeShape.checkedRadioButtonId == R.id.eyeCircle) {
+                    eyeCircleSize = progress / 100f
+                    selectedEyeBallShape = QrVectorBallShape.Circle(eyeCircleSize)
+                } else {
+                    eyeCircleMiniSize = progress / 100f
+                    selectedEyeBallShape =
+                        QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Circle(eyeCircleMiniSize))
+                }
+
+                eyeCircleSizeText.text = progress.toString()
+
+                onUpdate()
+            })
+
+        }
     }
 
 
     fun logoSetting(binding: LayoutQrLogoBinding, onUpdate: () -> Unit) {
-        // Sliders
-        binding.paddingSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
-            // Update padding in the context of the activity
-            logoPadding = progress / 100f
-            onUpdate()
-        })
+        val activity = binding.root.context as? QrGenerator
 
-        binding.logoSizeSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
-            logoSize = progress / 100f
-            onUpdate()
-        })
 
-        binding.darkPixelRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
-            darkPixelRoundness = progress / 100f
-            selectedDarkPixelShape = QrVectorPixelShape.RoundCorners(darkPixelRoundness)
+        with(binding) {
 
-            onUpdate()
-        })
+            btnImportLogo.setOnCheckedListener { isChecked ->
+                if (isChecked) {
+                    activity?.importDrawable(true, btnImportLogo)
+                }
+            }
 
-        binding.ballRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
-            ballRoundness = progress / 100f
-            QrVectorBallShape.RoundCorners(ballRoundness)
-            onUpdate()
-        })
+            // Sliders
+            paddingSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+                // Update padding in the context of the activity
+                logoPadding = progress / 100f
+                onUpdate()
+            })
 
-        binding.frameRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
-            frameRoundness = progress / 100f
-            QrVectorFrameShape.RoundCorners(frameRoundness)
-            onUpdate()
-        })
+            logoSizeSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+                logoSize = progress / 100f
+                onUpdate()
+            })
 
+            darkPixelRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+                darkPixelRoundness = progress / 100f
+                selectedDarkPixelShape = QrVectorPixelShape.RoundCorners(darkPixelRoundness)
+
+                onUpdate()
+            })
+
+            ballRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+                ballRoundness = progress / 100f
+                QrVectorBallShape.RoundCorners(ballRoundness)
+                onUpdate()
+            })
+
+            frameRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+                frameRoundness = progress / 100f
+                QrVectorFrameShape.RoundCorners(frameRoundness)
+                onUpdate()
+            })
+        }
     }
 
 
@@ -172,7 +228,7 @@ object QrUiSetup {
         with(binding) {
             val activity = binding.root.context as? AppCompatActivity
 
-            val colorPickerDialog = ColorPickerDialog(binding).apply {
+            val colorPickerDialog = ColorPickerDialog(ui = binding).apply {
                 onColorChanged = { newColor ->
 
                     if (useSolidColor) {
@@ -370,8 +426,65 @@ object QrUiSetup {
     }
 
 
-    fun backgroundSetting(binding: LayoutQrBackgroundBinding, function: () -> Unit?) {
+    fun backgroundSetting(binding: LayoutQrBackgroundBinding, onUpdate: () -> Unit?) {
+        val activity = binding.root.context as? QrGenerator
 
+        with(binding) {
+
+            btnImportBackground.setOnCheckedListener { isChecked ->
+                if (isChecked) {
+                    activity?.importDrawable(false, btnImportBackground)
+                }
+            }
+
+            val colorPickerDialog = ColorPickerDialog(ui2 = binding).apply {
+                onColorChanged = { newColor ->
+                    drawableBgColor = newColor
+                    qrBackground?.let { drawable ->
+                        // Ensure the drawable is a BitmapDrawable
+                        val bitmap = drawable.bitmap
+                        val paint = Paint().apply {
+                            colorFilter = PorterDuffColorFilter(newColor, PorterDuff.Mode.SRC_ATOP)
+                        }
+                        val newBitmap =
+                            bitmap.config?.let {
+                                Bitmap.createBitmap(
+                                    bitmap.width, bitmap.height,
+                                    it
+                                )
+                            }
+                        val canvas = newBitmap?.let { Canvas(it) }
+                        canvas?.drawBitmap(bitmap, 0f, 0f, paint)
+                        qrBackground = BitmapDrawable(resources, newBitmap)
+                        onUpdate()
+                    }
+                }
+            }
+
+            btnColor.setOnCheckedListener { isChecked ->
+                if (isChecked) {
+                    activity?.supportFragmentManager?.let {
+                        colorPickerDialog.show(it, "ColorPickerDialog")
+                    }
+                    onUpdate()
+                }
+            }
+
+            btnCenterCrop.setOnCheckedListener { isChecked ->
+                centerCrop = isChecked
+                onUpdate()
+            }
+
+
+            paddingSlider.apply {
+                max = 50 // Set the maximum value to represent 0.5f
+                progress = (qrPadding * 100).toInt() // Initialize the progress based on qrPadding
+                setOnSeekBarChangeListener(createSeekBarListener { progress ->
+                    qrPadding = progress / 100f // Map progress to the range 0.0f to 0.5f
+                    onUpdate()
+                })
+            }
+        }
     }
 
 
