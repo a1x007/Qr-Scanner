@@ -2,9 +2,14 @@ package com.ashique.qrscanner.helper
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.RectF
 import android.util.Log
 import com.ashique.qrscanner.helper.Combine.convertToDotBinaryBitmap
+import com.ashique.qrscanner.helper.ImageConverter.convertImageToDotArt
+import com.ashique.qrscanner.helper.ImageConverter.convertImageToHalftone
 import com.waynejo.androidndkgif.GifDecoder
 import com.waynejo.androidndkgif.GifEncoder
 import java.io.File
@@ -20,7 +25,7 @@ class GifPipeline2 {
     private var frameSequence = LinkedList<Bitmap>()
     private var currentFrame = 0
     var qrBitmap: Bitmap? = null
-    var useBinary = false
+    var useBinary = true
     val TAG = "GifPipeline"
 
     fun init(file: File): Boolean {
@@ -55,7 +60,9 @@ class GifPipeline2 {
 
             // Directly pass the full GIF frame to blendQrBitmap
             val blendedFrame = if (useBinary) {
-                convertGifToBinary(frame, qrBitmap)
+                convertImageToHalftone(frame, false)
+               // processBinary(frame)
+                //convertGifToBinary(frame, qrBitmap)
             } else {
                 blendQrBitmap(frame, qrBitmap)
             }
@@ -116,6 +123,8 @@ class GifPipeline2 {
     }
 
 
+
+
     fun convertGifToBinary(frameBitmap: Bitmap, qrBitmap: Bitmap?, threshold: Int = 128, dotSize: Int = 5): Bitmap? {
         // Convert the frame to a binary bitmap
         val binaryFrame =
@@ -125,7 +134,71 @@ class GifPipeline2 {
         return binaryFrame?.let { blendQrBitmap(it, qrBitmap) }
     }
 
+    private fun processBinary(original: Bitmap): Bitmap {
+        val dotSize = 4
+        // Convert the original image to grayscale
+        val grayBitmap = convertToGrayscale(original)
 
+        // Create a new bitmap for the dot-like binary image
+        val width = grayBitmap.width
+        val height = grayBitmap.height
+        val dotBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(dotBitmap)
+        val paint = Paint()
+
+        // Calculate the threshold for binary conversion
+        val threshold = 128 // Adjust as necessary
+
+        for (y in 0 until height step dotSize) {
+            for (x in 0 until width step dotSize) {
+                // Get the average color of the dot area
+                var totalColor = 0
+                var count = 0
+
+                for (dy in 0 until dotSize) {
+                    for (dx in 0 until dotSize) {
+                        if (x + dx < width && y + dy < height) {
+                            totalColor += grayBitmap.getPixel(x + dx, y + dy) and 0xFF
+                            count++
+                        }
+                    }
+                }
+
+                // Compute the average color and decide if it's black or white
+                val averageColor = totalColor / count
+                val color = if (averageColor > threshold) Color.WHITE else Color.BLACK
+
+                // Draw the dot
+                paint.color = color
+                canvas.drawCircle((x + dotSize / 2).toFloat(), (y + dotSize / 2).toFloat(), (dotSize / 2).toFloat(), paint)
+            }
+        }
+
+        return dotBitmap
+    }
+
+    fun convertToGrayscale(bitmap: Bitmap): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+        val grayBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                val pixel = bitmap.getPixel(x, y)
+                val red = Color.red(pixel)
+                val green = Color.green(pixel)
+                val blue = Color.blue(pixel)
+                val gray = (0.299 * red + 0.587 * green + 0.114 * blue).toInt()
+                val newPixel = Color.rgb(gray, gray, gray)
+                grayBitmap.setPixel(x, y, newPixel)
+            }
+        }
+
+        return grayBitmap
+    }
+
+
+    // not using
     private fun blendQrBitmap0(frame: Bitmap, qrBitmap: Bitmap?): Bitmap {
         if (qrBitmap == null) return frame
 

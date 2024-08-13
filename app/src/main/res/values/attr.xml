@@ -80,4 +80,12 @@
         <attr name="nts_active_color" format="color"/>
     </declare-styleable>
 
+
+    <declare-styleable name="AsciiImageView">
+        <attr name="_color" format="boolean" />
+        <attr name="_quality" format="dimension" />
+        <attr name="asciiTextSize" format="dimension" />
+        <attr name="asciiCharacter" format="string" />
+    </declare-styleable>
+
 </resources>

@@ -8,7 +8,6 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.BitmapDrawable
 import android.view.View
-import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.ashique.qrscanner.R
@@ -45,6 +44,7 @@ import com.ashique.qrscanner.databinding.LayoutQrSaveBinding
 import com.ashique.qrscanner.databinding.LayoutQrShapeBinding
 import com.ashique.qrscanner.databinding.LayoutQrTextBinding
 import com.ashique.qrscanner.helper.Extensions.animateLayout
+import com.ashique.qrscanner.helper.Extensions.createSeekBarListener
 import com.github.alexzhirkevich.customqrgenerator.style.QrShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorBallShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorColor
@@ -140,24 +140,24 @@ object QrUiSetup {
                 else View.GONE
             }
 
-            pixelCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+            pixelCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
                 // Update padding in the context of the activity
                 darkPixelCircleSize = progress / 100f
                 pixelCircleSizeText.text = progress.toString()
                 selectedDarkPixelShape = QrVectorPixelShape.Circle(darkPixelCircleSize)
                 onUpdate()
-            })
+            }))
 
-            frameCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+            frameCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
                 // Update padding in the context of the activity
                 frameCircleSize = progress / 100f
                 frameCircleSizeText.text = progress.toString()
                 selectedFrameShape =
                     QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Circle(frameCircleSize))
                 onUpdate()
-            })
+            }))
 
-            eyeCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+            eyeCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
                 // Update padding in the context of the activity
                 if (radioGroupEyeShape.checkedRadioButtonId == R.id.eyeCircle) {
                     eyeCircleSize = progress / 100f
@@ -171,7 +171,7 @@ object QrUiSetup {
                 eyeCircleSizeText.text = progress.toString()
 
                 onUpdate()
-            })
+            }))
 
         }
     }
@@ -190,35 +190,35 @@ object QrUiSetup {
             }
 
             // Sliders
-            paddingSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+            paddingSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
                 // Update padding in the context of the activity
                 logoPadding = progress / 100f
                 onUpdate()
-            })
+            }))
 
-            logoSizeSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+            logoSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
                 logoSize = progress / 100f
                 onUpdate()
-            })
+            }))
 
-            darkPixelRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+            darkPixelRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
                 darkPixelRoundness = progress / 100f
                 selectedDarkPixelShape = QrVectorPixelShape.RoundCorners(darkPixelRoundness)
 
                 onUpdate()
-            })
+            }))
 
-            ballRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+            ballRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
                 ballRoundness = progress / 100f
                 QrVectorBallShape.RoundCorners(ballRoundness)
                 onUpdate()
-            })
+            }))
 
-            frameRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener { progress ->
+            frameRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
                 frameRoundness = progress / 100f
                 QrVectorFrameShape.RoundCorners(frameRoundness)
                 onUpdate()
-            })
+            }))
         }
     }
 
@@ -402,16 +402,7 @@ object QrUiSetup {
     }
 
 
-    private fun createSeekBarListener(onProgressChanged: (Int) -> Unit): SeekBar.OnSeekBarChangeListener {
-        return object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                onProgressChanged(progress)
-            }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar) {}
-        }
-    }
 
     private fun setGradientFlags(solid: Boolean, linear: Boolean, radial: Boolean, sweep: Boolean) {
         useSolidColor = solid
@@ -479,10 +470,10 @@ object QrUiSetup {
             paddingSlider.apply {
                 max = 50 // Set the maximum value to represent 0.5f
                 progress = (qrPadding * 100).toInt() // Initialize the progress based on qrPadding
-                setOnSeekBarChangeListener(createSeekBarListener { progress ->
+                setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
                     qrPadding = progress / 100f // Map progress to the range 0.0f to 0.5f
                     onUpdate()
-                })
+                }))
             }
         }
     }

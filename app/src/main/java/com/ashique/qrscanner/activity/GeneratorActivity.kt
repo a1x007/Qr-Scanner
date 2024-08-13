@@ -1,11 +1,7 @@
 package com.ashique.qrscanner.activity
 
-import android.R.attr
-import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Rect
-import android.graphics.RectF
-import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -13,101 +9,142 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.widget.addTextChangedListener
-import com.ashique.qrscanner.R
+import androidx.lifecycle.lifecycleScope
 import com.ashique.qrscanner.databinding.ActivityGeneratorBinding
-import com.ashique.qrscanner.helper.BitmapHelper.crop
 import com.ashique.qrscanner.helper.BitmapHelper.saveBitmap
-import com.ashique.qrscanner.helper.BitmapHelper.toBitmap
-import com.ashique.qrscanner.helper.BitmapHelper.toMutableBitmap
-import com.ashique.qrscanner.helper.Extensions.showToast
-import com.ashique.qrscanner.helper.Extensions.toBitmapDrawable
-import com.ashique.qrscanner.helper.QrHelper
-import com.github.sumimakito.awesomeqr.AwesomeQrRenderer
-import com.github.sumimakito.awesomeqr.RenderResult
-import com.github.sumimakito.awesomeqr.option.RenderOption
-import com.github.sumimakito.awesomeqr.option.background.Background
-import com.github.sumimakito.awesomeqr.option.background.BlendBackground
-import com.github.sumimakito.awesomeqr.option.background.GifBackground
-import com.github.sumimakito.awesomeqr.option.background.StillBackground
-import com.github.sumimakito.awesomeqr.option.color.Color
-import com.github.sumimakito.awesomeqr.option.logo.Logo
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
+import com.ashique.qrscanner.helper.BitmapHelper.toPath
+import com.ashique.qrscanner.helper.Extensions.createSeekBarListener
+import com.bumptech.glide.Glide
+import com.chaquo.python.Python
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 
 class GeneratorActivity : AppCompatActivity() {
 
     private lateinit var ui: ActivityGeneratorBinding
-    val rainbowColor = Color().apply {
-        light = 0xFFFFFFFF.toInt() // for blank spaces
-        dark = 0xFFFF8C8C.toInt() // for non-blank spaces
-        background =
-            0xFFFFFFFF.toInt() // for the background (will be overriden by background images, if set)
-        auto =
-            false // set to true to automatically pick out colors from the background image (will only work if background image is present)
-    }
 
-    private var backgroundType = "still"
+    private var binaryConvert = false
+    private var colorized = true
     private var isLogo = false
-    private var useRainbow = true
-    private var logoBitmap: Bitmap? = null
-    private var backgroundBitmap: Bitmap? = null
-    private var gifFile: File? = null
-    private var pictureStorage =
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+
+    private var qrUri: Uri? = null
+    private var backgroundUri: Uri? = null
 
     private lateinit var photoPickerLauncher: ActivityResultLauncher<String>
     val TAG = "Generator"
+
+    private var contrast = 2.0
+    private var brightness = 1.5
+    private var halftoneDotSize = 2
+    private var halftoneResolution = 2
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ui = ActivityGeneratorBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
-        generateQr()
+
 
         photoPickerLauncher = registerForActivityResult(
             ActivityResultContracts.GetContent()
         ) { uri ->
-            uri?.toBitmap(this)?.let { bitmap ->
+
+            backgroundUri = uri
+
+            // uri?.let { convertToBinary(it) }
+
+
+            uri?.let {
                 if (isLogo) {
-                    logoBitmap = bitmap.toMutableBitmap()
+                    qrUri = it
                 } else {
-                    backgroundBitmap = bitmap.toMutableBitmap()
+                    backgroundUri = it
                 }
-                renderQr()
+
 
             }
 
         }
 
         ui.editInput.setText("Special,thus awesome.")
-        ui.editInput.addTextChangedListener { generateQr() }
-        ui.generateBtn.setOnClickListener { generateQr() }
-        ui.uploadLogoBtn.setOnClickListener { importDrawable(true) }
-        ui.uploadStillBgBtn.setOnClickListener { importDrawable(false) }
-        ui.uploadBlendBgBtn.setOnClickListener { importDrawable(false, type = "blend") }
-        ui.uploadGifBgBtn.setOnClickListener { importDrawable(false, type = "gif") }
+        ui.editInput.addTextChangedListener { }
+        ui.generateBtn.setOnClickListener {
+            if (binaryConvert) backgroundUri?.let { uri ->
+                convertToBinary(
+                    uri
+                )
+            } else combine(qrUri, backgroundUri)
+        }
+        ui.uploadLogoBtn.setOnClickListener { importDrawable(colorized, isLogo = true) }
+        ui.uploadStillBgBtn.setOnClickListener { importDrawable(colorized) }
+        ui.uploadBlendBgBtn.setOnClickListener { importDrawable(colorized = true) }
+        ui.uploadGifBgBtn.setOnClickListener { importDrawable(colorized = false) }
+        ui.colorizedSwitch.setOnCheckedChangeListener { _, isChecked -> colorized = isChecked }
 
+
+
+        ui.halftoneDotsizeSlider.setOnSeekBarChangeListener(
+            createSeekBarListener(onProgressChanged = { progress ->
+                halftoneDotSize = progress
+                ui.halftoneDotsizeText.text = String.format("Dot Size %d", halftoneDotSize)
+
+
+            }, onStop = { hasStopped ->
+                if (hasStopped) {
+                    backgroundUri?.let { convertToBinary(it) }
+                }
+
+            })
+        )
+
+        ui.halftoneResolutionSlider.setOnSeekBarChangeListener(
+            createSeekBarListener(onProgressChanged = { progress ->
+                halftoneResolution = progress
+                ui.halftoneResolutionText.text = String.format("Resolution %d", halftoneResolution)
+
+            },
+                onStop = { hasStopped ->
+                    if (hasStopped) {
+                        backgroundUri?.let { convertToBinary(it) }
+                    }
+
+                })
+        )
+
+        ui.contrastSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
+            contrast = (progress / 100.toDouble()) * 2.0
+            ui.contrastText.text = String.format("Contrast %.2f", contrast)
+
+
+        }, onStop = { hasStopped ->
+            if (hasStopped) {
+                backgroundUri?.let { convertToBinary(it) }
+            }
+
+        }))
+
+        ui.brightnessSlider.setOnSeekBarChangeListener(
+            createSeekBarListener(onProgressChanged = { progress ->
+                brightness = (progress / 100.toDouble()) * 2.0
+                ui.brightnessText.text = String.format("Brightness %.2f", brightness)
+
+            }, onStop = { hasStopped ->
+                if (hasStopped) {
+                    backgroundUri?.let { convertToBinary(it) }
+                }
+
+            })
+        )
 
         ui.saveBtn.setOnClickListener {
             ui.qrPreview.drawable?.let { drawable ->
                 val bitmap = drawable.toBitmap(1024, 1024)
-                if (QrHelper.scanQrCode(bitmap).isNullOrEmpty()) {
-                    ui.verifyQrText.apply {
-                        setTextColor(android.graphics.Color.RED)
-                        text = String.format("Qr is corrupted !")
-                    }
-
-                } else {
-                    ui.verifyQrText.apply {
-                        setTextColor(android.graphics.Color.GREEN)
-                        text = String.format("Qr is verified.")
-                    }
-
-                }
                 saveBitmap(bitmap, Bitmap.CompressFormat.JPEG, "qr_code.png")
             } ?: run {
                 Toast.makeText(
@@ -118,111 +155,122 @@ class GeneratorActivity : AppCompatActivity() {
     }
 
 
-    private fun generateQr() {
-        // Render the QR code asynchronously
-        AwesomeQrRenderer.renderAsync(renderQr(), { result ->
-            Log.i(TAG, "renderAsync Qr: $result")
-            runOnUiThread {
-                when {
-                    result.bitmap != null -> {
-                        // If the result has a bitmap, display it
-                        ui.qrPreview.setImageBitmap(result.bitmap)
-                    }
+    private fun convertToBinary(uri: Uri) {
+        // Start a coroutine for background processing
+        lifecycleScope.launch(Dispatchers.IO) {
+            val inputStream = contentResolver.openInputStream(uri)
+            val isGif = inputStream?.use {
+                val header = ByteArray(6)
+                it.read(header)
+                header[0] == 'G'.code.toByte() && header[1] == 'I'.code.toByte() && header[2] == 'F'.code.toByte()
+            } ?: false
 
-                    result.type == RenderResult.OutputType.GIF -> {
-                        // If the background is a GIF, the image will be saved to the output file
-                        showToast("GIF saved at: ${pictureStorage?.absolutePath}")
+            val extension = if (isGif) "gif" else "png"
+            val directory = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Qr"
+            )
+            if (!directory.exists()) {
+                directory.mkdirs()  // Create the directory if it doesn't exist
+            }
 
-                        Log.i(TAG, "GIF saved at: ${pictureStorage?.absolutePath}")
-                    }
+            val outputGifFile = File(directory, "${System.currentTimeMillis()}_binary.$extension")
+            val outputGifPath = outputGifFile.absolutePath
+            Log.i(TAG, "convertToBinary: outputpath: $outputGifPath")
 
-                    else -> {
-                        // Handle unexpected results
-                        showToast("Unexpected result")
-                    }
+            if (!outputGifFile.exists()) {
+                // Get the Python instance
+                val python = Python.getInstance()
+
+                // Call the Python script to convert the image to binary
+                python.getModule("convert").callAttr(
+                    "convert_to_binary",
+                    uri.toPath(this@GeneratorActivity),
+                    outputGifPath,
+                    colorized,
+                    contrast,
+                    brightness,
+                    isGif,
+                    "ultra",
+                    halftoneDotSize,
+                    halftoneResolution
+
+                )
+            }
+
+            if (outputGifFile.exists()) {
+                withContext(Dispatchers.Main) {
+                    Glide.with(this@GeneratorActivity).load(outputGifPath).into(ui.qrPreview)
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    ui.qrPreview.setImageBitmap(null) // Clear the ImageView or show an error image
+                    Toast.makeText(
+                        this@GeneratorActivity,
+                        "Conversion failed. Output file not found.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
-        }, { exception ->
-            Log.e(TAG, "Error generating QR code: $exception")
-            runOnUiThread {
-                // Handle exceptions during rendering
-                exception.printStackTrace()
-                showToast("Error generating QR code: ${exception.message}")
-            }
-        })
-    }
-
-    private fun renderQr(): RenderOption {
-
-        Log.d(TAG, "Logo Bitmap: $logoBitmap")
-        Log.d(TAG, "Background Bitmap: $backgroundBitmap")
-
-        return RenderOption().apply {
-            content = if (ui.editInput.text.isEmpty()) "test qr" else ui.editInput.text.toString()
-            size = 1000 // size of the final QR code image
-            borderWidth = 20 // width of the empty space around the QR code
-            ecl = ErrorCorrectionLevel.M // (optional) specify an error correction level
-            patternScale = 0.35f // (optional) specify a scale for patterns
-            roundedPatterns = true // (optional) if true, blocks will be drawn as dots instead
-            clearBorder =
-                true // if set to true, the background will NOT be drawn on the border area
-            color = if (useRainbow) rainbowColor else Color()
-            background = getBackground(backgroundType)
-            logo = Logo().apply {
-                bitmap = logoBitmap
-                scale = 0.2f
-                borderRadius = 8
-                borderWidth = 10
-                clippingRect = RectF(0F, 0F, 200F, 200F) // Use actual bitmap size
-            }
-        }
-
-
-    }
-
-    private fun getBackground(type: String): Background {
-
-        val bitmapWidth = backgroundBitmap?.width ?: 200
-        val bitmapHeight = backgroundBitmap?.height ?: 200
-        val clippingRects = Rect(0, 0, bitmapWidth, bitmapHeight)
-
-        return when (type) {
-            "still" -> {
-                StillBackground().apply {
-                    bitmap = backgroundBitmap // assign a bitmap as the background
-                    clippingRect = clippingRects
-                    alpha = 0.7f // alpha of the background to be drawn
-                }
-            }
-
-            "blend" -> {
-                BlendBackground().apply {
-                    bitmap = backgroundBitmap
-                    clippingRect = clippingRects
-                    alpha = 0.7f
-                    borderRadius = 10 // radius for blending corners
-                }
-            }
-
-            "gif" -> {
-                GifBackground().apply {
-                    inputFile = gifFile // assign a file object of a gif image to this field
-                    outputFile = File(
-                        pictureStorage, "output.gif"
-                    ) // IMPORTANT: the output image will be saved to this file object
-                    clippingRect = clippingRects
-                    alpha = 0.7f
-                }
-            }
-
-            else -> throw IllegalArgumentException("Invalid background type")
         }
     }
 
 
-    private fun importDrawable(isLogo: Boolean, type: String = "still") {
+    private fun combine(qrUri: Uri?, bgUri: Uri?) {
+        if (qrUri != null && bgUri != null) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val qrPath = qrUri.toPath(this@GeneratorActivity)
+                val bgPath = bgUri.toPath(this@GeneratorActivity)
+
+                val isGif = bgPath?.let { File(it).extension.equals("gif", ignoreCase = true) }
+                val extension = if (isGif == true) "gif" else "png"
+
+                val directory = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Qr"
+                )
+                if (!directory.exists()) {
+                    directory.mkdirs()  // Create the directory if it doesn't exist
+                }
+
+                val outputFile = File(directory, "${System.currentTimeMillis()}_binary.$extension")
+                val outputPath = outputFile.absolutePath
+                Log.i(TAG, "convertToBinary: outputpath: $outputPath")
+
+                // Get the Python instance
+                val python = Python.getInstance()
+
+                // Call the Python script to process the images and save the result
+                python.getModule("combine").callAttr(
+                    "combine",
+                    qrPath,
+                    bgPath,
+                    outputPath,
+                    colorized,
+                    contrast,
+                    brightness
+                )
+
+                if (outputFile.exists()) {
+                    withContext(Dispatchers.Main) {
+                        Glide.with(this@GeneratorActivity).load(outputPath).into(ui.qrPreview)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        ui.qrPreview.setImageBitmap(null) // Clear the ImageView or show an error image
+                        Toast.makeText(
+                            this@GeneratorActivity,
+                            "Conversion failed. Output file not found.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun importDrawable(colorized: Boolean, isLogo: Boolean = false) {
+        this.colorized = colorized
         this.isLogo = isLogo
-        backgroundType = type
         photoPickerLauncher.launch("image/*")
     }
 

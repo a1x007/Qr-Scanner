@@ -1,7 +1,6 @@
 package com.ashique.qrscanner.helper
 
 import android.animation.LayoutTransition
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -22,12 +21,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Interpolator
+import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import java.io.IOException
 
@@ -187,4 +186,22 @@ object Extensions {
     fun getDisplayMetric(context: Context?): DisplayMetrics {
         return if (context != null) context.resources.displayMetrics else Resources.getSystem().displayMetrics
     }
+
+    fun createSeekBarListener(
+        onProgressChanged: (Int) -> Unit,
+        onStop: ((Boolean) -> Unit)? = null
+    ): SeekBar.OnSeekBarChangeListener {
+        return object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                onProgressChanged(progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                onStop?.invoke(true)  // Call onStop if it is not null
+            }
+        }
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.ashique.qrscanner.helper
 
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -204,6 +205,13 @@ object BitmapHelper {
         }
     }
 
-
+    fun Context.createOutputFile(extension: String): File? {
+        val timestamp = System.currentTimeMillis()
+        val directory = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "Qr")
+        if (!directory.exists()) {
+            directory.mkdirs() // Ensure the directory exists
+        }
+        return File(directory, "${timestamp}_binary.$extension")
+    }
 
 }

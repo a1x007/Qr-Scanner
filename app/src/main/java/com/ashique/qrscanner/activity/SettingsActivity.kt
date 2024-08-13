@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.lifecycleScope
+import com.ashique.qrscanner.R
 import com.ashique.qrscanner.databinding.ActivitySettingsBinding
 import com.ashique.qrscanner.helper.BitmapHelper.saveBitmap
 import com.ashique.qrscanner.helper.BitmapHelper.toBitmap
@@ -26,6 +27,7 @@ import com.ashique.qrscanner.helper.Combine.convertToDotBinaryBitmap
 import com.ashique.qrscanner.helper.Combine.generateQrCodeWithBinaryBitmap
 import com.ashique.qrscanner.helper.GifPipeline
 import com.ashique.qrscanner.helper.GifPipeline2
+import com.ashique.qrscanner.helper.ImageConverter
 import com.ashique.qrscanner.helper.Prefs.initialize
 import com.ashique.qrscanner.helper.Prefs.setZxing
 import com.ashique.qrscanner.helper.Prefs.useZxing
@@ -97,6 +99,11 @@ class SettingsActivity : AppCompatActivity() {
 
         }
 
+
+
+
+        ui.dotImageView.setImageBitmap(ImageConverter.convertImageToHalftone(BitmapFactory.decodeResource(resources, R.drawable.girl), true))
+
         ui.upload.setOnClickListener {
             photoPickerLauncher.launch("image/*")
         }
@@ -105,9 +112,9 @@ class SettingsActivity : AppCompatActivity() {
         ui.uploadQr.setOnClickListener { pickQrImage() }
 
         ui.saveBtn.setOnClickListener {
-            ui.preview.drawable?.let { drawable ->
+            ui.dotImageView.drawable?.let { drawable ->
                 val bitmap = drawable.toBitmap(1024, 1024)
-                if (QrHelper.scanQrCode(bitmap).isNullOrEmpty()) {
+                /*if (QrHelper.scanQrCode(bitmap).isNullOrEmpty()) {
                     ui.verifyQrText.apply {
                         setTextColor(Color.RED)
                         text = String.format("Qr is corrupted !")
@@ -120,7 +127,9 @@ class SettingsActivity : AppCompatActivity() {
                     }
 
                 }
-                saveBitmap(bitmap, Bitmap.CompressFormat.JPEG, "qr_code.png")
+
+                 */
+                saveBitmap(bitmap, Bitmap.CompressFormat.JPEG, "qr_code_${System.currentTimeMillis()}.png")
             } ?: run {
                 Toast.makeText(
                     this, "QR code image is not available.", Toast.LENGTH_SHORT

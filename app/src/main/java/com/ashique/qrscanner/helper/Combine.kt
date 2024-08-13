@@ -4,8 +4,13 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Movie
+import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.widget.ImageView
+import androidx.core.graphics.drawable.toBitmap
 import com.bumptech.glide.Glide
 import com.bumptech.glide.gifdecoder.GifDecoder
 import com.bumptech.glide.gifdecoder.GifHeader
@@ -16,6 +21,8 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import java.io.FileOutputStream
 import java.io.InputStream
 import java.nio.ByteBuffer
 
@@ -199,7 +206,6 @@ object Combine {
 
         return combinedBitmap
     }
-
 
 
 

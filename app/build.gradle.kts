@@ -58,6 +58,7 @@ android {
         create("py310") { dimension = "pyVersion" }
         create("py311") { dimension = "pyVersion" }
     }
+    ndkVersion = "26.1.10909125"
 }
 
 
