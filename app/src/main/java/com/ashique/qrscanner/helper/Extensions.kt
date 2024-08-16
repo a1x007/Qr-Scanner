@@ -21,6 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Interpolator
+import android.webkit.MimeTypeMap
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -28,7 +29,11 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 
 object Extensions {
 
@@ -139,6 +144,12 @@ object Extensions {
         }
     }
 
+    fun Uri.isGifUri(context: Context): Boolean {
+        val contentResolver = context.contentResolver
+        val mimeType = contentResolver.getType(this)
+        return mimeType == "image/gif"
+    }
+
 
     fun Uri.toBitmap(context: Context): Bitmap? {
         return try {
@@ -201,6 +212,26 @@ object Extensions {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 onStop?.invoke(true)  // Call onStop if it is not null
             }
+        }
+    }
+
+
+    fun Context.toFile(uri: Uri): File? {
+        return try {
+            val mimeType = contentResolver.getType(uri)
+            val fileExtension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "tmp"
+            val tempFile = File.createTempFile("temp_file", ".$fileExtension", cacheDir)
+
+            contentResolver.openInputStream(uri)?.use { inputStream ->
+                tempFile.outputStream().use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+            }
+
+            tempFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 

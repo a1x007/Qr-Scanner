@@ -4,12 +4,13 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.util.Log
 import com.ashique.qrscanner.helper.Combine.convertToDotBinaryBitmap
-import com.ashique.qrscanner.helper.ImageConverter.convertImageToDotArt
 import com.ashique.qrscanner.helper.ImageConverter.convertImageToHalftone
+import com.ashique.qrscanner.helper.ImageConverter.toBinaryBitmap
 import com.waynejo.androidndkgif.GifDecoder
 import com.waynejo.androidndkgif.GifEncoder
 import java.io.File
@@ -18,6 +19,7 @@ import java.util.LinkedList
 import kotlin.math.roundToInt
 
 class GifPipeline2 {
+    var path: Path? = null
     var outputFile: File? = null
     var clippingRect: RectF? = null
     var errorInfo: String? = null
@@ -60,7 +62,8 @@ class GifPipeline2 {
 
             // Directly pass the full GIF frame to blendQrBitmap
             val blendedFrame = if (useBinary) {
-                convertImageToHalftone(frame, false)
+             //   toBinaryBitmap(frame, colorize = false, shapeSize = 3, threshold = 127, useShape = false)
+                blendQrBitmapX(toBinaryBitmap(frame, colorize = false, shapeSize = 3, threshold = 127, useShape = false), qrBitmap)
                // processBinary(frame)
                 //convertGifToBinary(frame, qrBitmap)
             } else {
@@ -234,6 +237,40 @@ class GifPipeline2 {
         return result
     }
 
+    private fun blendQrBitmapX(frame: Bitmap, qrBitmap: Bitmap?): Bitmap {
+        if (qrBitmap == null) return frame
+
+        // Resize the GIF frame to match the size of the QR bitmap
+        val resizedFrame = Bitmap.createScaledBitmap(frame, qrBitmap.width, qrBitmap.height, true)
+
+        // Create a mutable bitmap to hold the blended result, using the resized frame's configuration
+        val result = Bitmap.createBitmap(resizedFrame.width, resizedFrame.height, resizedFrame.config!!)
+
+        // Create a canvas to draw on the result bitmap
+        val canvas = Canvas(result)
+
+        // Clip the canvas to the specified path
+        Prefs.PixelPath?.let { canvas.clipPath(it) }
+
+        // Draw the resized GIF frame onto the clipped canvas
+        canvas.drawBitmap(resizedFrame, 0f, 0f, null)
+
+        // Calculate the size and position of the QR bitmap
+        val qrWidth = qrBitmap.width
+        val qrHeight = qrBitmap.height
+
+        // Calculate the position to center the QR bitmap on the resized frame
+        val left = (resizedFrame.width - qrWidth) / 2
+        val top = (resizedFrame.height - qrHeight) / 2
+
+        // Draw the QR bitmap on top of the clipped GIF frame
+        canvas.drawBitmap(qrBitmap, left.toFloat(), top.toFloat(), null)
+
+        // Recycle the resized frame if it's no longer needed
+        resizedFrame.recycle()
+
+        return result
+    }
 
     private fun blendQrBitmap(frame: Bitmap, qrBitmap: Bitmap?): Bitmap {
         if (qrBitmap == null) return frame

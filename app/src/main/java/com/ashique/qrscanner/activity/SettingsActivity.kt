@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.RectF
 import android.net.Uri
 import android.os.Bundle
@@ -25,16 +24,13 @@ import com.ashique.qrscanner.helper.BitmapHelper.toMutableBitmap
 import com.ashique.qrscanner.helper.Combine.convertToBinaryBitmap
 import com.ashique.qrscanner.helper.Combine.convertToDotBinaryBitmap
 import com.ashique.qrscanner.helper.Combine.generateQrCodeWithBinaryBitmap
-import com.ashique.qrscanner.helper.GifPipeline
 import com.ashique.qrscanner.helper.GifPipeline2
 import com.ashique.qrscanner.helper.ImageConverter
 import com.ashique.qrscanner.helper.Prefs.initialize
 import com.ashique.qrscanner.helper.Prefs.setZxing
 import com.ashique.qrscanner.helper.Prefs.useZxing
-import com.ashique.qrscanner.helper.QrHelper
 import com.bumptech.glide.Glide
 import com.chaquo.python.Python
-import com.github.sumimakito.awesomeqr.option.background.GifBackground
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -56,14 +52,14 @@ class SettingsActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             qrUri = uri
             // ui.preview.setImageBitmap(qrUri?.toBitmap(this)?.toMutableBitmap()?.let { convertToBinaryBitmap(it) })
-          //  checkAndCombineImages()
+            //  checkAndCombineImages()
             gifBackground()
         }
 
     private val pickBgImage =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             bgUri = uri
-           // checkAndCombineImages()
+            // checkAndCombineImages()
             gifBackground()
         }
 
@@ -102,7 +98,22 @@ class SettingsActivity : AppCompatActivity() {
 
 
 
-        ui.dotImageView.setImageBitmap(ImageConverter.convertImageToHalftone(BitmapFactory.decodeResource(resources, R.drawable.girl), true))
+        ui.dotImageView.setImageBitmap(
+            ImageConverter.convertImageToHalftone(
+                BitmapFactory.decodeResource(
+                    resources,
+                    R.drawable.girl
+                ), true
+            )
+        )
+        ui.bitImageView.setImageBitmap(
+            ImageConverter.toBinaryBitmap(
+                BitmapFactory.decodeResource(
+                    resources,
+                    R.drawable.girl
+                ), colorize = false, shapeSize = 3, threshold = 127, useShape = false
+            )
+        )
 
         ui.upload.setOnClickListener {
             photoPickerLauncher.launch("image/*")
@@ -129,7 +140,11 @@ class SettingsActivity : AppCompatActivity() {
                 }
 
                  */
-                saveBitmap(bitmap, Bitmap.CompressFormat.JPEG, "qr_code_${System.currentTimeMillis()}.png")
+                saveBitmap(
+                    bitmap,
+                    Bitmap.CompressFormat.JPEG,
+                    "qr_code_${System.currentTimeMillis()}.png"
+                )
             } ?: run {
                 Toast.makeText(
                     this, "QR code image is not available.", Toast.LENGTH_SHORT
@@ -236,20 +251,31 @@ class SettingsActivity : AppCompatActivity() {
                     // Convert bgUri to InputStream
                     val bgInputStream = bgUri!!.toInputStream(this@SettingsActivity)
                     if (bgInputStream != null) {
-                        val gifFile = File.createTempFile("temp_gif", ".gif", this@SettingsActivity.cacheDir)
+                        val gifFile =
+                            File.createTempFile("temp_gif", ".gif", this@SettingsActivity.cacheDir)
                         Log.i("TAG", "gifBackground: $bgInputStream / $gifFile")
                         bgInputStream.copyTo(gifFile.outputStream())
                         if (gifPipeline.init(gifFile)) {
                             // Convert qrUri to a Bitmap and set it as the QR bitmap
-                            val qrBitmap = qrUri!!.toBitmap(this@SettingsActivity)?.toMutableBitmap()
+                            val qrBitmap =
+                                qrUri!!.toBitmap(this@SettingsActivity)?.toMutableBitmap()
                             if (qrBitmap != null) {
                                 gifPipeline.qrBitmap = qrBitmap
-                                gifPipeline.clippingRect = RectF(0f, 0f, qrBitmap.width.toFloat(), qrBitmap.height.toFloat()) // Set dimensions as needed
+                                gifPipeline.clippingRect = RectF(
+                                    0f,
+                                    0f,
+                                    qrBitmap.width.toFloat(),
+                                    qrBitmap.height.toFloat()
+                                ) // Set dimensions as needed
 
                                 Log.i("TAG", "gifBackground: qrBitmap: $qrBitmap")
                             } else {
                                 withContext(Dispatchers.Main) {
-                                    Toast.makeText(this@SettingsActivity, "Failed to load QR Bitmap", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        this@SettingsActivity,
+                                        "Failed to load QR Bitmap",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                                 return@launch
                             }
@@ -280,17 +306,29 @@ class SettingsActivity : AppCompatActivity() {
                                 }
                             } else {
                                 withContext(Dispatchers.Main) {
-                                    Toast.makeText(this@SettingsActivity, "Failed to render GIF", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        this@SettingsActivity,
+                                        "Failed to render GIF",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         } else {
                             withContext(Dispatchers.Main) {
-                                Toast.makeText(this@SettingsActivity, "Failed to initialize GIF", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@SettingsActivity,
+                                    "Failed to initialize GIF",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     } else {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(this@SettingsActivity, "Failed to get background InputStream", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@SettingsActivity,
+                                "Failed to get background InputStream",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
 
@@ -298,7 +336,11 @@ class SettingsActivity : AppCompatActivity() {
                     gifPipeline.release()
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(this@SettingsActivity, "An error occurred: ${e.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@SettingsActivity,
+                            "An error occurred: ${e.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                     e.printStackTrace()
                 }
@@ -309,45 +351,45 @@ class SettingsActivity : AppCompatActivity() {
     }
 
 
- /*fun gifRender(){
-    val background = bgUri!!.toInputStream(this@SettingsActivity)
-        ?: throw Exception("Output file has not yet been set. It is required under GIF background mode.")
-    val gifPipeline = GifPipeline()
-    if (background != null) {
-        val gifFile = File.createTempFile("temp_gif", ".gif", this@SettingsActivity.cacheDir)
-        Log.i("TAG", "gifBackground: $background / $gifFile")
-        background.copyTo(gifFile.outputStream())
+    /*fun gifRender(){
+       val background = bgUri!!.toInputStream(this@SettingsActivity)
+           ?: throw Exception("Output file has not yet been set. It is required under GIF background mode.")
+       val gifPipeline = GifPipeline()
+       if (background != null) {
+           val gifFile = File.createTempFile("temp_gif", ".gif", this@SettingsActivity.cacheDir)
+           Log.i("TAG", "gifBackground: $background / $gifFile")
+           background.copyTo(gifFile.outputStream())
 
-    if (!gifPipeline.init(gifFile)) {
-        throw Exception("GifPipeline failed to init: " + gifPipeline.errorInfo)
-    }
-        val qrBitmap = qrUri!!.toBitmap(this@SettingsActivity)?.toMutableBitmap()
-        if (qrBitmap != null) {
-            gifPipeline = qrBitmap
+       if (!gifPipeline.init(gifFile)) {
+           throw Exception("GifPipeline failed to init: " + gifPipeline.errorInfo)
+       }
+           val qrBitmap = qrUri!!.toBitmap(this@SettingsActivity)?.toMutableBitmap()
+           if (qrBitmap != null) {
+               gifPipeline = qrBitmap
 
-        gifPipeline.clippingRect = RectF(0f, 0f, qrBitmap.width.toFloat(), qrBitmap.height.toFloat()) // Set dimensions as needed
-    gifPipeline.outputFile = background.outputFile
-    var frame: Bitmap?
-    var renderedFrame: Bitmap
-    var firstRenderedFrame: Bitmap? = null
-    frame = gifPipeline.nextFrame()
-    while (frame != null) {
-        renderedFrame = renderFrame(renderOptions, frame)
-        gifPipeline.pushRendered(renderedFrame)
-        if (firstRenderedFrame == null) {
-            firstRenderedFrame = renderedFrame.copy(Bitmap.Config.ARGB_8888, true)
-        }
-        frame = gifPipeline.nextFrame()
-    }
-    if (gifPipeline.errorInfo != null) {
-        throw Exception("GifPipeline failed to render frames: " + gifPipeline.errorInfo)
-    }
-    if (!gifPipeline.postRender()) {
-        throw Exception("GifPipeline failed to do post render works: " + gifPipeline.errorInfo)
-    }
-    return RenderResult(firstRenderedFrame, background.outputFile, RenderResult.OutputType.GIF)
-}
+           gifPipeline.clippingRect = RectF(0f, 0f, qrBitmap.width.toFloat(), qrBitmap.height.toFloat()) // Set dimensions as needed
+       gifPipeline.outputFile = background.outputFile
+       var frame: Bitmap?
+       var renderedFrame: Bitmap
+       var firstRenderedFrame: Bitmap? = null
+       frame = gifPipeline.nextFrame()
+       while (frame != null) {
+           renderedFrame = renderFrame(renderOptions, frame)
+           gifPipeline.pushRendered(renderedFrame)
+           if (firstRenderedFrame == null) {
+               firstRenderedFrame = renderedFrame.copy(Bitmap.Config.ARGB_8888, true)
+           }
+           frame = gifPipeline.nextFrame()
+       }
+       if (gifPipeline.errorInfo != null) {
+           throw Exception("GifPipeline failed to render frames: " + gifPipeline.errorInfo)
+       }
+       if (!gifPipeline.postRender()) {
+           throw Exception("GifPipeline failed to do post render works: " + gifPipeline.errorInfo)
+       }
+       return RenderResult(firstRenderedFrame, background.outputFile, RenderResult.OutputType.GIF)
+   }
 
 
-  */
+     */
 }

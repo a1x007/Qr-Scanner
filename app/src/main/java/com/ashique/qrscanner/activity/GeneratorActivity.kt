@@ -29,7 +29,7 @@ class GeneratorActivity : AppCompatActivity() {
     private lateinit var ui: ActivityGeneratorBinding
 
     private var binaryConvert = false
-    private var colorized = true
+    private var colorized = false
     private var isLogo = false
 
     private var qrUri: Uri? = null
@@ -86,7 +86,7 @@ class GeneratorActivity : AppCompatActivity() {
         ui.uploadBlendBgBtn.setOnClickListener { importDrawable(colorized = true) }
         ui.uploadGifBgBtn.setOnClickListener { importDrawable(colorized = false) }
         ui.colorizedSwitch.setOnCheckedChangeListener { _, isChecked -> colorized = isChecked }
-
+        ui.binarySwitch.setOnCheckedChangeListener { _, isChecked -> binaryConvert = isChecked }
 
 
         ui.halftoneDotsizeSlider.setOnSeekBarChangeListener(
@@ -217,13 +217,16 @@ class GeneratorActivity : AppCompatActivity() {
 
     private fun combine(qrUri: Uri?, bgUri: Uri?) {
         if (qrUri != null && bgUri != null) {
+            // Start a coroutine for background processing
             lifecycleScope.launch(Dispatchers.IO) {
-                val qrPath = qrUri.toPath(this@GeneratorActivity)
-                val bgPath = bgUri.toPath(this@GeneratorActivity)
+                val inputStream = contentResolver.openInputStream(bgUri)
+                val isGif = inputStream?.use {
+                    val header = ByteArray(6)
+                    it.read(header)
+                    header[0] == 'G'.code.toByte() && header[1] == 'I'.code.toByte() && header[2] == 'F'.code.toByte()
+                } ?: false
 
-                val isGif = bgPath?.let { File(it).extension.equals("gif", ignoreCase = true) }
-                val extension = if (isGif == true) "gif" else "png"
-
+                val extension = if (isGif) "gif" else "png"
                 val directory = File(
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Qr"
                 )
@@ -231,27 +234,35 @@ class GeneratorActivity : AppCompatActivity() {
                     directory.mkdirs()  // Create the directory if it doesn't exist
                 }
 
-                val outputFile = File(directory, "${System.currentTimeMillis()}_binary.$extension")
-                val outputPath = outputFile.absolutePath
-                Log.i(TAG, "convertToBinary: outputpath: $outputPath")
+                val outputGifFile =
+                    File(directory, "${System.currentTimeMillis()}_binary.$extension")
+                val outputGifPath = outputGifFile.absolutePath
+                Log.i(TAG, "convertToBinary: outputpath: $outputGifPath")
 
-                // Get the Python instance
-                val python = Python.getInstance()
+                if (!outputGifFile.exists()) {
+                    // Get the Python instance
+                    val python = Python.getInstance()
 
-                // Call the Python script to process the images and save the result
-                python.getModule("combine").callAttr(
-                    "combine",
-                    qrPath,
-                    bgPath,
-                    outputPath,
-                    colorized,
-                    contrast,
-                    brightness
-                )
+                    // Call the Python script to convert the image to binary
+                    python.getModule("convert").callAttr(
+                        "convert_to_binary",
+                        qrUri.toPath(this@GeneratorActivity),
+                        bgUri.toPath(this@GeneratorActivity),
+                        outputGifPath,
+                        colorized,
+                        contrast,
+                        brightness,
+                        isGif,
+                        "ultra",
+                        halftoneDotSize,
+                        halftoneResolution
 
-                if (outputFile.exists()) {
+                    )
+                }
+
+                if (outputGifFile.exists()) {
                     withContext(Dispatchers.Main) {
-                        Glide.with(this@GeneratorActivity).load(outputPath).into(ui.qrPreview)
+                        Glide.with(this@GeneratorActivity).load(outputGifPath).into(ui.qrPreview)
                     }
                 } else {
                     withContext(Dispatchers.Main) {

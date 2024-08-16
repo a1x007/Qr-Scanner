@@ -16,6 +16,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.DecodeHintType
+import com.google.zxing.LuminanceSource
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.NotFoundException
 import com.google.zxing.RGBLuminanceSource
@@ -273,5 +274,9 @@ object QrHelper {
         val combinedBitmap = BitmapFactory.decodeFile(combinedImagePath)
         this.setImageBitmap(combinedBitmap)
     }
+
+
+
+
 
 }

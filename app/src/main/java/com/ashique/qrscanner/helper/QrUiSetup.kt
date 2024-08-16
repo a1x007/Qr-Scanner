@@ -9,6 +9,7 @@ import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.BitmapDrawable
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.isVisible
 import com.ashique.qrscanner.R
 import com.ashique.qrscanner.activity.QrGenerator
@@ -26,6 +27,7 @@ import com.ashique.qrscanner.activity.QrGenerator.Companion.gradientColor1
 import com.ashique.qrscanner.activity.QrGenerator.Companion.logoPadding
 import com.ashique.qrscanner.activity.QrGenerator.Companion.logoSize
 import com.ashique.qrscanner.activity.QrGenerator.Companion.qrBackground
+import com.ashique.qrscanner.activity.QrGenerator.Companion.qrBackgroundColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.qrPadding
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedDarkPixelShape
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedEyeBallShape
@@ -45,6 +47,7 @@ import com.ashique.qrscanner.databinding.LayoutQrShapeBinding
 import com.ashique.qrscanner.databinding.LayoutQrTextBinding
 import com.ashique.qrscanner.helper.Extensions.animateLayout
 import com.ashique.qrscanner.helper.Extensions.createSeekBarListener
+import com.ashique.qrscanner.helper.ImageConverter.toBinaryBitmap
 import com.github.alexzhirkevich.customqrgenerator.style.QrShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorBallShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorColor
@@ -58,6 +61,7 @@ object QrUiSetup {
     }
 
 
+    private var darkPixelSquareSize: Float = 1f
     private var darkPixelCircleSize: Float = 0.1f
     private var frameCircleSize: Float = 0.40f
     private var eyeCircleMiniSize: Float = 0.40f
@@ -78,10 +82,10 @@ object QrUiSetup {
 
             binding.radioGroupDarkPixelShape.setOnCheckedChangeListener { _, checkedId ->
                 selectedDarkPixelShape = when (checkedId) {
-                    R.id.pixelDefault -> QrVectorPixelShape.Default
+                    R.id.pixelDefault -> QrVectorPixelShape.Square(darkPixelSquareSize)
                     R.id.pixelCircle -> QrVectorPixelShape.Circle(darkPixelCircleSize)
                     R.id.pixelRoundCorners25 -> QrVectorPixelShape.RoundCorners(0.25f)
-                    R.id.pixelStar -> QrVectorPixelShape.Star
+                    R.id.pixelStar -> QrVectorPixelShape.Bubble(.3f,.6f)
                     R.id.pixelRhombus -> QrVectorPixelShape.Rhombus()
                     R.id.pixelRoundCornersHorizontal -> QrVectorPixelShape.RoundCornersHorizontal()
                     R.id.radioButtonRoundCornersVertical -> QrVectorPixelShape.RoundCornersVertical()
@@ -89,7 +93,7 @@ object QrUiSetup {
                 }
                 onUpdate()
 
-                pixelCircleSizeSlider.visibility = if (checkedId == R.id.pixelCircle)
+                pixelCircleSizeSlider.visibility = if (checkedId == R.id.pixelCircle || checkedId == R.id.pixelDefault)
                     View.VISIBLE
                 else View.GONE
             }
@@ -99,7 +103,7 @@ object QrUiSetup {
                     R.id.frameDefault -> QrVectorFrameShape.Default
                     R.id.frameCircle -> QrVectorFrameShape.Circle()
                     R.id.frameRoundCorners25 -> QrVectorFrameShape.RoundCorners(0.25f)
-                    R.id.frameStar -> QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Star)
+                    R.id.frameStar -> QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Bubble(.3f,.6f))
                     R.id.frameRhombus -> QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Rhombus())
                     R.id.frameCircleMini -> QrVectorFrameShape.AsPixelShape(
                         QrVectorPixelShape.Circle(
@@ -122,7 +126,7 @@ object QrUiSetup {
                     R.id.eyeDefault -> QrVectorBallShape.Default
                     R.id.eyeCircle -> QrVectorBallShape.Circle(eyeCircleSize)
                     R.id.eyeRoundCorners25 -> QrVectorBallShape.RoundCorners(0.25f)
-                    R.id.eyeStar -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Star)
+                    R.id.eyeStar -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Bubble(.3f,.6f))
                     R.id.eyeRhombus -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Rhombus())
                     R.id.eyeCircleMini -> QrVectorBallShape.AsPixelShape(
                         QrVectorPixelShape.Circle(
@@ -140,13 +144,26 @@ object QrUiSetup {
                 else View.GONE
             }
 
-            pixelCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
-                // Update padding in the context of the activity
-                darkPixelCircleSize = progress / 100f
-                pixelCircleSizeText.text = progress.toString()
-                selectedDarkPixelShape = QrVectorPixelShape.Circle(darkPixelCircleSize)
-                onUpdate()
-            }))
+            pixelCircleSizeSlider.setOnSeekBarChangeListener(
+                createSeekBarListener(
+                    onProgressChanged = { progress ->
+                        val size = progress / 100f
+                        if (radioGroupDarkPixelShape.checkedRadioButtonId == R.id.pixelDefault) {
+                            // Update the size of the square shape
+                            darkPixelSquareSize = size
+                            selectedDarkPixelShape = QrVectorPixelShape.Square(darkPixelSquareSize)
+                        } else {
+                            // Update the size of the circle shape
+                            darkPixelCircleSize = size
+                            selectedDarkPixelShape = QrVectorPixelShape.Circle(darkPixelCircleSize)
+                        }
+                        // Update UI
+                        pixelCircleSizeText.text = progress.toString()
+                        onUpdate()
+                    }
+                )
+            )
+
 
             frameCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
                 // Update padding in the context of the activity
@@ -430,6 +447,10 @@ object QrUiSetup {
 
             val colorPickerDialog = ColorPickerDialog(ui2 = binding).apply {
                 onColorChanged = { newColor ->
+
+                    qrBackgroundColor = newColor
+                    onUpdate()
+
                     drawableBgColor = newColor
                     qrBackground?.let { drawable ->
                         // Ensure the drawable is a BitmapDrawable
@@ -447,6 +468,16 @@ object QrUiSetup {
                         val canvas = newBitmap?.let { Canvas(it) }
                         canvas?.drawBitmap(bitmap, 0f, 0f, paint)
                         qrBackground = BitmapDrawable(resources, newBitmap)
+                        onUpdate()
+                    }
+                }
+            }
+
+            btnHalftoneEffect.setOnCheckedListener { isChecked ->
+                if (isChecked){
+                    qrBackground?.let { drawable ->
+                       val halftone = toBinaryBitmap(drawable.bitmap)
+                        qrBackground = activity?.resources?.let { halftone.toDrawable(it) }
                         onUpdate()
                     }
                 }

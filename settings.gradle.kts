@@ -21,5 +21,5 @@ dependencyResolutionManagement {
 
 
 rootProject.name = "Qr Scanner"
-include(":app")
+include(":app", ":custom_qr_generator")
 

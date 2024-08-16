@@ -1,13 +1,16 @@
 package com.ashique.qrscanner.helper
 
-import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.drawable.BitmapDrawable
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
@@ -214,4 +217,76 @@ object BitmapHelper {
         return File(directory, "${timestamp}_binary.$extension")
     }
 
+
+    fun createBitmapFromPath(path: Path, height: Int = 400, width: Int = 400): Bitmap{
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+        // Create a canvas to draw on the bitmap
+        val canvas = Canvas(bitmap)
+
+        // Create a paint object
+        val paint = Paint().apply {
+            color = Color.BLUE // Set the color for the dark pixels
+            style = Paint.Style.FILL // Choose how to fill the path (e.g., stroke, fill)
+        }
+
+        // Draw the combined path onto the canvas
+        canvas.drawPath(path, paint)
+        return bitmap
+    }
+
+    fun createBitmapWithShapes(positions: List<Pair<Int, Int>>, framePath: Path, targetSize: Float): Bitmap {
+        // Calculate the original bounds of the path
+        val originalBounds = RectF()
+        framePath.computeBounds(originalBounds, true)
+
+        // Calculate the scaling factor to resize the shape to the target size
+        val scaleX = targetSize / originalBounds.width()
+        val scaleY = targetSize / originalBounds.height()
+
+        // Create a Matrix to scale the path
+        val scaleMatrix = Matrix().apply {
+            setScale(scaleX, scaleY, originalBounds.left, originalBounds.top)
+        }
+
+        // Apply the scaling to the path
+        val scaledPath = Path(framePath).apply {
+            transform(scaleMatrix)
+        }
+
+        // Calculate the maximum extents to define the bitmap size
+        val maxX = positions.maxOfOrNull { it.first } ?: 0
+        val maxY = positions.maxOfOrNull { it.second } ?: 0
+
+        // Create a Bitmap and Canvas
+        val bitmapWidth = (maxX + targetSize).toInt()
+        val bitmapHeight = (maxY + targetSize).toInt()
+        val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        // Create a Paint object for drawing
+        val paint = Paint().apply {
+            color = Color.BLACK
+            style = Paint.Style.FILL
+        }
+
+        // Draw the resized shape at each position
+        for ((x, y) in positions) {
+            val translatedPath = Path(scaledPath)
+            translatedPath.offset(x.toFloat(), y.toFloat())
+            canvas.drawPath(translatedPath, paint)
+        }
+
+        return bitmap
+    }
+
+    fun Path.computeBounds(): android.graphics.RectF {
+        val bounds = android.graphics.RectF()
+        this.computeBounds(bounds, true)
+        return bounds
+    }
+
+    fun Bitmap.toBitmapDrawable(context: Context): BitmapDrawable {
+        return BitmapDrawable(context.resources,this)
+    }
 }
