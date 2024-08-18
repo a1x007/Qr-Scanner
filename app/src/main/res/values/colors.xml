@@ -8,6 +8,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="yellow">#CDDC39</color>
+    <color name="light_green">#8BC34A</color>
+    <color name="green">#4CAF50</color>
     <color name="overlay_color">#99000000</color>
     <color name="barcode_overlay_stroke">#ffffff</color>
     <color name="red">#FF0000</color>

@@ -1,55 +1,63 @@
 package com.ashique.qrscanner.helper
 
 import android.graphics.Bitmap
-import com.google.zxing.BarcodeFormat
+import android.util.Log
+import com.google.android.gms.tasks.Tasks
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.common.InputImage
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.DecodeHintType
-import com.google.zxing.MultiFormatReader
 import com.google.zxing.NotFoundException
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
+import com.google.zxing.multi.qrcode.QRCodeMultiReader
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 
 object QrScanner {
-
-    suspend fun scanQrCode(bitmap: Bitmap): String? = withContext(Dispatchers.IO) {
-        try {
-            // Determine if the image needs to be scaled down
-            val maxDimension = 1024
-            val shouldResize = bitmap.width > maxDimension || bitmap.height > maxDimension
-
-            val scaledBitmap = if (shouldResize) {
-                val aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
-                val width = if (aspectRatio > 1) maxDimension else (maxDimension * aspectRatio).toInt()
-                val height = if (aspectRatio > 1) (maxDimension / aspectRatio).toInt() else maxDimension
-                Bitmap.createScaledBitmap(bitmap, width, height, true)
-            } else {
-                bitmap
-            }
-
-            val width = scaledBitmap.width
-            val height = scaledBitmap.height
+    const val TAG = "QrScanner"
+    suspend fun scanQrBitmap(bitmap: Bitmap): String? = withContext(Dispatchers.Default) {
+        val zxingResult = try {
+            // Start the Zxing scanning process asynchronously
+            val width = bitmap.width
+            val height = bitmap.height
             val pixels = IntArray(width * height)
-            scaledBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
 
             val source = RGBLuminanceSource(width, height, pixels)
             val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
 
-            val reader = MultiFormatReader()
-            val hints = mapOf(
-                DecodeHintType.TRY_HARDER to true,
-                DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE),
-                DecodeHintType.PURE_BARCODE to false
-            )
+            val reader = QRCodeMultiReader()
+            val hints = mapOf(DecodeHintType.TRY_HARDER to true)
 
-            val result = reader.decode(binaryBitmap, hints)
-
-            result.text
+            val results = reader.decodeMultiple(binaryBitmap, hints)
+            results.firstOrNull()?.text
         } catch (e: NotFoundException) {
-            null // Handle case where no QR code is found
+            // Zxing did not find a QR code
+            null
         } catch (e: Exception) {
-            null // Handle other exceptions
+            // Handle other exceptions
+            e.printStackTrace()
+            null
+        }
+
+        if (zxingResult != null) {
+            // Return Zxing result if successful
+            return@withContext zxingResult
+        }
+
+        try {
+            // If Zxing failed, try ML Kit scanning
+            val barcodeScanner = BarcodeScanning.getClient()
+            val inputImage = InputImage.fromBitmap(bitmap, 0) // Rotation is 0 for bitmap
+            val barcodes = Tasks.await(barcodeScanner.process(inputImage))
+            barcodes.firstOrNull()?.rawValue
+        } catch (mlKitException: Exception) {
+            // Handle ML Kit exceptions
+            mlKitException.printStackTrace()
+            null
         }
     }
+
 }

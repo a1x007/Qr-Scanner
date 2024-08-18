@@ -3,7 +3,7 @@ package com.ashique.qrscanner.helper
 import android.graphics.Bitmap
 import android.graphics.RectF
 import android.util.Log
-import com.ashique.qrscanner.helper.ImageConverter.toBinaryBitmap
+import com.ashique.qrscanner.helper.ImageEnhancer.convert
 import com.waynejo.androidndkgif.GifDecoder
 import com.waynejo.androidndkgif.GifEncoder
 import java.io.File
@@ -41,7 +41,15 @@ class GifPipeline {
         return true
     }
 
-    fun nextFrame(crop: Boolean? = false, convertBinary: Boolean? = false): Bitmap? {
+    fun nextFrame(
+        crop: Boolean? = false,
+        brightness: Float? = null,
+        contrast: Float? = null,
+        halftone: Boolean = false,
+        binary: Boolean = false,
+        colorize: Boolean = false,
+        dotSize: Int = 2
+    ): Bitmap? {
         if (gifDecoder!!.frameNum() == 0) {
             errorInfo = "GIF contains zero frames."
             Log.e(TAG, errorInfo!!)
@@ -82,19 +90,22 @@ class GifPipeline {
                 frame.recycle()
                 return cropped
             } else {
-                // If cropping is not enabled, return the entire frame
-                return if (convertBinary == true) {
-                    toBinaryBitmap(
-                        frame, colorize = false, shapeSize = 3, threshold = 127, useShape = false
-                    )
-
-                } else frame
+                return convert(
+                    frame,
+                    brightness = brightness,
+                    contrast = contrast,
+                    halftone = halftone,
+                    binary = binary,
+                    colorized = colorize,
+                    dotSize = dotSize
+                )
             }
         } else {
             errorInfo = "No more frames available."
             Log.e(TAG, errorInfo!!)
             return null
         }
+
     }
 
 

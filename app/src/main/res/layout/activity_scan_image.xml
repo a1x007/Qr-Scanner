@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.ashique.qrscanner.custom.Frame
+        android:id="@+id/text_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:padding="6dp"
+        app:cornerRadius="3dp"
+        app:backgroundColor="@color/radio_buttons_border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/console"
+                android:text="Drag the markers till the qr code is detected."
+                android:textAllCaps="true"
+                android:textColor="@color/text"
+                android:textSize="13sp" />
+
+            <com.ashique.qrscanner.custom.Buttons
+                android:id="@+id/icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/info"
+                android:layout_marginEnd="6dp"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:padding="4dp"
+                app:_activeColor="@color/text"
+                app:_activeIconColor="@color/icon_active"
+                app:_borderColor="@color/radio_buttons_border"
+                app:_borderWidth="0dp"
+                app:_fillColor="@color/radio_buttons_border"
+                app:_icon="@drawable/ic_success"
+                app:_iconColor="@color/text"
+                app:_iconHeight="10dp"
+                app:_iconWidth="10dp"
+                app:_radius="10dp"
+                android:clickable="false"/>
+
+            <TextView
+                android:id="@+id/qr_detected_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+               android:layout_centerVertical="true"
+                android:layout_below="@+id/info"
+                android:layout_toEndOf="@+id/icon"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="1dp"
+                android:fontFamily="@font/console"
+                android:text="Qr Code Detetced"
+                android:textAllCaps="true"
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+    </com.ashique.qrscanner.custom.Frame>
+
+
+    <com.ashique.qrscanner.custom.CropImageView
+        android:id="@+id/crop_Image_View"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="@dimen/default_margin"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_frame"
+        app:scv_animation_duration="300"
+        app:scv_animation_enabled="true"
+        app:scv_background_color="@color/zxing_transparent"
+        app:scv_crop_mode="free"
+        app:scv_frame_color="@color/yellow"
+        app:scv_frame_stroke_weight="1dp"
+        app:scv_guide_color="@color/yellow"
+        app:scv_guide_show_mode="show_on_touch"
+        app:scv_guide_stroke_weight="1dp"
+        app:scv_handle_color="@color/yellow"
+        app:scv_handle_show_mode="show_always"
+        app:scv_handle_size="10dp"
+        app:scv_min_frame_size="50dp"
+        app:scv_overlay_color="@color/overlay_color"
+        app:scv_touch_padding="8dp" />
+
+
+    <LinearLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Left Button -->
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:gravity="center"
+            android:padding="4dp"
+            app:_activeColor="@color/text"
+            app:_activeIconColor="@color/icon_active"
+            app:_borderColor="@color/radio_buttons_border"
+            app:_borderWidth="1dp"
+            app:_fillColor="@color/radio_buttons_border"
+            app:_icon="@drawable/ic_import"
+            app:_iconColor="@color/text"
+            app:_iconHeight="30dp"
+            app:_iconWidth="30dp"
+            app:_radius="3dp" />
+
+        <!-- Space to Center the Middle Layout -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.ashique.qrscanner.custom.Buttons
+                android:id="@+id/rotate_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="4dp"
+                app:_activeColor="@color/text"
+                app:_activeIconColor="@color/icon_active"
+                app:_borderColor="@color/radio_buttons_border"
+                app:_borderWidth="1dp"
+                app:_fillColor="@color/radio_buttons_border"
+                app:_icon="@drawable/rotate_left"
+                app:_iconColor="@color/text"
+                app:_iconHeight="30dp"
+                app:_iconWidth="30dp"
+                app:_radius="3dp" />
+
+            <com.ashique.qrscanner.custom.Buttons
+                android:id="@+id/rotate_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:gravity="center"
+                android:padding="4dp"
+                android:rotationY="180"
+                app:_activeColor="@color/text"
+                app:_activeIconColor="@color/icon_active"
+                app:_borderColor="@color/radio_buttons_border"
+                app:_borderWidth="1dp"
+                app:_fillColor="@color/radio_buttons_border"
+                app:_icon="@drawable/rotate_left"
+                app:_iconColor="@color/text"
+                app:_iconHeight="30dp"
+                app:_iconWidth="30dp"
+                app:_radius="3dp" />
+        </LinearLayout>
+
+        <!-- Right Button -->
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/crop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            android:padding="4dp"
+            app:_activeColor="@color/text"
+            app:_activeIconColor="@color/icon_active"
+            app:_borderColor="@color/radio_buttons_border"
+            app:_borderWidth="1dp"
+            app:_fillColor="@color/radio_buttons_border"
+            app:_icon="@drawable/scan_it"
+            app:_iconColor="@color/text"
+            app:_iconHeight="30dp"
+            app:_iconWidth="30dp"
+            app:_radius="3dp" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

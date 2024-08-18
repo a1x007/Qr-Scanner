@@ -11,6 +11,7 @@ import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
@@ -19,6 +20,7 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import java.io.File
 import java.io.FileOutputStream
@@ -288,5 +290,9 @@ object BitmapHelper {
 
     fun Bitmap.toBitmapDrawable(context: Context): BitmapDrawable {
         return BitmapDrawable(context.resources,this)
+    }
+
+    fun Int.toDrawable(context: Context): Drawable? {
+        return ContextCompat.getDrawable(context, this)
     }
 }

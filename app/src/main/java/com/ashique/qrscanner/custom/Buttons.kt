@@ -13,12 +13,11 @@ import android.util.AttributeSet
 import android.view.Gravity
 import androidx.appcompat.widget.AppCompatButton
 import com.ashique.qrscanner.R
+import com.ashique.qrscanner.helper.BitmapHelper.toDrawable
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Buttons @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
     private var width: Int = 0
     private var height: Int = 0
@@ -64,34 +63,28 @@ class Buttons @JvmOverloads constructor(
 
     init {
         context.theme.obtainStyledAttributes(
-            attrs,
-            R.styleable.Button,
-            0, 0
+            attrs, R.styleable.Button, 0, 0
         ).apply {
             try {
                 radius = getDimension(R.styleable.Button__radius, 0f)
                 fillColor = getColor(R.styleable.Button__fillColor, Color.TRANSPARENT)
                 borderColor = getColor(
-                    R.styleable.Button__borderColor,
-                    Color.BLACK
+                    R.styleable.Button__borderColor, Color.BLACK
                 )
                 borderWidth = getDimension(R.styleable.Button__borderWidth, 0f)
                 iconDrawable = getDrawable(R.styleable.Button__icon)
                 iconColor = getColor(R.styleable.Button__iconColor, Color.WHITE)
                 iconWidth = getDimensionPixelSize(
-                    R.styleable.Button__iconWidth,
-                    iconDrawable?.intrinsicWidth ?: 0
+                    R.styleable.Button__iconWidth, iconDrawable?.intrinsicWidth ?: 0
                 )
                 iconHeight = getDimensionPixelSize(
-                    R.styleable.Button__iconHeight,
-                    iconDrawable?.intrinsicHeight ?: 0
+                    R.styleable.Button__iconHeight, iconDrawable?.intrinsicHeight ?: 0
                 )
                 textMarginTop = getDimensionPixelSize(R.styleable.Button__textMarginTop, 0)
                 textMarginBottom = getDimensionPixelSize(R.styleable.Button__textMarginBottom, 0)
                 textMarginLeft = getDimensionPixelSize(R.styleable.Button__textMarginLeft, 0)
                 textMarginRight = getDimensionPixelSize(R.styleable.Button__textMarginRight, 0)
-                isChecked =
-                    getBoolean(R.styleable.Button__checked, false)
+                isChecked = getBoolean(R.styleable.Button__checked, false)
                 activeColor = getColor(R.styleable.Button__activeColor, Color.TRANSPARENT)
                 activeIconColor = getColor(R.styleable.Button__activeIconColor, Color.TRANSPARENT)
             } finally {
@@ -126,10 +119,10 @@ class Buttons @JvmOverloads constructor(
         val textHeight = textBounds.height()
         val textWidth = paint.measureText(text.toString())
 
-        val desiredWidth = (paddingLeft + paddingRight +
-                iconWidth + textWidth + (2 * borderWidth)).toInt()
-        val desiredHeight = (paddingTop + paddingBottom +
-                maxOf(iconHeight, textHeight) + (2 * borderWidth)).toInt()
+        val desiredWidth =
+            (paddingLeft + paddingRight + iconWidth + textWidth + (2 * borderWidth)).toInt()
+        val desiredHeight =
+            (paddingTop + paddingBottom + maxOf(iconHeight, textHeight) + (2 * borderWidth)).toInt()
 
         val measuredWidth = resolveSize(desiredWidth, widthMeasureSpec)
         val measuredHeight = resolveSize(desiredHeight, heightMeasureSpec)
@@ -198,8 +191,7 @@ class Buttons @JvmOverloads constructor(
 
     private fun updateCheckedState() {
         iconDrawable?.colorFilter = PorterDuffColorFilter(
-            if (isChecked) activeIconColor else iconColor,
-            PorterDuff.Mode.SRC_IN
+            if (isChecked) activeIconColor else iconColor, PorterDuff.Mode.SRC_IN
         )
         invalidate()
     }
@@ -213,6 +205,15 @@ class Buttons @JvmOverloads constructor(
     fun setIconColor(color: Int) {
         iconColor = color
         iconDrawable?.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
+        invalidate()
+    }
+
+    fun setIcon(icon: Int, color: Int? = null) {
+        iconDrawable = icon.toDrawable(context)
+        color?.let {
+            iconColor = it
+            iconDrawable?.colorFilter = PorterDuffColorFilter(it, PorterDuff.Mode.SRC_IN)
+        }
         invalidate()
     }
 

@@ -3,17 +3,11 @@ package com.ashique.qrscanner.activity
 import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.Surface
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -29,29 +23,19 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.ashique.qrscanner.R
+import com.ashique.qrscanner.activity.ScanImageActivity.Companion.OPEN_GALLERY
 import com.ashique.qrscanner.databinding.ActivityMainBinding
 import com.ashique.qrscanner.fragments.ResultFragment
-import com.ashique.qrscanner.helper.BitmapHelper
-import com.ashique.qrscanner.helper.BitmapHelper.invertColors
-import com.ashique.qrscanner.helper.BitmapHelper.isGrayscale
 import com.ashique.qrscanner.helper.Extensions.applyDayNightTheme
 import com.ashique.qrscanner.helper.Extensions.navigateTo
 import com.ashique.qrscanner.helper.Extensions.setOnBackPressedAction
 import com.ashique.qrscanner.helper.Extensions.showToast
 import com.ashique.qrscanner.helper.Prefs
-import com.ashique.qrscanner.helper.QrHelper
-import com.ashique.qrscanner.helper.QrHelper.scanBitmap
 import com.ashique.qrscanner.services.PermissionManager.initPermissionManager
-import com.ashique.qrscanner.services.PermissionManager.isAllFilesAccessGranted
 import com.ashique.qrscanner.services.PermissionManager.isCameraPermissionGranted
 import com.ashique.qrscanner.services.PermissionManager.requestCameraPermission
-import com.ashique.qrscanner.services.PermissionManager.requestExternalStoragePermissions
-import com.ashique.qrscanner.services.PermissionManager.requestManageAllFilesPermission
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
-import com.isseiaoki.simplecropview.CropImageView
-import com.isseiaoki.simplecropview.callback.CropCallback
-import com.isseiaoki.simplecropview.callback.LoadCallback
 import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.max
@@ -76,7 +60,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var analysisUseCase: ImageAnalysis
 
 
-    private lateinit var photoPickerLauncher: ActivityResultLauncher<String>
 
 
     private var flashEnabled = false
@@ -114,8 +97,12 @@ class MainActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
-        ui.upload.setOnClickListener { openGalleryAndScanQR() }
-        ui.gallery.setOnClickListener { openGalleryAndScanQR() }
+        ui.upload.setOnClickListener {
+            navigateTo<ScanImageActivity>(Bundle().apply {
+                putBoolean(OPEN_GALLERY, true)  // Pass a flag to indicate gallery should be opened
+            })
+           }
+
         ui.overlay.setViewFinder()
         ui.settingBtn.setOnClickListener { navigateTo<SettingsActivity>() }
         ui.generatorBtn.setOnClickListener { navigateTo<GeneratorActivity>() }
@@ -123,6 +110,7 @@ class MainActivity : AppCompatActivity() {
         ui.generateBtn.setOnClickListener {
             navigateTo<QrGenerator>()
         }
+
 
         ui.cameraError.setOnClickListener { requestCameraPermission() }
 
@@ -135,15 +123,6 @@ class MainActivity : AppCompatActivity() {
             ui.scanner.visibility = GONE
         }
 
-        // Initialize the ActivityResultLauncher
-        photoPickerLauncher = registerForActivityResult(
-            ActivityResultContracts.GetContent()
-        ) { uri ->
-            // Handle the image URI
-            uri?.let {
-                onImagePicked(it)
-            }
-        }
 
         checkCameraPermission()
 
@@ -207,12 +186,15 @@ class MainActivity : AppCompatActivity() {
             if (supportFragmentManager.backStackEntryCount > 0) {
                 supportFragmentManager.popBackStack()
                 ui.fragmentContainer.visibility = GONE
-            } else if (ui.cropImageView.drawable != null) {
+            } /*else if (ui.cropImageView.drawable != null) {
                 // Remove the bitmap
                 ui.cropImageView.setImageDrawable(null)
                 ui.cropBackground.visibility = GONE
                 ui.toolbar.visibility = GONE
-            } else {
+            }
+             */
+
+            else {
                 finish()
             }
         }
@@ -329,93 +311,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun openGalleryAndScanQR() {
-        if (isAllFilesAccessGranted()) {
-            // Permissions are already granted
-            photoPickerLauncher.launch("image/*")
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                // Log the condition for debugging
-                Log.d("PermissionCheck", "Requesting Manage All Files permission")
-                requestManageAllFilesPermission()
-            } else {
-                // Log the condition for debugging
-                Log.d("PermissionCheck", "Requesting External Storage permissions")
-                requestExternalStoragePermissions()
-            }
-        }
-    }
 
 
-    private fun onImagePicked(uri: Uri) {
-        ui.cropImageView.load(uri).execute(object : LoadCallback {
-            override fun onError(e: Throwable?) {
-                Log.e(TAG, "Error loading image", e)
-            }
-
-            override fun onSuccess() {
-                ui.cropBackground.visibility = VISIBLE
-                ui.toolbar.visibility = VISIBLE
-                // rotation
-                ui.rotateLeft.setOnClickListener {
-                    ui.cropImageView.rotateImage(
-                        CropImageView.RotateDegrees.ROTATE_M90D
-                    )
-                }
-                ui.rotateRight.setOnClickListener {
-                    ui.cropImageView.rotateImage(
-                        CropImageView.RotateDegrees.ROTATE_90D
-                    )
-                }
-
-                // Set up cropping
-                ui.crop.setOnClickListener {
-                    ui.cropImageView.crop(uri)
-                        .execute(object : CropCallback {
-                            override fun onSuccess(bitmap: Bitmap) {
-                                val grayscaleBitmap =
-                                    if (isGrayscale(bitmap)) {
-                                        BitmapHelper.resizeBitmap(
-                                            bitmap,
-                                            300,
-                                            300
-                                        )
-                                    } else {
-                                        showToast("Colored Qr Detected !")
-                                        invertColors(
-                                            bitmap
-                                        )
-                                    }
-
-                                Log.i(TAG, "onSuccess: crop: $bitmap")
-
-                                // start qr scanning process
-                                scanBitmap(grayscaleBitmap, object : QrHelper.QrScanCallback {
-                                    override fun onBarcodeScanned(contents: String) {
-                                        // Handle the scanned barcode value
-                                        openResultActivity(contents)
-                                        showToast("Scanned barcode: $contents")
-                                    }
-
-                                    override fun onScanError(errorMessage: String) {
-                                        // Handle the error
-                                        showToast(errorMessage)
-                                    }
-                                })
-
-
-                            }
-
-                            override fun onError(e: Throwable) {
-                                Log.e(TAG, "Error cropping image", e)
-                                showToast("Error: $e")
-                            }
-                        })
-                }
-            }
-        })
-
-    }
 
 
     @OptIn(ExperimentalGetImage::class)
@@ -460,7 +357,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        photoPickerLauncher.unregister()
+
     }
 
 }

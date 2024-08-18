@@ -26,6 +26,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           app:cornerRadius="5dp"
+          app:borderColor="@android:color/transparent"
           android:layout_marginTop="6dp">
           <ImageView
               android:id="@+id/gifView"

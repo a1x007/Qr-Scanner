@@ -25,7 +25,7 @@ import com.ashique.qrscanner.helper.Combine.convertToBinaryBitmap
 import com.ashique.qrscanner.helper.Combine.convertToDotBinaryBitmap
 import com.ashique.qrscanner.helper.Combine.generateQrCodeWithBinaryBitmap
 import com.ashique.qrscanner.helper.GifPipeline2
-import com.ashique.qrscanner.helper.ImageConverter
+import com.ashique.qrscanner.helper.ImageEnhancer
 import com.ashique.qrscanner.helper.Prefs.initialize
 import com.ashique.qrscanner.helper.Prefs.setZxing
 import com.ashique.qrscanner.helper.Prefs.useZxing
@@ -99,7 +99,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
         ui.dotImageView.setImageBitmap(
-            ImageConverter.convertImageToHalftone(
+            ImageEnhancer.toHalftone(
                 BitmapFactory.decodeResource(
                     resources,
                     R.drawable.girl
@@ -107,7 +107,7 @@ class SettingsActivity : AppCompatActivity() {
             )
         )
         ui.bitImageView.setImageBitmap(
-            ImageConverter.toBinaryBitmap(
+            ImageEnhancer.toShapedBinaryBitmap(
                 BitmapFactory.decodeResource(
                     resources,
                     R.drawable.girl

@@ -1,6 +1,7 @@
 package com.ashique.qrscanner.helper
 
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -15,10 +16,14 @@ import com.ashique.qrscanner.R
 import com.ashique.qrscanner.activity.QrGenerator
 import com.ashique.qrscanner.activity.QrGenerator.Companion.ballColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.ballRoundness
+import com.ashique.qrscanner.activity.QrGenerator.Companion.brightness
 import com.ashique.qrscanner.activity.QrGenerator.Companion.centerCrop
+import com.ashique.qrscanner.activity.QrGenerator.Companion.colorize
+import com.ashique.qrscanner.activity.QrGenerator.Companion.contrast
 import com.ashique.qrscanner.activity.QrGenerator.Companion.currentColorType
 import com.ashique.qrscanner.activity.QrGenerator.Companion.darkColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.darkPixelRoundness
+import com.ashique.qrscanner.activity.QrGenerator.Companion.dotSize
 import com.ashique.qrscanner.activity.QrGenerator.Companion.drawableBgColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.frameColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.frameRoundness
@@ -26,6 +31,7 @@ import com.ashique.qrscanner.activity.QrGenerator.Companion.gradientColor0
 import com.ashique.qrscanner.activity.QrGenerator.Companion.gradientColor1
 import com.ashique.qrscanner.activity.QrGenerator.Companion.logoPadding
 import com.ashique.qrscanner.activity.QrGenerator.Companion.logoSize
+import com.ashique.qrscanner.activity.QrGenerator.Companion.originalBackground
 import com.ashique.qrscanner.activity.QrGenerator.Companion.qrBackground
 import com.ashique.qrscanner.activity.QrGenerator.Companion.qrBackgroundColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.qrPadding
@@ -34,6 +40,8 @@ import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedEyeBallShape
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedFrameShape
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedGradientOrientation
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedQrShape
+import com.ashique.qrscanner.activity.QrGenerator.Companion.useBinary
+import com.ashique.qrscanner.activity.QrGenerator.Companion.useHalftone
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useLinearGradient
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useRadialGradient
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useSolidColor
@@ -46,8 +54,9 @@ import com.ashique.qrscanner.databinding.LayoutQrSaveBinding
 import com.ashique.qrscanner.databinding.LayoutQrShapeBinding
 import com.ashique.qrscanner.databinding.LayoutQrTextBinding
 import com.ashique.qrscanner.helper.Extensions.animateLayout
+
 import com.ashique.qrscanner.helper.Extensions.createSeekBarListener
-import com.ashique.qrscanner.helper.ImageConverter.toBinaryBitmap
+import com.ashique.qrscanner.helper.ImageEnhancer.convert
 import com.github.alexzhirkevich.customqrgenerator.style.QrShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorBallShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorColor
@@ -58,6 +67,10 @@ object QrUiSetup {
 
     enum class QrColorType {
         QR, BALL, FRAME, DARK, COLOR0, COLOR1
+    }
+
+    enum class QrFormats{
+        JPG, PNG, GIF
     }
 
 
@@ -85,7 +98,7 @@ object QrUiSetup {
                     R.id.pixelDefault -> QrVectorPixelShape.Square(darkPixelSquareSize)
                     R.id.pixelCircle -> QrVectorPixelShape.Circle(darkPixelCircleSize)
                     R.id.pixelRoundCorners25 -> QrVectorPixelShape.RoundCorners(0.25f)
-                    R.id.pixelStar -> QrVectorPixelShape.Bubble(.3f,.6f)
+                    R.id.pixelStar -> QrVectorPixelShape.Bubble(.3f, .6f)
                     R.id.pixelRhombus -> QrVectorPixelShape.Rhombus()
                     R.id.pixelRoundCornersHorizontal -> QrVectorPixelShape.RoundCornersHorizontal()
                     R.id.radioButtonRoundCornersVertical -> QrVectorPixelShape.RoundCornersVertical()
@@ -93,9 +106,9 @@ object QrUiSetup {
                 }
                 onUpdate()
 
-                pixelCircleSizeSlider.visibility = if (checkedId == R.id.pixelCircle || checkedId == R.id.pixelDefault)
-                    View.VISIBLE
-                else View.GONE
+                pixelCircleSizeSlider.visibility =
+                    if (checkedId == R.id.pixelCircle || checkedId == R.id.pixelDefault) View.VISIBLE
+                    else View.GONE
             }
 
             binding.radioGroupFrameShape.setOnCheckedChangeListener { _, checkedId ->
@@ -103,7 +116,12 @@ object QrUiSetup {
                     R.id.frameDefault -> QrVectorFrameShape.Default
                     R.id.frameCircle -> QrVectorFrameShape.Circle()
                     R.id.frameRoundCorners25 -> QrVectorFrameShape.RoundCorners(0.25f)
-                    R.id.frameStar -> QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Bubble(.3f,.6f))
+                    R.id.frameStar -> QrVectorFrameShape.AsPixelShape(
+                        QrVectorPixelShape.Bubble(
+                            .3f, .6f
+                        )
+                    )
+
                     R.id.frameRhombus -> QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Rhombus())
                     R.id.frameCircleMini -> QrVectorFrameShape.AsPixelShape(
                         QrVectorPixelShape.Circle(
@@ -115,9 +133,9 @@ object QrUiSetup {
                 }
                 onUpdate()
 
-                frameCircleSizeSlider.visibility = if (checkedId == R.id.frameCircleMini)
-                    View.VISIBLE
-                else View.GONE
+                frameCircleSizeSlider.visibility =
+                    if (checkedId == R.id.frameCircleMini) View.VISIBLE
+                    else View.GONE
 
             }
 
@@ -126,7 +144,12 @@ object QrUiSetup {
                     R.id.eyeDefault -> QrVectorBallShape.Default
                     R.id.eyeCircle -> QrVectorBallShape.Circle(eyeCircleSize)
                     R.id.eyeRoundCorners25 -> QrVectorBallShape.RoundCorners(0.25f)
-                    R.id.eyeStar -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Bubble(.3f,.6f))
+                    R.id.eyeStar -> QrVectorBallShape.AsPixelShape(
+                        QrVectorPixelShape.Bubble(
+                            .3f, .6f
+                        )
+                    )
+
                     R.id.eyeRhombus -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Rhombus())
                     R.id.eyeCircleMini -> QrVectorBallShape.AsPixelShape(
                         QrVectorPixelShape.Circle(
@@ -139,33 +162,29 @@ object QrUiSetup {
 
                 onUpdate()
                 // Hide the slider when other shapes are selected
-                binding.eyeCircleSizeSlider.visibility = if (checkedId == R.id.eyeCircleMini || checkedId == R.id.eyeCircle)
-                    View.VISIBLE
-                else View.GONE
+                binding.eyeCircleSizeSlider.visibility =
+                    if (checkedId == R.id.eyeCircleMini || checkedId == R.id.eyeCircle) View.VISIBLE
+                    else View.GONE
             }
 
-            pixelCircleSizeSlider.setOnSeekBarChangeListener(
-                createSeekBarListener(
-                    onProgressChanged = { progress ->
-                        val size = progress / 100f
-                        if (radioGroupDarkPixelShape.checkedRadioButtonId == R.id.pixelDefault) {
-                            // Update the size of the square shape
-                            darkPixelSquareSize = size
-                            selectedDarkPixelShape = QrVectorPixelShape.Square(darkPixelSquareSize)
-                        } else {
-                            // Update the size of the circle shape
-                            darkPixelCircleSize = size
-                            selectedDarkPixelShape = QrVectorPixelShape.Circle(darkPixelCircleSize)
-                        }
-                        // Update UI
-                        pixelCircleSizeText.text = progress.toString()
-                        onUpdate()
-                    }
-                )
-            )
+            pixelCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
+                val size = progress / 100f
+                if (radioGroupDarkPixelShape.checkedRadioButtonId == R.id.pixelDefault) {
+                    // Update the size of the square shape
+                    darkPixelSquareSize = size
+                    selectedDarkPixelShape = QrVectorPixelShape.Square(darkPixelSquareSize)
+                } else {
+                    // Update the size of the circle shape
+                    darkPixelCircleSize = size
+                    selectedDarkPixelShape = QrVectorPixelShape.Circle(darkPixelCircleSize)
+                }
+                // Update UI
+                pixelCircleSizeText.text = progress.toString()
+                onUpdate()
+            }))
 
 
-            frameCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
+            frameCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
                 // Update padding in the context of the activity
                 frameCircleSize = progress / 100f
                 frameCircleSizeText.text = progress.toString()
@@ -174,7 +193,7 @@ object QrUiSetup {
                 onUpdate()
             }))
 
-            eyeCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
+            eyeCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
                 // Update padding in the context of the activity
                 if (radioGroupEyeShape.checkedRadioButtonId == R.id.eyeCircle) {
                     eyeCircleSize = progress / 100f
@@ -207,31 +226,33 @@ object QrUiSetup {
             }
 
             // Sliders
-            paddingSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
+            paddingSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
                 // Update padding in the context of the activity
                 logoPadding = progress / 100f
                 onUpdate()
             }))
 
-            logoSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
+            logoSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
                 logoSize = progress / 100f
                 onUpdate()
             }))
 
-            darkPixelRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
-                darkPixelRoundness = progress / 100f
-                selectedDarkPixelShape = QrVectorPixelShape.RoundCorners(darkPixelRoundness)
+            darkPixelRoundnessSlider.setOnSeekBarChangeListener(
+                createSeekBarListener(onProgressChanged = { progress ->
+                    darkPixelRoundness = progress / 100f
+                    selectedDarkPixelShape = QrVectorPixelShape.RoundCorners(darkPixelRoundness)
 
-                onUpdate()
-            }))
+                    onUpdate()
+                })
+            )
 
-            ballRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
+            ballRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
                 ballRoundness = progress / 100f
                 QrVectorBallShape.RoundCorners(ballRoundness)
                 onUpdate()
             }))
 
-            frameRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
+            frameRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
                 frameRoundness = progress / 100f
                 QrVectorFrameShape.RoundCorners(frameRoundness)
                 onUpdate()
@@ -272,8 +293,7 @@ object QrUiSetup {
                             colors = listOf(
                                 0f to gradientColor0,
                                 1f to gradientColor1,
-                            ),
-                            orientation = selectedGradientOrientation
+                            ), orientation = selectedGradientOrientation
                         )
                     }
                     onUpdate()
@@ -324,37 +344,25 @@ object QrUiSetup {
                 when (checkedId) {
                     R.id.gradient_bottom, R.id.gradient_right, R.id.gradient_bottom_right, R.id.gradient_top_right -> {
                         setGradientFlags(
-                            solid = false,
-                            linear = true,
-                            radial = false,
-                            sweep = false
+                            solid = false, linear = true, radial = false, sweep = false
                         )
                     }
 
                     R.id.radial -> {
                         setGradientFlags(
-                            solid = false,
-                            linear = false,
-                            radial = true,
-                            sweep = false
+                            solid = false, linear = false, radial = true, sweep = false
                         )
                     }
 
                     R.id.sweep -> {
                         setGradientFlags(
-                            solid = false,
-                            linear = false,
-                            radial = false,
-                            sweep = true
+                            solid = false, linear = false, radial = false, sweep = true
                         )
                     }
 
                     else -> {
                         setGradientFlags(
-                            solid = false,
-                            linear = true,
-                            radial = false,
-                            sweep = false
+                            solid = false, linear = true, radial = false, sweep = false
                         )
                     }
                 }
@@ -419,8 +427,6 @@ object QrUiSetup {
     }
 
 
-
-
     private fun setGradientFlags(solid: Boolean, linear: Boolean, radial: Boolean, sweep: Boolean) {
         useSolidColor = solid
         useLinearGradient = linear
@@ -439,11 +445,25 @@ object QrUiSetup {
 
         with(binding) {
 
+            rootLayout.animateLayout()
+
             btnImportBackground.setOnCheckedListener { isChecked ->
                 if (isChecked) {
                     activity?.importDrawable(false, btnImportBackground)
+                    thresholdLayout.isVisible = false
+                    if (binaryEffect.isChecked) binaryEffect.isChecked = false
+                    if (halftoneEffect.isChecked) halftoneEffect.isChecked = false
                 }
+                effectLayout.isVisible = qrBackground != null
+
             }
+
+
+
+            btnAdjust.setOnCheckedListener { isChecked ->
+                adjustLayout.isVisible = isChecked
+            }
+
 
             val colorPickerDialog = ColorPickerDialog(ui2 = binding).apply {
                 onColorChanged = { newColor ->
@@ -458,13 +478,11 @@ object QrUiSetup {
                         val paint = Paint().apply {
                             colorFilter = PorterDuffColorFilter(newColor, PorterDuff.Mode.SRC_ATOP)
                         }
-                        val newBitmap =
-                            bitmap.config?.let {
-                                Bitmap.createBitmap(
-                                    bitmap.width, bitmap.height,
-                                    it
-                                )
-                            }
+                        val newBitmap = bitmap.config?.let {
+                            Bitmap.createBitmap(
+                                bitmap.width, bitmap.height, it
+                            )
+                        }
                         val canvas = newBitmap?.let { Canvas(it) }
                         canvas?.drawBitmap(bitmap, 0f, 0f, paint)
                         qrBackground = BitmapDrawable(resources, newBitmap)
@@ -473,15 +491,29 @@ object QrUiSetup {
                 }
             }
 
-            btnHalftoneEffect.setOnCheckedListener { isChecked ->
-                if (isChecked){
-                    qrBackground?.let { drawable ->
-                       val halftone = toBinaryBitmap(drawable.bitmap)
-                        qrBackground = activity?.resources?.let { halftone.toDrawable(it) }
+            radioGroupEffect.setOnCheckedChangeListener { _, checkedId ->
+                when (checkedId) {
+                    R.id.halftone_effect -> {
+                        useHalftone = true
+                        useBinary = false
+                        thresholdLayout.isVisible = true
+                        activity?.updateQrBackground()
                         onUpdate()
                     }
+
+                    R.id.binary_effect -> {
+                        useHalftone = false
+                        useBinary = true
+                        thresholdLayout.isVisible = true
+                        activity?.updateQrBackground()
+                        onUpdate()
+                    }
+
                 }
             }
+
+
+
 
             btnColor.setOnCheckedListener { isChecked ->
                 if (isChecked) {
@@ -497,21 +529,94 @@ object QrUiSetup {
                 onUpdate()
             }
 
+            btnColorMode.setOnCheckedListener { isChecked ->
+                colorize = isChecked
+                activity?.updateQrBackground()
+                onUpdate()
+            }
+
+
+
+            thresholdSlider.apply {
+                max = 10
+                setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
+                    // Ensure the progress is always within 1 to 10
+                    val adjustedProgress = progress.coerceIn(1, 10)
+                    if (dotSize != adjustedProgress) {
+                        dotSize = adjustedProgress
+                        dotSizeText.text = adjustedProgress.toString()
+
+                        activity?.updateQrBackground()
+                        onUpdate()
+                    }
+                }))
+            }
+
+            brightnessSlider.apply {
+                setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
+                    val adjustedProgress = if (progress in 99..101) 100 else progress
+
+                    brightnessText.text = ((adjustedProgress - 100) / 100f).toString()
+                    brightness = (adjustedProgress - 100) / 100f
+
+                    activity?.updateQrBackground()
+                    onUpdate()
+                }))
+            }
+
+
+
+            contrastSlider.apply {
+                setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
+                    contrastText.text = (progress / 100f).toString()
+                    contrast = progress / 100f
+
+                    activity?.updateQrBackground()
+                    onUpdate()
+
+                }))
+            }
+
+
 
             paddingSlider.apply {
                 max = 50 // Set the maximum value to represent 0.5f
                 progress = (qrPadding * 100).toInt() // Initialize the progress based on qrPadding
-                setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged =  { progress ->
+                setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
                     qrPadding = progress / 100f // Map progress to the range 0.0f to 0.5f
                     onUpdate()
                 }))
             }
         }
+
+
     }
 
+    private fun Activity.updateQrBackground() {
+        originalBackground?.let { drawable ->
+            val bitmap = convert(
+                drawable.bitmap,
+                brightness = brightness,
+                contrast = contrast,
+                halftone = useHalftone,
+                binary = useBinary,
+                colorized = colorize,
+                dotSize = dotSize
+            )
+            qrBackground = resources?.let { bitmap.toDrawable(it) }
+        }
+    }
 
-    fun saveSetting(binding: LayoutQrSaveBinding, function: () -> Unit) {
-
+    fun saveSetting(binding: LayoutQrSaveBinding, onUpdate: () -> Unit) {
+        with(binding) {
+            radioGroupFormats.setOnCheckedChangeListener { _, checkedId ->
+                when (checkedId) {
+                    R.id.format_png -> {}
+                    R.id.format_jpg -> {}
+                    R.id.format_gif -> {}
+                }
+            }
+        }
     }
 
 

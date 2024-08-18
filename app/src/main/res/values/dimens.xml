@@ -9,4 +9,5 @@
     <dimen name="colorSlider_padding">0dp</dimen>
     <dimen name="colorSlider_wrapContent_size">48dp</dimen>
     <dimen name="colorSlider_thumbStroke_size">2dp</dimen>
+    <dimen name="default_margin">16dp</dimen>
 </resources>

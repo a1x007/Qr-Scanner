@@ -5,12 +5,10 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
-import android.graphics.Rect
 import android.graphics.RectF
 import android.util.Log
 import com.ashique.qrscanner.helper.Combine.convertToDotBinaryBitmap
-import com.ashique.qrscanner.helper.ImageConverter.convertImageToHalftone
-import com.ashique.qrscanner.helper.ImageConverter.toBinaryBitmap
+import com.ashique.qrscanner.helper.ImageEnhancer.toShapedBinaryBitmap
 import com.waynejo.androidndkgif.GifDecoder
 import com.waynejo.androidndkgif.GifEncoder
 import java.io.File
@@ -63,7 +61,7 @@ class GifPipeline2 {
             // Directly pass the full GIF frame to blendQrBitmap
             val blendedFrame = if (useBinary) {
              //   toBinaryBitmap(frame, colorize = false, shapeSize = 3, threshold = 127, useShape = false)
-                blendQrBitmapX(toBinaryBitmap(frame, colorize = false, shapeSize = 3, threshold = 127, useShape = false), qrBitmap)
+                blendQrBitmapX(toShapedBinaryBitmap(frame, colorize = false, shapeSize = 3, threshold = 127, useShape = false), qrBitmap)
                // processBinary(frame)
                 //convertGifToBinary(frame, qrBitmap)
             } else {
