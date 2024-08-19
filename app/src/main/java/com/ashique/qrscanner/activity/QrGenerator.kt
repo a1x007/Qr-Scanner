@@ -4,24 +4,32 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.ashique.qrscanner.R
 import com.ashique.qrscanner.custom.Buttons
+import com.ashique.qrscanner.databinding.LayoutQrBackgroundBinding
+import com.ashique.qrscanner.databinding.LayoutQrSaveBinding
 import com.ashique.qrscanner.databinding.QrGeneratorBinding
 import com.ashique.qrscanner.helper.BitmapHelper.saveBitmap
 import com.ashique.qrscanner.helper.Extensions.isGifUri
+import com.ashique.qrscanner.helper.Extensions.launchWithContext
 import com.ashique.qrscanner.helper.Extensions.showToast
 import com.ashique.qrscanner.helper.Extensions.toBitmapDrawable
 import com.ashique.qrscanner.helper.Extensions.toFile
+import com.ashique.qrscanner.helper.Extensions.uiUpdate
 import com.ashique.qrscanner.helper.GifPipeline
 import com.ashique.qrscanner.helper.QrScanner.scanQrBitmap
 import com.ashique.qrscanner.helper.QrUiSetup
@@ -56,27 +64,29 @@ class QrGenerator : AppCompatActivity() {
     }
 
     private lateinit var photoPickerLauncher: ActivityResultLauncher<String>
-
+    private var bgUi: LayoutQrBackgroundBinding? = null
     private var isLogo = true
     private var btnDrawable: Buttons? = null
 
-    val TAG = "QrGenerator"
 
     companion object {
-
+        private const val TAG = "QrGenerator"
         var currentColorType: QrColorType? = null
 
         var gifBackground: Uri? = null
         var originalBackground: BitmapDrawable? = null
-        var qrBackground: BitmapDrawable? = null
+        var stillBackground: BitmapDrawable? = null
         var qrLogo: BitmapDrawable? = null
+
+        var backgroundWidth: Int? = null
+        var backgroundHeight: Int? = null
+
         var qrBackgroundColor = Color.TRANSPARENT
         private var defaultColor = Color.BLACK
         var ballColor = defaultColor
         var frameColor = defaultColor
         var darkColor = defaultColor
 
-        var drawableBgColor = Color.RED
 
         var useSolidColor = true
         var useLinearGradient = false
@@ -86,10 +96,17 @@ class QrGenerator : AppCompatActivity() {
         var gradientColor0 = Color.RED
         var gradientColor1 = Color.GREEN
 
+        //Highlights color
+        var cornerEyesColor = Color.WHITE
+        var versionEyesColor = Color.WHITE
+        var timingLinesColor = Color.WHITE
+
+        var useGradientHighlight = false
+
         var qrPadding: Float = .100f
         var logoPadding: Float = .2f
         var logoSize: Float = .25f
-        var darkPixelRoundness: Float = 0.0f
+        var darkPixelRoundness: Float = .25f
         var ballRoundness: Float = .25f
         var frameRoundness: Float = .25f
 
@@ -102,7 +119,7 @@ class QrGenerator : AppCompatActivity() {
 
         var selectedFrameShape: QrVectorFrameShape = QrVectorFrameShape.RoundCorners(frameRoundness)
 
-        var selectedEyeBallShape: QrVectorBallShape = QrVectorBallShape.RoundCorners(ballRoundness)
+        var selectedEyeBallShape: QrVectorBallShape = QrVectorBallShape.Default
 
         var selectedGradientOrientation: QrVectorColor.LinearGradient.Orientation =
             QrVectorColor.LinearGradient.Orientation.Horizontal
@@ -144,12 +161,15 @@ class QrGenerator : AppCompatActivity() {
                         it.isGifUri(this@QrGenerator) -> {
                             Log.i("QRCodeDebug", "GIF file detected")
                             gifBackground = it
-                            qrBackground = null
-                            Glide.with(this@QrGenerator)
-                                .load(it)
+                            stillBackground = null
+                            originalBackground = null
+                            Glide.with(this@QrGenerator).load(it)
                                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .into(binding.gifView)
+
+                            bgUi?.effectLayout?.isVisible = true
+
                         }
 
                         else -> {
@@ -158,59 +178,24 @@ class QrGenerator : AppCompatActivity() {
                                 if (isLogo) {
                                     qrLogo = image
                                 } else {
-                                    qrBackground = image
+                                    stillBackground = image
                                     originalBackground = image
                                     gifBackground = null
                                 }
                                 btnDrawable?.isChecked = false
-                                updateQrCode()
-                            }
-                        }
-                    }
-                }
-            }
+                                bgUi?.effectLayout?.isVisible = true
 
-
-            btnSaveGif.setOnClickListener { generateGif() }
-
-
-            btnSaveQr.setOnClickListener {
-                // Generate the QR code bitmap
-                val bitmap = QrCodeDrawable(
-                    { binding.editInput.text.toString() },
-                    createQrOptions()
-                ).toBitmap(1024, 1024, Bitmap.Config.ARGB_8888)
-
-                // Start the coroutine in the appropriate lifecycle scope
-                lifecycleScope.launch(Dispatchers.IO) {
-                    // Scan the generated QR code to verify its integrity
-                    val qrScanResult = scanQrBitmap(bitmap)
-
-                    withContext(Dispatchers.Main) {
-                        // Update the UI based on the scan result
-                        if (qrScanResult.isNullOrEmpty()) {
-                            verifyQrText.apply {
-                                setTextColor(Color.RED)
-                                text = "QR is corrupted!"
-                            }
-                        } else {
-                            verifyQrText.apply {
-                                setTextColor(Color.GREEN)
-                                text = "QR is verified."
                             }
                         }
                     }
 
-                    // Save the bitmap after verifying
-                    saveBitmap(
-                        bitmap,
-                        Bitmap.CompressFormat.PNG,
-                        "qrcode_${System.currentTimeMillis()}.png"
-                    )
-
-                    // Debugging: Log bitmap transparency
-                    Log.d("QRCodeDebug", "Bitmap Transparency: ${bitmap.hasAlpha()}")
+                    updateQrCode()
                 }
+
+                Log.i(
+                    TAG,
+                    "onCreate: qrBackground: $stillBackground / gifBackground: $gifBackground / original: $originalBackground"
+                )
             }
 
         }
@@ -228,32 +213,58 @@ class QrGenerator : AppCompatActivity() {
 
 
             highlighting {
-                cornerEyes = HighlightingType.Styled(
-                    shape = selectedFrameShape, color = QrVectorColor.Solid(Color.WHITE)
-                )
+                cornerEyes =
+                    if (selectedFrameShape == QrVectorFrameShape.Default || selectedFrameShape == QrVectorFrameShape.Circle() || selectedFrameShape == QrVectorFrameShape.RoundCorners(
+                            frameRoundness
+                        )
+                    ) HighlightingType.Styled(
+                        shape = selectedFrameShape,
+                        color = if (!useGradientHighlight) QrVectorColor.Solid(cornerEyesColor) else QrVectorColor.RadialGradient(
+                            colors = listOf(
+                                0f to gradientColor0,
+                                1f to gradientColor1,
+                            )
+
+                        )
+                    ) else
+                        HighlightingType.Styled(
+                            color = QrVectorColor.Solid(cornerEyesColor)
+                        )
 
                 versionEyes = HighlightingType.Styled(
-                    shape = QrVectorFrameShape.Circle(50f), color = QrVectorColor.Solid(Color.WHITE)
+                    shape = QrVectorFrameShape.Circle(50f), color = QrVectorColor.Solid(
+                        versionEyesColor
+                    )
                 )
 
                 timingLines = HighlightingType.Styled(
                     shape = QrVectorPixelShape.Square(.25f),
-                    color = QrVectorColor.Solid(Color.WHITE)
+                    color = QrVectorColor.Solid(timingLinesColor)
                 )
                 alpha = 1f
             }
 
             background {
-                drawable = qrBackground.takeIf { gifBackground == null }
+                backgroundColor = QrVectorColor.Solid(
+                    when {
+                        gifBackground != null -> Color.TRANSPARENT
+                        //  stillBackground != null -> Color.TRANSPARENT
+                        else -> qrBackgroundColor
+                    }
+                )
+
+                drawable = stillBackground.takeIf { gifBackground == null }
                 color = QrVectorColor.Solid(
                     when {
                         gifBackground != null -> Color.TRANSPARENT
-                        qrBackground != null -> Color.TRANSPARENT
+                        //  stillBackground != null -> Color.TRANSPARENT
                         else -> qrBackgroundColor
                     }
                 )
                 codeShape = selectedQrShape
                 scale = if (centerCrop) BitmapScale.CenterCrop else BitmapScale.FitXY
+                width = backgroundWidth
+                height = backgroundHeight
             }
 
 
@@ -262,7 +273,8 @@ class QrGenerator : AppCompatActivity() {
                 size = logoSize
                 padding = QrVectorLogoPadding.Natural(logoPadding)
                 shape = QrVectorLogoShape.Circle
-
+                scale = BitmapScale.FitXY
+                backgroundColor = QrVectorColor.Solid(Color.TRANSPARENT)
             }
 
             colors {
@@ -356,7 +368,7 @@ class QrGenerator : AppCompatActivity() {
     }
 
 
-    fun generateGifQr(gifUri: Uri) {
+    fun generateGifQr(gifUri: Uri, saveUi: LayoutQrSaveBinding? = null) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 // Convert URI to file
@@ -381,14 +393,12 @@ class QrGenerator : AppCompatActivity() {
 
                 gifPipeline.outputFile = outputGifFile
 
-
                 // QR code generator function
                 val qrCodeGenerator: (Bitmap) -> Bitmap = { frame ->
                     val options = createQrOptions().copy(
                         background = QrVectorBackground(
                             drawable = frame.toDrawable(resources), scale = BitmapScale.CenterCrop
                         )
-
                     )
                     QrCodeDrawable({ binding.editInput.text.toString() }, options).toBitmap(
                         1024, 1024, Bitmap.Config.ARGB_8888
@@ -415,6 +425,16 @@ class QrGenerator : AppCompatActivity() {
 
                     // Recycle frame to free memory
                     frame.recycle()
+
+                    // Update progress in the UI
+                    withContext(Dispatchers.Main) {
+                        with(saveUi) {
+                            val progressText = "Processed frame $frameCount\n"
+                            this?.progressTextView?.append(progressText)
+                            this?.progressScrollView?.fullScroll(View.FOCUS_DOWN)
+
+                        }
+                    }
                 }
 
                 // Finalize GIF processing
@@ -425,6 +445,15 @@ class QrGenerator : AppCompatActivity() {
                         Log.e(TAG, "Failed to render GIF: ${gifPipeline.errorInfo}")
                     } else {
                         gifFile.delete() // delete the original GIF file
+                        withContext(Dispatchers.Main) {
+                            with(saveUi) {
+                                val progressText =
+                                    "GIF processed successfully! Output: ${gifPipeline.outputFile}"
+                                this?.progressTextView?.append(progressText)
+                                this?.progressScrollView?.fullScroll(View.FOCUS_DOWN)
+
+                            }
+                        }
                         Log.i(TAG, "GIF processed successfully! Output: ${gifPipeline.outputFile}")
                     }
                 }
@@ -436,46 +465,189 @@ class QrGenerator : AppCompatActivity() {
     }
 
 
-    fun importDrawable(isLogo: Boolean, button: Buttons) {
+    private fun LifecycleOwner.generateGifQr0(
+        gifUri: Uri, saveUi: LayoutQrSaveBinding? = null
+    ) {
+        launchWithContext(background = Dispatchers.IO, ui = Dispatchers.Main, backgroundWork = {
+            try {
+                val gifFile = toFile(gifUri) ?: run {
+                    Log.e(TAG, "generateGifQr: GIF file doesn't exist.")
+                    return@launchWithContext
+                }
+
+                val gifPipeline = GifPipeline().apply {
+                    if (!init(gifFile)) {
+                        Log.e(TAG, "Failed to initialize GIF pipeline: $errorInfo")
+                        return@launchWithContext
+                    }
+                }
+
+                File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+                    "qrcode_${System.currentTimeMillis()}.gif"
+                ).also { gifPipeline.outputFile = it }
+
+
+                uiUpdate {
+                    appendText(saveUi, "Decoding GIF frames...\n")
+                }
+
+                val qrCodeGenerator: (Bitmap) -> Bitmap = { frame ->
+                    val options = createQrOptions().copy(
+                        background = QrVectorBackground(
+                            drawable = frame.toDrawable(resources), scale = BitmapScale.CenterCrop
+                        )
+                    )
+                    QrCodeDrawable({ binding.editInput.text.toString() }, options).toBitmap(
+                        1024, 1024, Bitmap.Config.ARGB_8888
+                    )
+                }
+
+                var frameCount = 0
+                while (true) {
+                    val frame = gifPipeline.nextFrame(
+                        brightness = brightness,
+                        contrast = contrast,
+                        halftone = useHalftone,
+                        binary = useBinary,
+                        colorize = colorize,
+                        dotSize = dotSize
+                    ) ?: break
+
+                    Log.d(TAG, "Processing frame ${++frameCount}")
+
+                    gifPipeline.pushRendered(qrCodeGenerator(frame))
+                    frame.recycle()
+
+                    uiUpdate {
+                        appendText(saveUi, "Processed frame $frameCount\n")
+                    }
+
+                }
+
+                uiUpdate {
+                    appendText(saveUi, "Encoding gif please wait...\n")
+                }
+
+                if (frameCount == 0) {
+                    Log.w(TAG, "No frames were processed.")
+                } else {
+                    if (!gifPipeline.postRender()) {
+                        uiUpdate {
+                            appendText(saveUi, "Failed to render GIF: ${gifPipeline.errorInfo}")
+                        }
+                        Log.e(TAG, "Failed to render GIF: ${gifPipeline.errorInfo}")
+                    } else {
+                        gifFile.delete()
+                        uiUpdate {
+                            // saveUi?.radioGroupFormats?.clearCheck()
+                            appendText(
+                                saveUi,
+                                "GIF Qr generated successfully!\nOutput: ${gifPipeline.outputFile}"
+                            )
+                        }
+                        Log.i(
+                            TAG, "GIF processed successfully! Output: ${gifPipeline.outputFile}"
+                        )
+                    }
+                }
+
+            } catch (e: Exception) {
+                uiUpdate {
+                    appendText(saveUi, "Error occurred: ${e.message}")
+                }
+                Log.e(TAG, "Error occurred: ${e.message}", e)
+            }
+        })
+    }
+
+
+    private fun appendText(
+        saveUi: LayoutQrSaveBinding?, text: String, color: Int = resources.getColor(R.color.text)
+    ) {
+        saveUi?.let {
+            it.progressTextView.apply {
+                append(text)
+                setTextColor(color)
+            }
+            it.progressTextView.post {
+                it.progressScrollView.fullScroll(View.FOCUS_DOWN)
+            }
+        }
+    }
+
+    fun importDrawable(isLogo: Boolean, button: Buttons, bgUi: LayoutQrBackgroundBinding? = null) {
         this.isLogo = isLogo
         btnDrawable = button
+        this.bgUi = bgUi
         gifBackground = null
-        qrBackground = null
+        stillBackground = null
         photoPickerLauncher.launch("image/*")
     }
 
 
-    fun generateGif() {
-        gifBackground?.let { generateGifQr(it) }
-    }
-
-    fun saveQrCode(format: QrUiSetup.QrFormats) {
-        // Generate the QR code bitmap
-        val bitmap = QrCodeDrawable(
-            { binding.editInput.text.toString() },
-            createQrOptions()
-        ).toBitmap(1024, 1024, Bitmap.Config.ARGB_8888)
-
-
+    fun saveQrCode(format: QrUiSetup.QrFormats, saveUi: LayoutQrSaveBinding) {
+        saveUi.progressTextView.text = ""
+        saveUi.progressFrame.isVisible = false
         when (format) {
-            QrUiSetup.QrFormats.JPG -> {
-                saveBitmap(
-                    bitmap,
-                    Bitmap.CompressFormat.JPEG,
-                    "qrcode_${System.currentTimeMillis()}.jpg"
-                )
-            }
+            QrUiSetup.QrFormats.JPG, QrUiSetup.QrFormats.PNG, QrUiSetup.QrFormats.WEBP -> {
+                val bitmap = QrCodeDrawable(
+                    { binding.editInput.text.toString() }, createQrOptions()
+                ).toBitmap(1024, 1024, Bitmap.Config.ARGB_8888)
 
-            QrUiSetup.QrFormats.PNG -> {
-                saveBitmap(
-                    bitmap,
-                    Bitmap.CompressFormat.PNG,
-                    "qrcode_${System.currentTimeMillis()}.png"
-                )
+                val (compressFormat, fileExtension) = when (format) {
+                    QrUiSetup.QrFormats.JPG -> Bitmap.CompressFormat.JPEG to "jpg"
+                    QrUiSetup.QrFormats.PNG -> Bitmap.CompressFormat.PNG to "png"
+                    QrUiSetup.QrFormats.WEBP -> (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) Bitmap.CompressFormat.WEBP_LOSSLESS
+                    else Bitmap.CompressFormat.WEBP) to "webp"
+
+                    else -> return
+                }
+
+                // Start the coroutine in the appropriate lifecycle scope
+                lifecycleScope.launch(Dispatchers.IO) {
+                    // Scan the generated QR code to verify its integrity
+                    val qrScanResult = scanQrBitmap(bitmap)
+
+                    uiUpdate {
+                        // Update the UI based on the scan result
+                        if (qrScanResult.isNullOrEmpty()) {
+                            saveUi.progressFrame.isVisible = true
+                            appendText(
+                                saveUi,
+                                "QrCode is corrupted !!\nplease increase pixel size or change color.",
+                                Color.RED
+                            )
+                        } else {
+                            saveUi.progressFrame.isVisible = true
+                            appendText(saveUi, "QrCode is verified.\n", Color.GREEN)
+                            appendText(saveUi, "QrCode Saved Successfully.", Color.GREEN)
+                            saveBitmap(
+                                bitmap,
+                                compressFormat,
+                                "qrcode_${System.currentTimeMillis()}.$fileExtension"
+                            )
+                        }
+                    }
+
+                }
+
+
             }
 
             QrUiSetup.QrFormats.GIF -> {
-                gifBackground?.let { generateGifQr(it) }
+                gifBackground?.let { gifUri ->
+                    saveUi.progressFrame.isVisible = true
+                    generateGifQr0(gifUri, saveUi)
+                } ?: run {
+                    saveUi.progressFrame.isVisible = true
+                    appendText(
+                        saveUi,
+                        "GIF background is null.\nPlease select gif background first.",
+                        Color.YELLOW
+                    )
+                    Log.e(TAG, "GIF background is null. Cannot save QR code as GIF.")
+                }
             }
         }
     }

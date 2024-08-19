@@ -66,6 +66,24 @@
                     app:_iconHeight="28dp"
                     app:_iconWidth="28dp"
                     app:_radius="3dp" />
+
+                <com.ashique.qrscanner.custom.Buttons
+                    android:id="@+id/btn_effect"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="15dp"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    app:_activeColor="@color/text"
+                    app:_activeIconColor="@color/icon_active"
+                    app:_borderColor="@color/radio_buttons_border"
+                    app:_borderWidth="1dp"
+                    app:_fillColor="@color/radio_buttons_border"
+                    app:_icon="@drawable/ic_effect"
+                    app:_iconColor="@color/text"
+                    app:_iconHeight="28dp"
+                    app:_iconWidth="28dp"
+                    app:_radius="3dp" />
             </LinearLayout>
 
 
@@ -371,6 +389,72 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:max="100" />
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/shape_line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/sizeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="0dp"
+                android:fontFamily="@font/console"
+                android:gravity="start|center"
+                android:text="Size"
+                android:textAllCaps="true"
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/widthText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="15dp"
+                android:text="width: 0"
+                android:textSize="12sp"
+                android:fontFamily="@font/console"
+                android:textColor="@color/text"
+                android:textAllCaps="true"/>
+
+            <SeekBar
+                android:id="@+id/widthSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="300"
+                android:progress="100" />
+
+            <TextView
+                android:id="@+id/heightText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="15dp"
+                android:text="Height: 0"
+                android:fontFamily="@font/console"
+                android:textColor="@color/text"
+                android:textSize="12sp"
+                android:textAllCaps="true"/>
+
+            <SeekBar
+                android:id="@+id/heightSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="300"
+                android:progress="100" />
+
         </LinearLayout>
 
         <View

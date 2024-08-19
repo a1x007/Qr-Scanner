@@ -58,7 +58,7 @@ class ViewPagerAdapter(private val context: Context) : PagerAdapter() {
                 (context as? QrGenerator)?.updateQrCode()
             }
             5 -> QrUiSetup.saveSetting(binding as LayoutQrSaveBinding) {
-                (context as? QrGenerator)?.updateQrCode()
+               (context as? QrGenerator)?.updateQrCode()
             }
         }
         return view

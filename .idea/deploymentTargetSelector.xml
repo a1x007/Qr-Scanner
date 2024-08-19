@@ -15,10 +15,10 @@
       </SelectionState>
       <SelectionState runConfigName="QrGenerator">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-08-18T14:29:23.049698400Z">
+        <DropdownSelection timestamp="2024-08-18T21:56:10.644876200Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Ashique\.android\avd\Medium_Phone_API_34_2.avd" />
+              <DeviceId pluginId="Default" identifier="serial=192.168.10.104:37743;connection=bbb8b80a" />
             </handle>
           </Target>
         </DropdownSelection>

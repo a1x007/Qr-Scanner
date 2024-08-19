@@ -43,6 +43,7 @@
         <attr name="customBorderColor" format="color" />
         <attr name="customBorderWidth" format="dimension" />
         <attr name="customActiveColor" format="color" />
+        <attr name="customActiveTextColor" format="color" />
         <attr name="customActiveIconColor" format="color" />
 
     </declare-styleable>

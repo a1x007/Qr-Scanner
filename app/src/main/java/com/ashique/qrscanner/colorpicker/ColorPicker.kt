@@ -11,130 +11,148 @@ import kotlin.math.min
 
 class ColorPicker(context: Context, attributeSet: AttributeSet?) :
     ColorSlider(context, attributeSet) {
-
     constructor(context: Context) : this(context, null)
-
     private lateinit var colorShader: LinearGradient
     private lateinit var darknessShader: LinearGradient
-
     private val hsvArray = FloatArray(3)
-
+    /**
+     * Hue value in color picker. Should be in range of 0 to 360.
+     */
     var hue = 30
         set(value) {
-            require(value.toFloat() in 0f..360f) { "Hue value should be between 0 and 360" }
-            if (field != value) {
-                field = value
-                initializeSliderPaint()
-                calculateColor(circleX, circleY)
-                invalidate()
+            if (value < 0f || value > 360f) {
+                throw IllegalStateException("hue value should be between 0 and 360")
             }
+            field = value
+            initializeSliderPaint()
+            calculateColor(circleX, circleY)
+            invalidate()
         }
-
-    var circleIndicatorRadius = dp(0)
+    var circleIndicatorRadius = dp(0) //for removing padding
         set(value) {
-            if (field != value) {
-                field = value
-                invalidate()
-            }
+            field = value
+            invalidate()
         }
-
     var alphaSliderView: ColorAlphaSlider? = null
         set(value) {
             field = value
-            alphaSliderView?.selectedColor = colorWithFullAlpha
-            alphaSliderView?.setOnAlphaChangedListener {
-                alphaValue = (255 * it).toInt().coerceIn(0, 255)
-                callListeners()
-            }
-        }
-
-    var hueSliderView: HueSlider? = null
-        set(value) {
-            field = value
-            hueSliderView?.let { slider ->
-                hue = slider.hue.toInt()
-                slider.setOnHueChangedListener { newHue, _ ->
-                    if (newHue in 0f..360f) hue = newHue.toInt()
+            alphaSliderView?.let { alphaSlider ->
+                alphaSlider.selectedColor = colorWithFullAlpha
+                alphaSlider.setOnAlphaChangedListener {
+                    if (it in 0f..1f) {
+                        alphaValue = (255 * it).toInt()
+                        callListeners()
+                    }
                 }
             }
         }
-
+    var hueSliderView:HueSlider? = null
+        set(value) {
+            if (value != null) {
+                field = value
+                this.hue = value.hue.toInt()
+                value.setOnHueChangedListener { hue, argbColor ->
+                    if (hue in 0f..360f) {
+                        this.hue = hue.toInt()
+                    }
+                }
+            }
+        }
     private var colorWithFullAlpha = Color.RED
-
-    var color: Int
-        get() = Color.HSVToColor(alphaValue, hsvArray)
-        private set(value) {}
-
+    /**
+     * This value represents selected color in color picker.
+     * If [KavehColorAlphaSlider] is connected to this view via [alphaSliderView] then alpha value is
+     * taken from [alphaSliderView] and applied on the final color.
+     */
+    var color = Color.TRANSPARENT
+        private set
+        get() {
+            return Color.HSVToColor(alphaValue, hsvArray)
+        }
     private var alphaValue = 255
     private var onColorChanged: ((color: Int) -> Unit)? = null
     private var onColorChangedListener: OnColorChangedListener? = null
-    private val defaultSize = dp(320).toInt()
-
+    private var defaultSize = dp(320).toInt()
     init {
         linePaint.style = Paint.Style.FILL
     }
-
     override fun onCirclePositionChanged(circlePositionX: Float, circlePositionY: Float) {
         calculateColor(circlePositionX, circlePositionY)
         invalidate()
     }
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val finalWidth = MeasureSpec.getSize(widthMeasureSpec).let { measuredWidth ->
-            when (MeasureSpec.getMode(widthMeasureSpec)) {
-                MeasureSpec.EXACTLY -> measuredWidth
-                MeasureSpec.AT_MOST -> min(defaultSize, measuredWidth)
-                else -> defaultSize
+        val measureWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val measureHeight = MeasureSpec.getSize(heightMeasureSpec)
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        val finalWidth = when (widthMode) {
+            MeasureSpec.EXACTLY -> {
+                measureWidth
+            }
+            MeasureSpec.AT_MOST -> {
+                min(defaultSize, measureWidth)
+            }
+            MeasureSpec.UNSPECIFIED -> {
+                defaultSize
+            }
+            else -> {
+                suggestedMinimumWidth
             }
         }
-
-        val finalHeight = MeasureSpec.getSize(heightMeasureSpec).let { measuredHeight ->
-            when (MeasureSpec.getMode(heightMeasureSpec)) {
-                MeasureSpec.EXACTLY -> measuredHeight
-                MeasureSpec.AT_MOST -> min(defaultSize, measuredHeight)
-                else -> defaultSize
+        val finalHeight = when (heightMode) {
+            MeasureSpec.EXACTLY -> {
+                measureHeight
+            }
+            MeasureSpec.AT_MOST -> {
+                min(defaultSize, measureHeight)
+            }
+            MeasureSpec.UNSPECIFIED -> {
+                defaultSize
+            }
+            else -> {
+                suggestedMinimumWidth
             }
         }
-
         setMeasuredDimension(
             max(finalWidth, suggestedMinimumWidth),
             max(finalHeight, suggestedMinimumHeight)
         )
     }
-
     override fun calculateBounds(targetWidth: Float, targetHeight: Float) {
         val fx = (circleX - drawingStart) / (widthF - drawingStart)
         val fy = (circleY - drawingTop) / (heightF - drawingTop)
-
         widthF = targetWidth - paddingEnd - circleIndicatorRadius
         heightF = targetHeight - paddingBottom - circleIndicatorRadius
-
         drawingStart = paddingStart + circleIndicatorRadius
         drawingTop = paddingTop + circleIndicatorRadius
-
-        circleX = if (isFirstTimeLaying) widthF else ((widthF - drawingStart) * fx) + drawingStart
-        circleY = if (isFirstTimeLaying) drawingTop else ((heightF - drawingTop) * fy) + drawingTop
-
         if (isFirstTimeLaying) {
             isFirstTimeLaying = false
+            circleX = widthF
+            circleY = drawingTop
         } else if (isRestoredState) {
+            circleX = ((widthF - drawingStart) * circleXFactor) + drawingStart
+            circleY = ((heightF - drawingTop) * circleYFactor) + drawingTop
             circleXFactor = 0f
             circleYFactor = 0f
             isRestoredState = false
+        } else {
+            circleX = ((widthF - drawingStart) * fx) + drawingStart
+            circleY = ((heightF - drawingTop) * fy) + drawingTop
         }
     }
-
     private fun calculateColor(ex: Float, ey: Float) {
         hsvArray[0] = hue.toFloat()
-        hsvArray[1] = if (isFirstTimeLaying) 1f else (ex - drawingStart) / (widthF - drawingStart)
-        hsvArray[2] = if (isFirstTimeLaying) 1f else 1f - ((ey - drawingTop) / (heightF - drawingTop))
-
+        if (!isFirstTimeLaying) {
+            hsvArray[1] = (ex - drawingStart) / (widthF - drawingStart)
+            hsvArray[2] = 1f - ((ey - drawingTop) / (heightF - drawingTop))
+        } else {
+            hsvArray[1] = 1f
+            hsvArray[2] = 1f
+        }
         colorWithFullAlpha = Color.HSVToColor(hsvArray)
         alphaSliderView?.selectedColor = colorWithFullAlpha
-
         callListeners()
     }
-
     override fun onDraw(canvas: Canvas) {
         canvas.drawRect(drawingStart, drawingTop, widthF, heightF, linePaint.apply {
             shader = colorShader
@@ -142,69 +160,77 @@ class ColorPicker(context: Context, attributeSet: AttributeSet?) :
         canvas.drawRect(drawingStart, drawingTop, widthF, heightF, linePaint.apply {
             shader = darknessShader
         })
-        drawCircleIndicator(canvas)
+        canvas.drawCircle(
+            circleX,
+            circleY,
+            circleSize,
+            circlePaint.apply {
+                color = strokeColor
+            })
+        canvas.drawCircle(
+            circleX,
+            circleY,
+            circleSize - strokeSize,
+            circlePaint.apply {
+                color = colorWithFullAlpha
+            })
     }
-
-    private fun drawCircleIndicator(canvas: Canvas) {
-        canvas.drawCircle(circleX, circleY, circleSize, circlePaint.apply {
-            color = strokeColor
-        })
-        canvas.drawCircle(circleX, circleY, circleSize - strokeSize, circlePaint.apply {
-            color = colorWithFullAlpha
-        })
-    }
-
     override fun initializeSliderPaint() {
         hsvArray[0] = hue.toFloat()
-        colorShader = LinearGradient(
-            drawingStart, 0f, widthF, 0f,
-            Color.WHITE, Color.HSVToColor(hsvArray),
-            Shader.TileMode.MIRROR
-        )
-        darknessShader = LinearGradient(
-            0f, drawingTop, 0f, heightF,
-            Color.TRANSPARENT, Color.BLACK,
-            Shader.TileMode.MIRROR
-        )
+        hsvArray[1] = 1f
+        hsvArray[2] = 1f
+        colorShader =
+            LinearGradient(
+                drawingStart,
+                0f,
+                widthF,
+                0f,
+                Color.WHITE,
+                Color.HSVToColor(hsvArray),
+                Shader.TileMode.MIRROR
+            )
+        darknessShader =
+            LinearGradient(
+                0f,
+                drawingTop,
+                0f,
+                heightF,
+                Color.TRANSPARENT,
+                Color.BLACK,
+                Shader.TileMode.MIRROR
+            )
         calculateColor(circleX, circleY)
     }
-
     override fun onSaveInstanceState(): Parcelable {
         return (super.onSaveInstanceState() as Bundle).apply {
             putInt(HUE_KEY, hue)
             putInt(ALPHA_KEY, alphaValue)
         }
     }
-
     override fun onRestoreInstanceState(state: Parcelable?) {
-        (state as? Bundle)?.let { bundle ->
+        (state as Bundle).let { bundle ->
             isFirstTimeLaying = false
             alphaValue = bundle.getInt(ALPHA_KEY)
             hue = bundle.getInt(HUE_KEY)
         }
         super.onRestoreInstanceState(state)
     }
-
-    fun setOnColorChangedListener(listener: OnColorChangedListener) {
-        this.onColorChangedListener = listener
+    fun setOnColorChangedListener(onColorChangedListener: OnColorChangedListener) {
+        this.onColorChangedListener = onColorChangedListener
         callListeners()
     }
-
-    fun setOnColorChangedListener(listener: (color: Int) -> Unit) {
-        this.onColorChanged = listener
+    fun setOnColorChangedListener(onColorChangedListener: ((color: Int) -> Unit)) {
+        onColorChanged = onColorChangedListener
         callListeners()
     }
-
     private fun callListeners() {
-        val currentColor = Color.HSVToColor(alphaValue, hsvArray)
-        onColorChanged?.invoke(currentColor)
-        onColorChangedListener?.onColorChanged(currentColor)
+        val color = Color.HSVToColor(alphaValue, hsvArray)
+        onColorChanged?.invoke(color)
+        onColorChangedListener?.onColorChanged(color)
     }
-
     interface OnColorChangedListener {
         fun onColorChanged(color: Int)
     }
-
     companion object {
         private const val HUE_KEY = "hue"
         private const val ALPHA_KEY = "alpha"

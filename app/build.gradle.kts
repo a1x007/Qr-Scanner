@@ -17,10 +17,9 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-        renderscriptSupportModeBlasEnabled = true
-        renderscriptNdkModeEnabled = true
-        renderscriptTargetApi = 19
-        renderscriptSupportModeEnabled = true
+
+        //renderscriptTargetApi = 19
+     //   renderscriptSupportModeEnabled = true
         // for chaquopy
         ndk {
             // On Apple silicon, you can omit x86_64.

@@ -73,23 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:gravity="center">
-          <Button
-              android:id="@+id/btn_save_qr"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:text="Save" />
 
-          <Button
-              android:id="@+id/btn_save_gif"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_marginStart="10dp"
-              android:text="Generate Gif" />
-      </LinearLayout>
 
         <Space
             android:layout_width="wrap_content"

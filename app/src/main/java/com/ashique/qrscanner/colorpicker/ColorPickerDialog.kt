@@ -9,17 +9,26 @@ import androidx.fragment.app.DialogFragment
 import com.ashique.qrscanner.databinding.DialogColorPickerBinding
 import com.ashique.qrscanner.databinding.LayoutQrBackgroundBinding
 import com.ashique.qrscanner.databinding.LayoutQrColorBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class ColorPickerDialog(private val ui: LayoutQrColorBinding? = null, private val ui2: LayoutQrBackgroundBinding? = null) : DialogFragment() {
+class ColorPickerDialog(
+    private val ui: LayoutQrColorBinding? = null,
+    private val ui2: LayoutQrBackgroundBinding? = null
+) : DialogFragment() {
 
     private var _binding: DialogColorPickerBinding? = null
     private val binding get() = _binding!!
 
     var onColorChanged: ((Int) -> Unit)? = null
 
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
-        dialog.setCanceledOnTouchOutside(false) // Prevent closing on outside touch
+        dialog.setCanceledOnTouchOutside(false)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         return dialog.apply {
             setTitle("Pick a Color")
@@ -37,22 +46,33 @@ class ColorPickerDialog(private val ui: LayoutQrColorBinding? = null, private va
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set up color picker view
         binding.colorPickerView.alphaSliderView = binding.colorAlphaSlider
         binding.colorPickerView.hueSliderView = binding.hueSlider
 
+        // Handle color changes
         binding.colorPickerView.setOnColorChangedListener { color ->
-            onColorChanged?.invoke(color)
-
-            binding.previewButton.setIconColor(color)
+            coroutineScope.launch {
+                // Perform background tasks if needed
+                // For example: processColorChange(color)
+                onColorChanged?.invoke(color)
+                // Update the preview button color on the main thread
+                updatePreviewButtonColor(color)
+            }
         }
 
-
+        // Handle preview button click
         binding.previewButton.setOnClickListener {
             ui?.btnGradientColor0?.isChecked = false
             ui?.btnGradientColor1?.isChecked = false
             dismiss()
         }
+    }
 
+    private suspend fun updatePreviewButtonColor(color: Int) {
+        withContext(Dispatchers.Main) {
+            binding.previewButton.setIconColor(color)
+        }
     }
 
     override fun onDestroyView() {

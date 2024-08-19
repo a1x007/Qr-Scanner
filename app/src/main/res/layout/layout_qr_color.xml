@@ -9,14 +9,14 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:layout_marginBottom="10dp"
         android:fontFamily="@font/console"
+        android:gravity="start|center"
         android:text="Select Shape"
         android:textAllCaps="true"
         android:textColor="@color/text"
-        android:textSize="14sp"
-        android:layout_marginStart="10dp"
-        android:gravity="start|center"/>
+        android:textSize="14sp" />
 
     <RadioGroup
         android:id="@+id/radioGroupColor"
@@ -34,7 +34,6 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="20dp"
-            android:checked="true"
             app:customActiveColor="@color/text"
             app:customActiveIconColor="@color/icon_active"
             app:customBackgroundColor="@color/radio_buttons_border"
@@ -90,78 +89,84 @@
             app:customIconWidth="35dp" />
     </RadioGroup>
 
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/shape_line" />
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/console"
-        android:text="Select Color Type"
-        android:textAllCaps="true"
-        android:textColor="@color/text"
-        android:textSize="14sp"
-        android:layout_marginStart="10dp"
-        android:gravity="start|center"/>
-
     <LinearLayout
+        android:id="@+id/colorTypeFrame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        >
+        android:orientation="vertical"
+        android:visibility="gone">
 
-        <com.ashique.qrscanner.custom.Buttons
-            android:id="@+id/btn_solid_color"
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/shape_line" />
+
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="4dp"
-            app:_activeColor="@color/text"
-            app:_activeIconColor="@color/icon_active"
-            app:_borderColor="@color/radio_buttons_border"
-            app:_borderWidth="1dp"
-            app:_checked="true"
-            app:_fillColor="@color/radio_buttons_border"
-            app:_icon="@drawable/ic_solid"
-            app:_iconColor="@color/text"
-            app:_iconHeight="30dp"
-            app:_iconWidth="30dp"
-            app:_radius="3dp" />
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/console"
+            android:gravity="start|center"
+            android:text="Select Color Type"
+            android:textAllCaps="true"
+            android:textColor="@color/text"
+            android:textSize="14sp" />
 
-        <com.ashique.qrscanner.custom.Buttons
-            android:id="@+id/btn_gradient_color"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:gravity="center"
-            android:padding="4dp"
-            app:_activeColor="@color/text"
-            app:_activeIconColor="@color/icon_active"
-            app:_borderColor="@color/radio_buttons_border"
-            app:_borderWidth="1dp"
-            app:_fillColor="@color/radio_buttons_border"
-            app:_icon="@drawable/ic_gradient"
-            app:_iconColor="@color/text"
-            app:_iconHeight="30dp"
-            app:_iconWidth="30dp"
-            app:_radius="3dp" />
+            android:layout_marginStart="10dp">
 
+            <com.ashique.qrscanner.custom.Buttons
+                android:id="@+id/btn_solid_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="4dp"
+                app:_activeColor="@color/text"
+                app:_activeIconColor="@color/icon_active"
+                app:_borderColor="@color/radio_buttons_border"
+                app:_borderWidth="1dp"
+
+                app:_fillColor="@color/radio_buttons_border"
+                app:_icon="@drawable/ic_solid"
+                app:_iconColor="@color/text"
+                app:_iconHeight="30dp"
+                app:_iconWidth="30dp"
+                app:_radius="3dp" />
+
+            <com.ashique.qrscanner.custom.Buttons
+                android:id="@+id/btn_gradient_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:gravity="center"
+                android:padding="4dp"
+                app:_activeColor="@color/text"
+                app:_activeIconColor="@color/icon_active"
+                app:_borderColor="@color/radio_buttons_border"
+                app:_borderWidth="1dp"
+                app:_fillColor="@color/radio_buttons_border"
+                app:_icon="@drawable/ic_gradient"
+                app:_iconColor="@color/text"
+                app:_iconHeight="30dp"
+                app:_iconWidth="30dp"
+                app:_radius="3dp" />
+
+        </LinearLayout>
     </LinearLayout>
 
-
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/gradient_frame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <View
             android:layout_width="match_parent"
@@ -174,21 +179,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/console"
+            android:gravity="start|center"
             android:text="Gradient Type"
             android:textAllCaps="true"
             android:textColor="@color/text"
-            android:textSize="14sp"
-            android:layout_marginStart="10dp"
-            android:gravity="start|center"/>
+            android:textSize="14sp" />
 
         <RadioGroup
             android:id="@+id/radioGroupGradient"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
             android:gravity="start|center"
             android:orientation="horizontal">
 
@@ -213,6 +218,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="20dp"
+                android:checked="true"
                 android:rotation="90"
                 app:customActiveColor="@color/text"
                 app:customActiveIconColor="@color/icon_active"
@@ -222,8 +228,7 @@
                 app:customCornerRadius="3dp"
                 app:customIcon="@drawable/ic_arrow_up"
                 app:customIconColor="@color/text"
-                app:customIconWidth="24dp"
-                android:checked="true"/>
+                app:customIconWidth="24dp" />
 
             <com.ashique.qrscanner.custom.RadioButtons
                 android:id="@+id/gradient_bottom_right"
@@ -292,66 +297,173 @@
     </LinearLayout>
 
 
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/colorChangerFrame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/shape_line" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/console"
+            android:gravity="start|center"
+            android:text="Change Color"
+            android:textAllCaps="true"
+            android:textColor="@color/text"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp">
+
+            <com.ashique.qrscanner.custom.Buttons
+                android:id="@+id/btn_gradient_color0"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:padding="4dp"
+                app:_activeColor="@color/text"
+                app:_activeIconColor="@color/icon_active"
+                app:_borderColor="@color/radio_buttons_border"
+                app:_borderWidth="1dp"
+                app:_fillColor="@color/radio_buttons_border"
+                app:_icon="@drawable/ic_color_pallete"
+                app:_iconColor="@color/text"
+                app:_iconHeight="34dp"
+                app:_iconWidth="34dp"
+                app:_radius="3dp" />
+
+            <com.ashique.qrscanner.custom.Buttons
+                android:visibility="gone"
+                android:id="@+id/btn_gradient_color1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:gravity="center"
+                android:padding="4dp"
+                app:_activeColor="@color/text"
+                app:_activeIconColor="@color/icon_active"
+                app:_borderColor="@color/radio_buttons_border"
+                app:_borderWidth="1dp"
+                app:_fillColor="@color/radio_buttons_border"
+                app:_icon="@drawable/ic_color_pallete"
+                app:_iconColor="@color/text"
+                app:_iconHeight="34dp"
+                app:_iconWidth="34dp"
+                app:_radius="3dp" />
+        </LinearLayout>
+    </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="15dp"
         android:background="@drawable/shape_line" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/console"
-        android:text="Change Color"
-        android:textAllCaps="true"
-        android:textColor="@color/text"
-        android:textSize="14sp"
-        android:layout_marginStart="10dp"
-        android:gravity="start|center"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-       >
+        android:orientation="vertical">
 
-        <com.ashique.qrscanner.custom.Buttons
-            android:id="@+id/btn_gradient_color0"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:padding="4dp"
-            app:_activeColor="@color/text"
-            app:_activeIconColor="@color/icon_active"
-            app:_borderColor="@color/radio_buttons_border"
-            app:_borderWidth="1dp"
-            app:_fillColor="@color/radio_buttons_border"
-            app:_icon="@drawable/ic_color_pallete"
-            app:_iconColor="@color/text"
-            app:_iconHeight="34dp"
-            app:_iconWidth="34dp"
-            app:_radius="3dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/console"
+            android:gravity="start|center"
+            android:text="Change Highlights Color"
+            android:textAllCaps="true"
+            android:textColor="@color/text"
+            android:textSize="14sp" />
 
-        <com.ashique.qrscanner.custom.Buttons
-            android:id="@+id/btn_gradient_color1"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="20dp"
-            android:gravity="center"
-            android:padding="4dp"
-            app:_activeColor="@color/text"
-            app:_activeIconColor="@color/icon_active"
-            app:_borderColor="@color/radio_buttons_border"
-            app:_borderWidth="1dp"
-            app:_fillColor="@color/radio_buttons_border"
-            app:_icon="@drawable/ic_color_pallete"
-            app:_iconColor="@color/text"
-            app:_iconHeight="34dp"
-            app:_iconWidth="34dp"
-            app:_radius="3dp" />
+        <RadioGroup
+            android:id="@+id/radioGroupFormats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:gravity="start|center"
+            android:orientation="horizontal">
+
+            <com.ashique.qrscanner.custom.RadioButtons
+                android:id="@+id/corner_eyes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:fontFamily="@font/console"
+                android:paddingStart="8dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
+                android:text="corner eyes"
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                app:customActiveColor="@color/text"
+                app:customActiveIconColor="@color/icon_active"
+                app:customActiveTextColor="@color/icon_active"
+                app:customBackgroundColor="@color/radio_buttons_border"
+                app:customBorderColor="@color/radio_buttons_border"
+                app:customBorderWidth="1dp"
+                app:customCornerRadius="3dp" />
+
+
+            <com.ashique.qrscanner.custom.RadioButtons
+                android:id="@+id/version_eyes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:fontFamily="@font/console"
+                android:paddingStart="8dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
+                android:text="version eyes"
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                app:customActiveColor="@color/text"
+                app:customActiveIconColor="@color/icon_active"
+                app:customActiveTextColor="@color/icon_active"
+                app:customBackgroundColor="@color/radio_buttons_border"
+                app:customBorderColor="@color/radio_buttons_border"
+                app:customBorderWidth="1dp"
+                app:customCornerRadius="3dp" />
+
+            <com.ashique.qrscanner.custom.RadioButtons
+                android:id="@+id/timing_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:fontFamily="@font/console"
+                android:paddingStart="8dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
+                android:text="timing line"
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                app:customActiveColor="@color/text"
+                app:customActiveIconColor="@color/icon_active"
+                app:customActiveTextColor="@color/icon_active"
+                app:customBackgroundColor="@color/radio_buttons_border"
+                app:customBorderColor="@color/radio_buttons_border"
+                app:customBorderWidth="1dp"
+                app:customCornerRadius="3dp" />
+
+        </RadioGroup>
     </LinearLayout>
-
 
 </LinearLayout>

@@ -31,11 +31,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.IntentCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 import java.io.Serializable
 
 object Extensions {
@@ -73,6 +77,27 @@ object Extensions {
         }
     }
 
+    fun LifecycleOwner.launchWithContext(
+        background: CoroutineDispatcher = Dispatchers.IO,
+        ui: CoroutineDispatcher = Dispatchers.Main,
+        backgroundWork: suspend CoroutineScope.() -> Unit,
+        uiWork: (suspend CoroutineScope.() -> Unit)? = null
+    ) {
+        lifecycleScope.launch {
+            withContext(background) {
+                backgroundWork()
+            }
+            withContext(ui) {
+                uiWork?.let { it() }
+            }
+        }
+    }
+
+    suspend fun CoroutineScope.uiUpdate(uiWork: suspend () -> Unit) {
+        withContext(Dispatchers.Main) {
+            uiWork()
+        }
+    }
 
     inline fun <reified T : Any> Context.navigateTo(extras: Bundle? = null) {
         val intent = Intent(this, T::class.java).apply {
@@ -251,4 +276,7 @@ object Extensions {
         }
     }
 
+    fun Int.dpToPx(resources: Resources): Int {
+        return (this * resources.displayMetrics.density).toInt()
+    }
 }
