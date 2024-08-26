@@ -15,9 +15,8 @@ import androidx.lifecycle.lifecycleScope
 import com.ashique.qrscanner.databinding.ActivityGeneratorBinding
 import com.ashique.qrscanner.helper.BitmapHelper.saveBitmap
 import com.ashique.qrscanner.helper.BitmapHelper.toPath
-import com.ashique.qrscanner.helper.Extensions.createSeekBarListener
+import com.ashique.qrscanner.utils.Extensions.createSeekBarListener
 import com.bumptech.glide.Glide
-import com.chaquo.python.Python
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,14 +71,12 @@ class GeneratorActivity : AppCompatActivity() {
 
         }
 
-        ui.editInput.setText("Special,thus awesome.")
-        ui.editInput.addTextChangedListener { }
+      //  ui.editInput.setText("Special,thus awesome.")
+      //  ui.editInput.addTextChangedListener { }
         ui.generateBtn.setOnClickListener {
             if (binaryConvert) backgroundUri?.let { uri ->
-                convertToBinary(
-                    uri
-                )
-            } else combine(qrUri, backgroundUri)
+             //   convertToBinary(uri)
+            } else null //combine(qrUri, backgroundUri)
         }
         ui.uploadLogoBtn.setOnClickListener { importDrawable(colorized, isLogo = true) }
         ui.uploadStillBgBtn.setOnClickListener { importDrawable(colorized) }
@@ -97,7 +94,8 @@ class GeneratorActivity : AppCompatActivity() {
 
             }, onStop = { hasStopped ->
                 if (hasStopped) {
-                    backgroundUri?.let { convertToBinary(it) }
+                    backgroundUri?.let { // convertToBinary(it)
+                    }
                 }
 
             })
@@ -111,7 +109,8 @@ class GeneratorActivity : AppCompatActivity() {
             },
                 onStop = { hasStopped ->
                     if (hasStopped) {
-                        backgroundUri?.let { convertToBinary(it) }
+                        backgroundUri?.let {// convertToBinary(it)
+                        }
                     }
 
                 })
@@ -124,7 +123,8 @@ class GeneratorActivity : AppCompatActivity() {
 
         }, onStop = { hasStopped ->
             if (hasStopped) {
-                backgroundUri?.let { convertToBinary(it) }
+                backgroundUri?.let { //convertToBinary(it)
+                }
             }
 
         }))
@@ -136,7 +136,8 @@ class GeneratorActivity : AppCompatActivity() {
 
             }, onStop = { hasStopped ->
                 if (hasStopped) {
-                    backgroundUri?.let { convertToBinary(it) }
+                    backgroundUri?.let {// convertToBinary(it)
+                    }
                 }
 
             })
@@ -155,7 +156,7 @@ class GeneratorActivity : AppCompatActivity() {
     }
 
 
-    private fun convertToBinary(uri: Uri) {
+  /*  private fun convertToBinary(uri: Uri) {
         // Start a coroutine for background processing
         lifecycleScope.launch(Dispatchers.IO) {
             val inputStream = contentResolver.openInputStream(uri)
@@ -213,6 +214,8 @@ class GeneratorActivity : AppCompatActivity() {
             }
         }
     }
+
+
 
 
     private fun combine(qrUri: Uri?, bgUri: Uri?) {
@@ -278,7 +281,7 @@ class GeneratorActivity : AppCompatActivity() {
         }
     }
 
-
+ */
     private fun importDrawable(colorized: Boolean, isLogo: Boolean = false) {
         this.colorized = colorized
         this.isLogo = isLogo

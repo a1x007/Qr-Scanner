@@ -16,4 +16,5 @@
     <color name="nts_line_inactive">#20ffffff</color>
     <color name="icon_active">@color/black</color>
     <color name="radio_buttons_border">#10ffffff</color>
+
 </resources>

@@ -1,8 +1,13 @@
 package com.ashique.qrscanner.helper
 
 
-import android.app.Activity
+import android.util.Log
 import android.view.View
+import android.view.View.FOCUS_DOWN
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.RadioGroup
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.isVisible
@@ -12,47 +17,54 @@ import com.ashique.qrscanner.activity.QrGenerator
 import com.ashique.qrscanner.activity.QrGenerator.Companion.backgroundHeight
 import com.ashique.qrscanner.activity.QrGenerator.Companion.backgroundWidth
 import com.ashique.qrscanner.activity.QrGenerator.Companion.ballColor
-import com.ashique.qrscanner.activity.QrGenerator.Companion.ballRoundness
 import com.ashique.qrscanner.activity.QrGenerator.Companion.brightness
 import com.ashique.qrscanner.activity.QrGenerator.Companion.centerCrop
 import com.ashique.qrscanner.activity.QrGenerator.Companion.colorize
 import com.ashique.qrscanner.activity.QrGenerator.Companion.contrast
+import com.ashique.qrscanner.activity.QrGenerator.Companion.cornerEyesColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.currentColorType
 import com.ashique.qrscanner.activity.QrGenerator.Companion.darkColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.darkPixelRoundness
 import com.ashique.qrscanner.activity.QrGenerator.Companion.dotSize
 import com.ashique.qrscanner.activity.QrGenerator.Companion.frameColor
-import com.ashique.qrscanner.activity.QrGenerator.Companion.frameRoundness
+import com.ashique.qrscanner.activity.QrGenerator.Companion.gifBackground
 import com.ashique.qrscanner.activity.QrGenerator.Companion.gradientColor0
+import com.ashique.qrscanner.activity.QrGenerator.Companion.gradientColor00
 import com.ashique.qrscanner.activity.QrGenerator.Companion.gradientColor1
+import com.ashique.qrscanner.activity.QrGenerator.Companion.gradientColor11
+import com.ashique.qrscanner.activity.QrGenerator.Companion.lightColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.logoPadding
 import com.ashique.qrscanner.activity.QrGenerator.Companion.logoSize
 import com.ashique.qrscanner.activity.QrGenerator.Companion.originalBackground
 import com.ashique.qrscanner.activity.QrGenerator.Companion.qrBackgroundColor
+import com.ashique.qrscanner.activity.QrGenerator.Companion.qrLogo
 import com.ashique.qrscanner.activity.QrGenerator.Companion.qrPadding
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedDarkPixelShape
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedEyeBallShape
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedFrameShape
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedGradientOrientation
 import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedQrShape
+import com.ashique.qrscanner.activity.QrGenerator.Companion.selectedTimingShape
 import com.ashique.qrscanner.activity.QrGenerator.Companion.stillBackground
+import com.ashique.qrscanner.activity.QrGenerator.Companion.timingLinesColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useBinary
+import com.ashique.qrscanner.activity.QrGenerator.Companion.useGradientHighlight
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useHalftone
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useLinearGradient
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useRadialGradient
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useSolidColor
 import com.ashique.qrscanner.activity.QrGenerator.Companion.useSweepGradient
+import com.ashique.qrscanner.activity.QrGenerator.Companion.versionEyesColor
 import com.ashique.qrscanner.colorpicker.ColorPickerDialog
 import com.ashique.qrscanner.databinding.LayoutQrBackgroundBinding
 import com.ashique.qrscanner.databinding.LayoutQrColorBinding
 import com.ashique.qrscanner.databinding.LayoutQrLogoBinding
 import com.ashique.qrscanner.databinding.LayoutQrSaveBinding
 import com.ashique.qrscanner.databinding.LayoutQrShapeBinding
-import com.ashique.qrscanner.databinding.LayoutQrTextBinding
-import com.ashique.qrscanner.helper.Extensions.animateLayout
-import com.ashique.qrscanner.helper.Extensions.createSeekBarListener
-import com.ashique.qrscanner.helper.Extensions.dpToPx
 import com.ashique.qrscanner.helper.ImageEnhancer.convert
+import com.ashique.qrscanner.utils.Extensions.animateLayout
+import com.ashique.qrscanner.utils.Extensions.createSeekBarListener
+import com.ashique.qrscanner.utils.Extensions.dpToPx
 import com.github.alexzhirkevich.customqrgenerator.style.QrShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorBallShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorColor
@@ -61,22 +73,47 @@ import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorPixelSha
 
 object QrUiSetup {
 
+    enum class DataType {
+        TEXT, URL, CONTACT, SMS, PHONE, EMAIL, WIFI, GEO, BCARD, EVENT, YOUTUBE, GOOGLEPLAY, BKASH
+    }
+
     enum class QrColorType {
-        QR, BALL, FRAME, DARK, COLOR0, COLOR1
+        QR, BALL, FRAME, DARK, LIGHT, VERSION_EYES, CORNER_EYES, TIMING_LINE, COLOR0, COLOR1
     }
 
     enum class QrFormats {
         JPG, PNG, WEBP, GIF
     }
 
+
     private var darkPixelBubbleMaxSize = .6f
+    private var darkPixelBubbleMedSize = .45f
     private var darkPixelBubbleSize = .3f
     private var darkPixelSquareSize = 1f
     private var darkPixelCircleSize = 0.1f
+    private var frameRoundness = 0.25f
     private var frameCircleSize = 0.40f
     private var eyeCircleMiniSize = 0.40f
     private var eyeCircleSize = 0.90f
+
+    private var planetDashedCircleSize = 3f
+    private var frameBubbleMaxSize = .6f
+    private var frameBubbleMedSize = .45f
+    private var frameBubbleSize = .3f
+
+    private var eyeRoundness = 0.25f
+
+    private var timingSquareSize = .6f
+    private var timingCircleSize = .45f
+    private var timingBubbleMaxSize = .6f
+    private var timingBubbleMedSize = .45f
+    private var timingBubbleSize = .3f
+    private var timingRoundness = 0.25f
+    private var timingCircleMiniSize = 0.40f
+    private var timingRhombusSize = 0.90f
+
     private var setColorType: QrColorType = QrColorType.QR
+
 
 
     fun shapeSetting(ui: LayoutQrShapeBinding, onUpdate: () -> Unit) {
@@ -95,6 +132,8 @@ object QrUiSetup {
                 onUpdate()
             }
 
+
+
             groupDarkPixelShape.setOnCheckedChangeListener { _, checkedId ->
                 // Map checkedId to its corresponding pixel shape and value
                 val (shape, progressValue) = when (checkedId) {
@@ -102,12 +141,15 @@ object QrUiSetup {
                     R.id.pixelCircle -> QrVectorPixelShape.Circle(darkPixelCircleSize) to darkPixelCircleSize
                     R.id.pixelRoundCorners -> QrVectorPixelShape.RoundCorners(darkPixelRoundness) to darkPixelRoundness
                     R.id.pixelBubble -> QrVectorPixelShape.Bubble(
-                        darkPixelBubbleSize, darkPixelBubbleMaxSize
+                        darkPixelBubbleSize, darkPixelBubbleMedSize, darkPixelBubbleMaxSize,
                     ) to darkPixelBubbleSize
 
-                    R.id.pixelRhombus -> QrVectorPixelShape.Rhombus() to null
-                    R.id.pixelRoundCornersHorizontal -> QrVectorPixelShape.RoundCornersHorizontal() to null
-                    R.id.radioButtonRoundCornersVertical -> QrVectorPixelShape.RoundCornersVertical() to null
+                    R.id.pixelRhombus -> QrVectorPixelShape.Box() to null
+                    R.id.pixelHitech -> QrVectorPixelShape.Hitech(
+                        .3f, .45f, .6f, .5f
+                    ) to null
+
+                    R.id.radioButtonRoundCornersVertical -> QrVectorPixelShape.Sticky(.5f) to null
                     else -> QrVectorPixelShape.Default to null
                 }
 
@@ -122,66 +164,6 @@ object QrUiSetup {
                 pixelSlider.progress =
                     (progressValue?.let { it * 100 } ?: pixelSlider.progress).toInt()
             }
-
-
-
-            groupFrameShape.setOnCheckedChangeListener { _, checkedId ->
-                selectedFrameShape = when (checkedId) {
-                    R.id.frameDefault -> QrVectorFrameShape.Default
-                    R.id.frameCircle -> QrVectorFrameShape.Circle()
-                    R.id.frameRoundCorners25 -> QrVectorFrameShape.RoundCorners(0.25f)
-                    R.id.frameStar -> QrVectorFrameShape.AsPixelShape(
-                        QrVectorPixelShape.Bubble(
-                            .3f, .6f
-                        )
-                    )
-
-                    R.id.frameRhombus -> QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Rhombus())
-                    R.id.frameCircleMini -> QrVectorFrameShape.AsPixelShape(
-                        QrVectorPixelShape.Circle(
-                            frameCircleSize
-                        )
-                    )
-
-                    else -> QrVectorFrameShape.Default// Default fallback
-                }
-                onUpdate()
-
-                frameCircleSizeSlider.visibility =
-                    if (checkedId == R.id.frameCircleMini) View.VISIBLE
-                    else View.GONE
-
-            }
-
-
-            ui.radioGroupEyeShape.setOnCheckedChangeListener { _, checkedId ->
-                selectedEyeBallShape = when (checkedId) {
-                    R.id.eyeDefault -> QrVectorBallShape.Default
-                    R.id.eyeCircle -> QrVectorBallShape.Circle(eyeCircleSize)
-                    R.id.eyeRoundCorners25 -> QrVectorBallShape.RoundCorners(0.25f)
-                    R.id.eyeStar -> QrVectorBallShape.AsPixelShape(
-                        QrVectorPixelShape.Bubble(
-                            .3f, .6f
-                        )
-                    )
-
-                    R.id.eyeRhombus -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Rhombus())
-                    R.id.eyeCircleMini -> QrVectorBallShape.AsPixelShape(
-                        QrVectorPixelShape.Circle(
-                            eyeCircleMiniSize
-                        )
-                    )
-
-                    else -> QrVectorBallShape.Default// Default fallback
-                }
-
-                onUpdate()
-                // Hide the slider when other shapes are selected
-                ui.eyeCircleSizeSlider.visibility =
-                    if (checkedId == R.id.eyeCircleMini || checkedId == R.id.eyeCircle) View.VISIBLE
-                    else View.GONE
-            }
-
 
             pixelSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
                 val size = progress / 100f
@@ -198,10 +180,10 @@ object QrUiSetup {
 
                     R.id.pixelBubble -> {
                         darkPixelBubbleSize = size.coerceIn(0f, 0.7f)
+                        darkPixelBubbleMedSize = (size + 0.1f).coerceIn(0f, 1f)
                         darkPixelBubbleMaxSize = (size + 0.2f).coerceIn(0f, 1f)
                         QrVectorPixelShape.Bubble(
-                            darkPixelBubbleSize,
-                            darkPixelBubbleMaxSize
+                            darkPixelBubbleSize, darkPixelBubbleMedSize, darkPixelBubbleMaxSize
                         ) to size
                     }
 
@@ -218,20 +200,114 @@ object QrUiSetup {
 
 
 
-            frameCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
+            groupFrameShape.setOnCheckedChangeListener { _, checkedId ->
+                selectedFrameShape = when (checkedId) {
+                    R.id.frameDefault -> QrVectorFrameShape.Default
+                    R.id.frameCircle -> QrVectorFrameShape.Circle()
+                    R.id.frameRoundCorners -> QrVectorFrameShape.RoundCorners(
+                        frameRoundness, 1f, topLeft = false
+                    )
+
+                    R.id.frameBubble -> QrVectorFrameShape.AsPixelShape(
+                        QrVectorPixelShape.Bubble(
+                            .3f, .45f, .6f
+                        )
+                    )
+
+                    R.id.framePlanet -> QrVectorFrameShape.Planet(width = planetDashedCircleSize)
+                    R.id.frameCircleMini -> QrVectorFrameShape.AsPixelShape(
+                        QrVectorPixelShape.Circle(
+                            frameCircleSize
+                        )
+                    )
+
+                    else -> QrVectorFrameShape.Default// Default fallback
+                }
+                onUpdate()
+
+                frameSliderFrame.visibility =
+                    if (checkedId == R.id.frameCircleMini || checkedId == R.id.frameRoundCorners || checkedId == R.id.framePlanet) View.VISIBLE
+                    else View.GONE
+
+            }
+
+
+            frameSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
                 // Update padding in the context of the activity
-                frameCircleSize = progress / 100f
-                frameCircleSizeText.text = progress.toString()
-                selectedFrameShape =
-                    QrVectorFrameShape.AsPixelShape(QrVectorPixelShape.Circle(frameCircleSize))
+                val size = progress / 100f
+                when (groupFrameShape.checkedRadioButtonId) {
+                    R.id.frameCircleMini -> {
+                        frameCircleSize = size
+
+                        selectedFrameShape = QrVectorFrameShape.AsPixelShape(
+                            QrVectorPixelShape.Circle(
+                                frameCircleSize
+                            )
+                        )
+                    }
+
+                    R.id.frameRoundCorners -> {
+                        frameRoundness = size
+                        selectedFrameShape = QrVectorFrameShape.RoundCorners(frameRoundness)
+
+                    }
+
+                    R.id.framePlanet -> {
+                        planetDashedCircleSize = size
+                        selectedFrameShape =
+                            QrVectorFrameShape.Planet(width = planetDashedCircleSize)
+                    }
+
+                    R.id.pixelBubble -> {
+                        frameBubbleSize = size.coerceIn(0f, 0.7f)
+                        frameBubbleMedSize = (size + 0.1f).coerceIn(0f, 1f)
+                        frameBubbleMaxSize = (size + 0.2f).coerceIn(0f, 1f)
+                        selectedFrameShape = QrVectorFrameShape.AsPixelShape(
+                            QrVectorPixelShape.Bubble(
+                                darkPixelBubbleSize, darkPixelBubbleMedSize, darkPixelBubbleMaxSize
+                            )
+                        )
+                    }
+                }
+
+                frameSizeText.text = progress.toString()
                 onUpdate()
             }))
 
+
+            groupEyeShape.setOnCheckedChangeListener { _, checkedId ->
+                selectedEyeBallShape = when (checkedId) {
+                    R.id.eyeDefault -> QrVectorBallShape.Default
+                    R.id.eyeCircle -> QrVectorBallShape.Circle(1f)
+                    R.id.eyeRoundCorners -> QrVectorBallShape.RoundCorners(eyeRoundness)
+                    R.id.eyeStar -> QrVectorBallShape.AsPixelShape(
+                        QrVectorPixelShape.Bubble(
+                            .3f, .45f, .6f
+                        )
+                    )
+
+                    R.id.eyeRhombus -> QrVectorBallShape.AsPixelShape(QrVectorPixelShape.Rhombus())
+                    R.id.eyeCircleMini -> QrVectorBallShape.AsPixelShape(
+                        QrVectorPixelShape.Circle(
+                            eyeCircleMiniSize
+                        )
+                    )
+
+                    else -> QrVectorBallShape.Default// Default fallback
+                }
+
+                onUpdate()
+                // Hide the slider when other shapes are selected
+                eyeSliderFrame.visibility =
+                    if (checkedId == R.id.eyeCircleMini || checkedId == R.id.eyeRoundCorners) View.VISIBLE
+                    else View.GONE
+            }
+
             eyeCircleSizeSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
                 // Update padding in the context of the activity
-                if (radioGroupEyeShape.checkedRadioButtonId == R.id.eyeCircle) {
-                    eyeCircleSize = progress / 100f
-                    selectedEyeBallShape = QrVectorBallShape.Circle(eyeCircleSize)
+                if (groupEyeShape.checkedRadioButtonId == R.id.eyeRoundCorners) {
+                    eyeRoundness = progress / 100f
+                    selectedEyeBallShape = QrVectorBallShape.RoundCorners(eyeRoundness)
                 } else {
                     eyeCircleMiniSize = progress / 100f
                     selectedEyeBallShape =
@@ -242,6 +318,80 @@ object QrUiSetup {
 
                 onUpdate()
             }))
+
+
+            groupHighlightShape.setOnCheckedChangeListener { _, checkedId ->
+                selectedTimingShape = when (checkedId) {
+                    R.id.timingDefault -> QrVectorPixelShape.Default
+                    R.id.timingCircle -> QrVectorPixelShape.Circle(timingCircleSize)
+                    R.id.timingRoundCorners -> QrVectorPixelShape.RoundCorners(0.25f)
+                    R.id.timingStar -> QrVectorPixelShape.Bubble(
+                        timingBubbleSize, timingBubbleMedSize, timingBubbleMaxSize
+                    )
+
+                    R.id.timingRhombus -> QrVectorPixelShape.Rhombus(timingRhombusSize)
+                    R.id.timingCircleMini -> QrVectorPixelShape.Circle(eyeCircleMiniSize)
+                    else -> QrVectorPixelShape.Default
+                }
+
+                onUpdate()
+
+                val isSliderVisible = checkedId in arrayOf(
+                    R.id.timingDefault,
+                    R.id.timingRoundCorners,
+                    R.id.timingStar,
+                    R.id.timingRhombus,
+                    R.id.timingCircle
+                )
+
+                timingSliderFrame.visibility = if (isSliderVisible) VISIBLE else GONE
+
+                if (isSliderVisible) {
+                    root.postDelayed({ scrollview.fullScroll(FOCUS_DOWN) }, 200)
+                }
+            }
+
+
+
+            timingSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
+                val size = progress / 100f
+                val (shape, updatedSize) = when (groupHighlightShape.checkedRadioButtonId) {
+                    R.id.timingDefault -> {
+                        timingSquareSize = size
+                        QrVectorPixelShape.Square(size) to size
+                    }
+
+                    R.id.timingRoundCorners -> {
+                        timingRoundness = size
+                        QrVectorPixelShape.RoundCorners(size) to size
+                    }
+
+                    R.id.timingStar -> {
+                        timingBubbleSize = size.coerceIn(0f, 0.7f)
+                        timingBubbleMedSize = (size + 0.1f).coerceIn(0f, 1f)
+                        timingBubbleMaxSize = (size + 0.2f).coerceIn(0f, 1f)
+                        QrVectorPixelShape.Bubble(
+                            timingBubbleSize, timingBubbleMedSize, timingBubbleMaxSize
+                        ) to size
+
+                    }
+
+                    R.id.timingRhombus -> {
+                        timingRhombusSize = size.coerceIn(0f, 1f)
+                        QrVectorPixelShape.Rhombus(size) to size
+                    }
+
+                    else -> {
+                        timingCircleSize = size
+                        QrVectorPixelShape.Circle(size) to size
+                    }
+                }
+
+                selectedTimingShape = shape
+                timingSizeText.text = updatedSize.toString()
+                onUpdate()
+            }))
+
 
         }
     }
@@ -255,9 +405,24 @@ object QrUiSetup {
 
             btnImportLogo.setOnCheckedListener { isChecked ->
                 if (isChecked) {
-                    activity?.importDrawable(true, btnImportLogo)
+                    activity?.importDrawable(true, btnImportLogo, logoUi = binding)
                 }
             }
+
+            btnDelete.setOnCheckedListener { isChecked ->
+                if (isChecked) {
+                    qrLogo?.bitmap?.recycle()
+                    qrLogo = null
+                    btnDelete.isVisible = false
+                    onUpdate()
+                }
+            }
+
+            btnCenterCrop.setOnCheckedListener { isChecked ->
+                centerCrop = isChecked
+                onUpdate()
+            }
+
 
             // Sliders
             paddingSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
@@ -271,26 +436,6 @@ object QrUiSetup {
                 onUpdate()
             }))
 
-            darkPixelRoundnessSlider.setOnSeekBarChangeListener(
-                createSeekBarListener(onProgressChanged = { progress ->
-                    darkPixelRoundness = progress / 100f
-                    selectedDarkPixelShape = QrVectorPixelShape.RoundCorners(darkPixelRoundness)
-
-                    onUpdate()
-                })
-            )
-
-            ballRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
-                ballRoundness = progress / 100f
-                QrVectorBallShape.RoundCorners(ballRoundness)
-                onUpdate()
-            }))
-
-            frameRoundnessSlider.setOnSeekBarChangeListener(createSeekBarListener(onProgressChanged = { progress ->
-                frameRoundness = progress / 100f
-                QrVectorFrameShape.RoundCorners(frameRoundness)
-                onUpdate()
-            }))
         }
     }
 
@@ -301,6 +446,8 @@ object QrUiSetup {
             val activity = binding.root.context as? AppCompatActivity
             root.animateLayout()
 
+            var isHightlight = false
+
             val colorPickerDialog = ColorPickerDialog(ui = binding).apply {
                 onColorChanged = { newColor ->
 
@@ -309,27 +456,56 @@ object QrUiSetup {
                             QrColorType.BALL -> ballColor = newColor
                             QrColorType.FRAME -> frameColor = newColor
                             QrColorType.DARK -> darkColor = newColor
+                            QrColorType.LIGHT -> lightColor = newColor
                             QrColorType.QR -> {
                                 darkColor = newColor
+                                lightColor = newColor
                                 frameColor = newColor
                                 ballColor = newColor
                             }
 
-                            else -> Unit
-                        }
-                    } else if (useLinearGradient) {
-                        when (currentColorType) {
-                            QrColorType.COLOR0 -> gradientColor0 = newColor
-                            QrColorType.COLOR1 -> gradientColor1 = newColor
-                            else -> Unit
-                        }
+                            QrColorType.CORNER_EYES -> {
+                                cornerEyesColor = newColor
+                            }
 
-                        QrVectorColor.LinearGradient(
-                            colors = listOf(
-                                0f to gradientColor0,
-                                1f to gradientColor1,
-                            ), orientation = selectedGradientOrientation
-                        )
+                            QrColorType.VERSION_EYES -> {
+                                versionEyesColor = newColor
+                            }
+
+                            QrColorType.TIMING_LINE -> {
+                                timingLinesColor = newColor
+                            }
+
+                            else -> Unit
+                        }
+                    } else {
+                        when (currentColorType) {
+                            QrColorType.COLOR0 -> if (!isHightlight) gradientColor0 =
+                                newColor else gradientColor00 = newColor
+
+                            QrColorType.COLOR1 -> if (!isHightlight) gradientColor1 =
+                                newColor else gradientColor11 = newColor
+
+                            else -> Unit
+                        }
+                        if (!isHightlight) {
+                            QrVectorColor.LinearGradient(
+                                colors = listOf(
+                                    0f to gradientColor0,
+                                    1f to gradientColor1,
+                                ), orientation = selectedGradientOrientation
+                            )
+                        } else {
+                            Log.i("TAG", "qrColorSetting: setting radial gradient: $newColor")
+                            QrVectorColor.RadialGradient(
+                                colors = listOf(
+                                    0f to gradientColor00,
+                                    1f to gradientColor11,
+                                )
+
+                            )
+
+                        }
                     }
                     onUpdate()
 
@@ -337,32 +513,54 @@ object QrUiSetup {
             }
 
 
-            radioGroupColor.setOnCheckedChangeListener { _, checkedId ->
-                when (checkedId) {
-                    R.id.qr_color -> {
-                        setColorType = QrColorType.QR
-                        colorTypeFrame.isVisible = true
+            // Track the last checked group
+            var lastCheckedGroup: RadioGroup? = null
+            var lastCheckedId: Int = -1
+
+            fun handleCheckedChange(group: RadioGroup, checkedId: Int, highlight: Boolean) {
+                // Check if the current selection is different from the previous selection
+                if (group.checkedRadioButtonId != lastCheckedId) {
+                    val colorType = when (checkedId) {
+                        R.id.qr_color -> QrColorType.QR
+                        R.id.qr_darkpixel_color -> QrColorType.DARK
+                        R.id.qr_lightpixel_color -> QrColorType.LIGHT
+                        R.id.qr_eye_color -> QrColorType.BALL
+                        R.id.qr_frame_color -> QrColorType.FRAME
+                        R.id.corner_eyes -> QrColorType.CORNER_EYES
+                        R.id.version_eyes -> QrColorType.VERSION_EYES
+                        R.id.timing_line -> QrColorType.TIMING_LINE
+                        else -> return
                     }
 
-                    R.id.qr_darkpixel_color -> {
-                        setColorType = QrColorType.DARK
-                        colorTypeFrame.isVisible = true
+                    // Update color type and visibility
+                    setColorType = colorType
+                    colorTypeFrame.isVisible = true
+                    isHightlight = highlight
 
+                    // Clear the previous group only if it's different from the current one
+                    if (lastCheckedGroup != group) {
+                        lastCheckedGroup?.clearCheck()
+                        lastCheckedGroup = group
+                        btnGradientColor.isChecked = false
+                        btnSolidColor.isChecked = false
+                        colorChangerFrame.isVisible = false
                     }
 
-                    R.id.qr_eye_color -> {
-                        setColorType = QrColorType.BALL
-                        colorTypeFrame.isVisible = true
-                    }
-
-                    R.id.qr_frame_color -> {
-                        setColorType = QrColorType.FRAME
-                        colorTypeFrame.isVisible = true
-
-                    }
+                    // Update the last checked ID
+                    lastCheckedId = checkedId
                 }
-
             }
+
+            // Set listeners
+            radioGroupColor.setOnCheckedChangeListener { group, checkedId ->
+                handleCheckedChange(group, checkedId, highlight = false)
+            }
+
+            groupHighlight.setOnCheckedChangeListener { group, checkedId ->
+                handleCheckedChange(group, checkedId, highlight = true)
+            }
+
+
 
 
             radioGroupGradient.setOnCheckedChangeListener { _, checkedId ->
@@ -423,14 +621,26 @@ object QrUiSetup {
             btnGradientColor.setOnCheckedListener { isCheck ->
 
                 if (isCheck) {
-                    gradientFrame.isVisible = true
-                    btnSolidColor.isChecked = false
-                    btnGradientColor1.isVisible = true
-                    colorChangerFrame.isVisible = true
-                    setGradientFlags(solid = false, linear = true, radial = false, sweep = false)
+                    if (!isHightlight) {
+                        gradientFrame.isVisible = true
+                        btnSolidColor.isChecked = false
+                        btnGradientColor1.isVisible = true
+                        colorChangerFrame.isVisible = true
+                        useGradientHighlight = false
+                        setGradientFlags(
+                            solid = false, linear = true, radial = false, sweep = false
+                        )
+                    } else {
+                        useSolidColor = false
+                        btnSolidColor.isChecked = false
+                        btnGradientColor1.isVisible = true
+                        colorChangerFrame.isVisible = true
+                        useGradientHighlight = true
+                    }
                     onUpdate()
                 } else {
                     gradientFrame.isVisible = false
+                    useGradientHighlight = false
                     btnGradientColor1.isVisible = false
                 }
             }
@@ -471,9 +681,9 @@ object QrUiSetup {
         useSweepGradient = sweep
     }
 
-    fun textSetting(binding: LayoutQrTextBinding, function: () -> Unit?) {
 
-    }
+
+
 
 
     fun backgroundSetting(binding: LayoutQrBackgroundBinding, onUpdate: () -> Unit?) {
@@ -488,14 +698,8 @@ object QrUiSetup {
                     activity?.importDrawable(false, btnImportBackground, binding)
                     thresholdLayout.isVisible = false
                     radioGroupEffect.clearCheck()
-
-
                 }
 
-                // Log.d("Debug", "stillBackground: $stillBackground")
-                //  Log.d("Debug", "gifBackground: $gifBackground")
-
-                // effectLayout.isVisible = (stillBackground != null || gifBackground != null)
             }
 
 
@@ -503,6 +707,16 @@ object QrUiSetup {
 
             btnAdjust.setOnCheckedListener { isChecked ->
                 adjustLayout.isVisible = isChecked
+            }
+
+            btnDelete.setOnCheckedListener { isChecked ->
+                if (isChecked) {
+                    gifBackground = null
+                    stillBackground?.bitmap?.recycle()
+                    stillBackground = null
+                    btnDelete.isVisible = false
+                    onUpdate()
+                }
             }
 
 
@@ -543,6 +757,7 @@ object QrUiSetup {
                         thresholdLayout.isVisible = true
                         activity?.updateQrBackground()
                         onUpdate()
+                        effectLabel.text = "Halftone"
                     }
 
                     R.id.binary_effect -> {
@@ -551,10 +766,14 @@ object QrUiSetup {
                         thresholdLayout.isVisible = true
                         activity?.updateQrBackground()
                         onUpdate()
+                        effectLabel.text = "Binary"
                     }
 
                 }
             }
+
+
+
 
 
 
@@ -576,6 +795,20 @@ object QrUiSetup {
                 colorize = isChecked
                 activity?.updateQrBackground()
                 onUpdate()
+                if (isChecked) {
+                    if (radioGroupEffect.checkedRadioButtonId == R.id.halftone_effect){
+                        effectLabel.text = "Halftone - Colored"
+                    } else {
+                        effectLabel.text = "Binary - Colored"
+                    }
+                } else {
+                    if (radioGroupEffect.checkedRadioButtonId == R.id.halftone_effect){
+                        effectLabel.text = "Halftone"
+                    } else {
+                        effectLabel.text = "Binary"
+                    }
+                }
+
             }
 
 
@@ -658,7 +891,8 @@ object QrUiSetup {
 
     }
 
-    private fun Activity.updateQrBackground() {
+    private fun ComponentActivity.updateQrBackground() {
+
         originalBackground?.let { drawable ->
             val bitmap = convert(
                 drawable.bitmap,
@@ -669,8 +903,12 @@ object QrUiSetup {
                 colorized = colorize,
                 dotSize = dotSize
             )
+
             stillBackground = resources?.let { bitmap.toDrawable(it) }
+
+
         }
+
     }
 
     fun saveSetting(binding: LayoutQrSaveBinding, onUpdate: () -> Unit) {

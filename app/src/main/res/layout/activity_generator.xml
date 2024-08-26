@@ -24,21 +24,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/qrPreview" />
 
-    <EditText
-        android:id="@+id/edit_input"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/verify_qr_text" />
 
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@+id/edit_input">
+        app:layout_constraintTop_toBottomOf="@+id/verify_qr_text">
 
         <com.ashique.qrscanner.custom.Buttons
             android:id="@+id/generate_btn"

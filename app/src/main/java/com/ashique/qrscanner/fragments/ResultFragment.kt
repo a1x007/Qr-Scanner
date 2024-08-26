@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.ashique.qrscanner.helper.Extensions.setOnBackPressedAction
+import com.ashique.qrscanner.utils.Extensions.setOnBackPressedAction
 import com.ashique.qrscanner.R
 
 class ResultFragment : Fragment() {

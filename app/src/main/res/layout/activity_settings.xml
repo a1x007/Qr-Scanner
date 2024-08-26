@@ -134,4 +134,10 @@
 
     </com.ashique.qrscanner.custom.Frame>
 
+
+    <com.ashique.qrscanner.colorpicker.v2.ColorPickerView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toBottomOf="@+id/frame2" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

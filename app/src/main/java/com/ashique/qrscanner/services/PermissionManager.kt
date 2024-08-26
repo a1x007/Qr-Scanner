@@ -14,7 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.ashique.qrscanner.helper.Extensions.showToast
+import com.ashique.qrscanner.utils.Extensions.showToast
 
 object PermissionManager {
 

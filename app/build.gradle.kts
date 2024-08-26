@@ -1,10 +1,7 @@
 
-import java.util.regex.Pattern.compile
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.chaquo.python")
 }
 
 android {
@@ -18,15 +15,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        //renderscriptTargetApi = 19
-     //   renderscriptSupportModeEnabled = true
-        // for chaquopy
-        ndk {
-            // On Apple silicon, you can omit x86_64.
-            abiFilters += listOf("arm64-v8a", "x86_64")
-        }
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
 
@@ -56,32 +46,10 @@ android {
         jvmTarget = "1.8"
     }
 
-    // for chaquopy
-    flavorDimensions += "pyVersion"
-    productFlavors {
-        create("py310") { dimension = "pyVersion" }
-        create("py311") { dimension = "pyVersion" }
-    }
-    ndkVersion = "26.1.10909125"
+
 }
 
 
-chaquopy {
-    productFlavors {
-        getByName("py310") { version = "3.10" }
-        getByName("py311") { version = "3.11" }
-    }
-
-    sourceSets {
-
-    }
-
-    defaultConfig {
-        pip {
-            install("pillow")
-        }
-    }
-}
 
 
 dependencies {
@@ -115,6 +83,12 @@ dependencies {
 
     implementation("io.github.waynejo:androidndkgif:1.0.1")
     implementation("com.github.awxkee:aire:0.13.12")
+
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
+
+    implementation("com.google.android.material:material:1.12.0")
+
+    implementation("com.github.swnishan:materialdatetimepicker:1.0.0")
 
     implementation(project(":custom_qr_generator"))
 }

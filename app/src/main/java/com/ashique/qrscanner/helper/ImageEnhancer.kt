@@ -20,37 +20,37 @@ object ImageEnhancer {
     ): Bitmap {
         var enhancedBitmap = bitmap
 
-        if (brightness != 0f) {
+        brightness?.takeIf { it != 0f }?.let {
             // Apply brightness adjustment if a value is provided
-            brightness?.let {
-                enhancedBitmap = Aire.brightness(
-                    bitmap = enhancedBitmap,
-                    bias = it
-                )
-            }
+            enhancedBitmap = Aire.brightness(
+                bitmap = enhancedBitmap,
+                bias = it
+            )
         }
 
-        if (contrast != 0f) {
+        contrast?.takeIf { it != 0f }?.let {
             // Apply contrast adjustment if a value is provided
-            contrast?.let {
-                enhancedBitmap = Aire.contrast(
-                    bitmap = enhancedBitmap,
-                    gain = it
-                )
-            }
+            enhancedBitmap = Aire.contrast(
+                bitmap = enhancedBitmap,
+                gain = it
+            )
         }
 
-
-        return if (halftone) toHalftone(
-            enhancedBitmap,
-            colorize = colorized,
-            dotSize = dotSize
-        ) else if (binary) toShapedBinaryBitmap(
-            enhancedBitmap,
-            colorize = colorized,
-            pixelSize = dotSize
-        ) else enhancedBitmap
+        return when {
+            halftone -> toHalftone(
+                enhancedBitmap,
+                colorize = colorized,
+                dotSize = dotSize
+            )
+            binary -> toShapedBinaryBitmap(
+                enhancedBitmap,
+                colorize = colorized,
+                pixelSize = dotSize
+            )
+            else -> enhancedBitmap
+        }
     }
+
 
     // Colored binary
     fun toShapedBinaryBitmap(

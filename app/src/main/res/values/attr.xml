@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <declare-styleable name="TextInputLayout">
+        <attr name="BorderColor" format="color" />
+        <attr name="BorderWidth" format="dimension" />
+        <attr name="CornerRadius" format="dimension" />
+        <attr name="animatedTextSize" format="dimension" />
+        <attr name="animationDuration" format="integer" />
+        <attr name="hintColor" format="color" />
+        <attr name="hintTextFont" format="reference" />
+        <attr name="hintText" format="string" />
+    </declare-styleable>
+
+
     <declare-styleable name="ColorSlider">
         <attr name="sliderBarStrokeCap" format="enum">
             <enum name="Butt" value="0" />
@@ -22,6 +34,7 @@
         <attr name="_icon" format="reference" />
         <attr name="_iconColor" format="color" />
         <attr name="_activeIconColor" format="color" />
+        <attr name="_activeTextColor" format="color" />
         <attr name="_activeColor" format="color" />
         <attr name="_iconWidth" format="dimension" />
         <attr name="_iconHeight" format="dimension" />
@@ -88,5 +101,6 @@
         <attr name="asciiTextSize" format="dimension" />
         <attr name="asciiCharacter" format="string" />
     </declare-styleable>
+
 
 </resources>

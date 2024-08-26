@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/scrollview">
 
 
     <com.ashique.qrscanner.custom.Frame
@@ -199,7 +200,7 @@
 
 
                     <com.ashique.qrscanner.custom.RadioButtons
-                        android:id="@+id/pixelRoundCornersHorizontal"
+                        android:id="@+id/pixelHitech"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginEnd="17dp"
@@ -263,7 +264,8 @@
                     android:id="@+id/pixel_slider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="visible" />
+                    android:progressDrawable="@drawable/seek_progress"
+                    android:thumb="@drawable/seek_thumb" />
 
 
             </LinearLayout>
@@ -334,7 +336,7 @@
 
 
                     <com.ashique.qrscanner.custom.RadioButtons
-                        android:id="@+id/frameRoundCorners25"
+                        android:id="@+id/frameRoundCorners"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginEnd="17dp"
@@ -351,7 +353,7 @@
 
 
                     <com.ashique.qrscanner.custom.RadioButtons
-                        android:id="@+id/frameStar"
+                        android:id="@+id/frameBubble"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginEnd="17dp"
@@ -366,7 +368,7 @@
                         app:customIconWidth="20dp" />
 
                     <com.ashique.qrscanner.custom.RadioButtons
-                        android:id="@+id/frameRhombus"
+                        android:id="@+id/framePlanet"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginEnd="17dp"
@@ -401,39 +403,48 @@
 
             </LinearLayout>
 
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/shape_line" />
-
             <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/frameSliderFrame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/frameCircleSizeText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="15dp"
-                    android:fontFamily="@font/console"
-                    android:text="Size: 0.20"
-                    android:textAllCaps="true"
-                    android:textColor="@color/text" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/shape_line" />
 
-                <SeekBar
-                    android:id="@+id/frameCircleSizeSlider"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="visible" />
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/frame_size_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="15dp"
+                        android:fontFamily="@font/console"
+                        android:text="Size: 0.20"
+                        android:textAllCaps="true"
+                        android:textColor="@color/text" />
 
 
+                    <SeekBar
+                        android:id="@+id/frame_slider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:progressDrawable="@drawable/seek_progress"
+                        android:thumb="@drawable/seek_thumb" />
+
+
+                </LinearLayout>
             </LinearLayout>
 
             <View
@@ -462,7 +473,7 @@
 
 
                 <RadioGroup
-                    android:id="@+id/radioGroupEyeShape"
+                    android:id="@+id/group_eye_shape"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -503,7 +514,7 @@
 
 
                     <com.ashique.qrscanner.custom.RadioButtons
-                        android:id="@+id/eyeRoundCorners25"
+                        android:id="@+id/eyeRoundCorners"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginEnd="17dp"
@@ -569,6 +580,46 @@
 
             </LinearLayout>
 
+
+
+            <LinearLayout
+                android:id="@+id/eyeSliderFrame"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/shape_line" />
+
+                <TextView
+                    android:id="@+id/eyeCircleSizeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/console"
+                    android:text="Size: 0.20"
+                    android:textAllCaps="true"
+                    android:textColor="@color/text" />
+
+
+                <SeekBar
+                    android:id="@+id/eyeCircleSizeSlider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:progressDrawable="@drawable/seek_progress"
+                    android:thumb="@drawable/seek_thumb" />
+
+
+            </LinearLayout>
+
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -580,28 +631,171 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="15dp"
+                android:gravity="start|center"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/eyeCircleSizeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="10dp"
                     android:fontFamily="@font/console"
-                    android:text="Size: 0.20"
+                    android:text="HighLight Timing Line Shape"
                     android:textAllCaps="true"
-                    android:textColor="@color/text" />
+                    android:textColor="@color/text"
+                    android:textSize="14sp" />
 
 
-                <SeekBar
-                    android:id="@+id/eyeCircleSizeSlider"
+                <RadioGroup
+                    android:id="@+id/groupHighlightShape"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="visible" />
+                    android:layout_gravity="center"
+                    android:gravity="start|center"
+                    android:orientation="horizontal">
+
+                    <com.ashique.qrscanner.custom.RadioButtons
+                        android:id="@+id/timingDefault"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        android:checked="true"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_square"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
 
 
+                    <com.ashique.qrscanner.custom.RadioButtons
+                        android:id="@+id/timingCircle"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_circle"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
+
+
+                    <com.ashique.qrscanner.custom.RadioButtons
+                        android:id="@+id/timingRoundCorners"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_rounded_corner"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
+
+
+                    <com.ashique.qrscanner.custom.RadioButtons
+                        android:id="@+id/timingStar"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_star"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
+
+                    <com.ashique.qrscanner.custom.RadioButtons
+                        android:id="@+id/timingRhombus"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_rhombus"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="20dp" />
+
+
+                    <com.ashique.qrscanner.custom.RadioButtons
+                        android:id="@+id/timingCircleMini"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="17dp"
+                        app:customActiveColor="@color/text"
+                        app:customActiveIconColor="@color/icon_active"
+                        app:customBackgroundColor="@color/radio_buttons_border"
+                        app:customBorderColor="@color/radio_buttons_border"
+                        app:customBorderWidth="1dp"
+                        app:customCornerRadius="3dp"
+                        app:customIcon="@drawable/shape_circle"
+                        app:customIconColor="@color/text"
+                        app:customIconWidth="15dp" />
+
+                </RadioGroup>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/timingSliderFrame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:orientation="vertical">
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/shape_line" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/timing_size_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="15dp"
+                        android:fontFamily="@font/console"
+                        android:text="Size: 0.20"
+                        android:textAllCaps="true"
+                        android:textColor="@color/text" />
+
+
+                    <SeekBar
+                        android:id="@+id/timing_slider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:progressDrawable="@drawable/seek_progress"
+                        android:thumb="@drawable/seek_thumb" />
+
+
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

@@ -15,7 +15,7 @@ import androidx.appcompat.widget.AppCompatButton
 import com.ashique.qrscanner.R
 import com.ashique.qrscanner.helper.BitmapHelper.toDrawable
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
+
 class Buttons @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
@@ -60,6 +60,7 @@ class Buttons @JvmOverloads constructor(
 
     private var activeColor: Int = 0
     private var activeIconColor: Int = 0
+    private var activeTextColor: Int = 0
 
     init {
         context.theme.obtainStyledAttributes(
@@ -87,6 +88,8 @@ class Buttons @JvmOverloads constructor(
                 isChecked = getBoolean(R.styleable.Button__checked, false)
                 activeColor = getColor(R.styleable.Button__activeColor, Color.TRANSPARENT)
                 activeIconColor = getColor(R.styleable.Button__activeIconColor, Color.TRANSPARENT)
+                activeTextColor = getColor(R.styleable.Button__activeTextColor, Color.BLACK)
+
             } finally {
                 recycle()
             }
@@ -172,7 +175,7 @@ class Buttons @JvmOverloads constructor(
         }
 
         // Draw text
-        paint.color = currentTextColor
+        paint.color =  if (isChecked) activeTextColor else currentTextColor
         val textWidth = paint.measureText(text.toString())
         val textHeight = paint.descent() - paint.ascent()
         val textX = centerX - textWidth / 2 + textMarginLeft - textMarginRight

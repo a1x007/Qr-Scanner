@@ -9,7 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import com.ashique.qrscanner.R
 import com.ashique.qrscanner.helper.BitmapHelper.createPatternBitmap
-import com.ashique.qrscanner.helper.Extensions.dp
+import com.ashique.qrscanner.utils.Extensions.dp
 import kotlin.math.floor
 import kotlin.math.max
 
@@ -93,6 +93,8 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
                 recycle()
             }
         }
+
+        initializePatternPaint()
     }
 
     private fun initializePatternPaint() {
@@ -136,7 +138,7 @@ abstract class ColorSlider(context: Context, attributeSet: AttributeSet?) :
         if (w != oldw || h != oldh) {
             calculateBounds(w.toFloat(), h.toFloat())
             initializeSliderPaint()
-            initializePatternPaint()
+         //   initializePatternPaint()
         }
     }
 

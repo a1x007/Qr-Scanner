@@ -27,47 +27,30 @@
         android:layout_height="match_parent" />
 
 
-
-    <androidx.appcompat.widget.SwitchCompat
+    <com.ashique.qrscanner.custom.Buttons
         android:id="@+id/switchDayNight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textOff="Day"
-        android:textOn="Night"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:padding="6dp"
+        app:_activeColor="@color/white"
+        app:_activeIconColor="@color/black"
+        app:_borderColor="#10ffffff"
+        app:_borderWidth="0dp"
+        app:_fillColor="#10ffffff"
+        app:_icon="@drawable/ic_day"
+        app:_iconColor="@color/white"
+        app:_iconHeight="20dp"
+        app:_iconWidth="20dp"
+        app:_radius="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/setting_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Setting"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/generator_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="generate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/setting_btn" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/generate_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="generate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
 
     <FrameLayout
@@ -91,40 +74,57 @@
     </FrameLayout>
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:gravity="end"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/flash"
+            android:layout_width="100dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/flash" />
 
 
+        <ImageView
+            android:id="@+id/upload"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:src="@drawable/gallery_circle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
+        <com.ashique.qrscanner.custom.Buttons
+            android:id="@+id/btn_generate"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"
+            app:_activeColor="@color/text"
+            app:_activeIconColor="@color/icon_active"
+            app:_borderColor="@color/radio_buttons_border"
+            app:_borderWidth="0dp"
+            app:_fillColor="@color/radio_buttons_border"
+            app:_icon="@drawable/qr"
+            app:_iconColor="@color/text"
+            app:_iconHeight="30dp"
+            app:_iconWidth="30dp"
+            app:_radius="50dp" />
 
-   <LinearLayout
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:orientation="horizontal"
-       android:gravity="center"
-       android:layout_marginBottom="100dp"
-       app:layout_constraintBottom_toBottomOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintStart_toStartOf="parent">
-
-       <com.airbnb.lottie.LottieAnimationView
-           android:id="@+id/flash"
-           android:layout_width="100dp"
-           android:layout_height="60dp"
-           android:layout_gravity="center"
-           app:lottie_autoPlay="false"
-           app:lottie_loop="false"
-           app:lottie_rawRes="@raw/flash" />
-
-
-       <ImageView
-           android:id="@+id/upload"
-           android:layout_width="50dp"
-           android:layout_height="50dp"
-           android:layout_gravity="center"
-           android:src="@drawable/gallery_circle"
-           app:layout_constraintBottom_toBottomOf="parent"
-           app:layout_constraintEnd_toEndOf="parent"
-           app:layout_constraintStart_toStartOf="parent"/>
-   </LinearLayout>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/cameraError"
@@ -138,12 +138,6 @@
         app:layout_constraintVertical_bias="0.32999998"
         android:contentDescription="@string/image" />
 
-    <View
-        android:visibility="gone"
-        android:id="@+id/crop_background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#0c0c0c"/>
 
 
 

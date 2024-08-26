@@ -26,14 +26,14 @@ import com.ashique.qrscanner.R
 import com.ashique.qrscanner.activity.ScanImageActivity.Companion.OPEN_GALLERY
 import com.ashique.qrscanner.databinding.ActivityMainBinding
 import com.ashique.qrscanner.fragments.ResultFragment
-import com.ashique.qrscanner.helper.Extensions.applyDayNightTheme
-import com.ashique.qrscanner.helper.Extensions.navigateTo
-import com.ashique.qrscanner.helper.Extensions.setOnBackPressedAction
-import com.ashique.qrscanner.helper.Extensions.showToast
-import com.ashique.qrscanner.helper.Prefs
 import com.ashique.qrscanner.services.PermissionManager.initPermissionManager
 import com.ashique.qrscanner.services.PermissionManager.isCameraPermissionGranted
 import com.ashique.qrscanner.services.PermissionManager.requestCameraPermission
+import com.ashique.qrscanner.utils.Extensions.applyDayNightTheme
+import com.ashique.qrscanner.utils.Extensions.navigateTo
+import com.ashique.qrscanner.utils.Extensions.setOnBackPressedAction
+import com.ashique.qrscanner.utils.Extensions.showToast
+import com.ashique.qrscanner.utils.Prefs
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executors
@@ -58,8 +58,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var previewUseCase: Preview
     private lateinit var analysisUseCase: ImageAnalysis
-
-
 
 
     private var flashEnabled = false
@@ -88,26 +86,29 @@ class MainActivity : AppCompatActivity() {
         ui.switchDayNight.isChecked = isNightModeActive()
 
         // Handle switch toggle
-        ui.switchDayNight.setOnCheckedChangeListener { _, isChecked ->
+        ui.switchDayNight.setOnCheckedListener { isChecked ->
             if (isChecked) {
                 // Night mode is selected
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                ui.switchDayNight.setIcon(R.drawable.ic_night)
+
             } else {
                 // Day mode is selected
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                ui.switchDayNight.setIcon(R.drawable.ic_day)
             }
         }
         ui.upload.setOnClickListener {
             navigateTo<ScanImageActivity>(Bundle().apply {
                 putBoolean(OPEN_GALLERY, true)  // Pass a flag to indicate gallery should be opened
             })
-           }
+        }
 
         ui.overlay.setViewFinder()
-        ui.settingBtn.setOnClickListener { navigateTo<SettingsActivity>() }
-        ui.generatorBtn.setOnClickListener { navigateTo<GeneratorActivity>() }
+       // ui.settingBtn.setOnClickListener { navigateTo<SettingsActivity>() }
+       // ui.generatorBtn.setOnClickListener { navigateTo<GeneratorActivity>() }
 
-        ui.generateBtn.setOnClickListener {
+        ui.btnGenerate.setOnClickListener {
             navigateTo<QrGenerator>()
         }
 
@@ -145,13 +146,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun displayResult(result: String) {
-        val fragment = ResultFragment.newInstance(result)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
-    }
+
 
     private fun openResultActivity(result: String) {
         val intent = ResultActivity.newIntent(this, result)
@@ -185,7 +180,6 @@ class MainActivity : AppCompatActivity() {
         setOnBackPressedAction {
             if (supportFragmentManager.backStackEntryCount > 0) {
                 supportFragmentManager.popBackStack()
-                ui.fragmentContainer.visibility = GONE
             } /*else if (ui.cropImageView.drawable != null) {
                 // Remove the bitmap
                 ui.cropImageView.setImageDrawable(null)
@@ -193,7 +187,6 @@ class MainActivity : AppCompatActivity() {
                 ui.toolbar.visibility = GONE
             }
              */
-
             else {
                 finish()
             }
@@ -309,10 +302,6 @@ class MainActivity : AppCompatActivity() {
             illegalArgumentException.printStackTrace()
         }
     }
-
-
-
-
 
 
     @OptIn(ExperimentalGetImage::class)

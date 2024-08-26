@@ -1,4 +1,4 @@
-package com.ashique.qrscanner.helper
+package com.ashique.qrscanner.utils
 
 import android.content.Context
 import android.content.SharedPreferences

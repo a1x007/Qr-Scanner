@@ -2,6 +2,8 @@ package com.github.alexzhirkevich.customqrgenerator.vector
 
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.BitmapShader
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ColorFilter
@@ -11,6 +13,7 @@ import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
+import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.core.graphics.and
@@ -24,6 +27,7 @@ import androidx.core.graphics.withTranslation
 import com.github.alexzhirkevich.customqrgenerator.HighlightingType
 import com.github.alexzhirkevich.customqrgenerator.QrData
 import com.github.alexzhirkevich.customqrgenerator.QrErrorCorrectionLevel
+import com.github.alexzhirkevich.customqrgenerator.R
 import com.github.alexzhirkevich.customqrgenerator.encoder.QrCodeMatrix
 import com.github.alexzhirkevich.customqrgenerator.encoder.neighbors
 import com.github.alexzhirkevich.customqrgenerator.encoder.toQrMatrix
@@ -252,7 +256,7 @@ private class QrCodeDrawableImpl(
 
         return color
             .createPaint(size, size)
-            .apply { alpha = (options.highlighting.alpha.coerceIn(0f, 1f) * 255).roundToInt() }
+            .apply { /*alpha = (options.highlighting.alpha.coerceIn(0f, 1f) * 255).roundToInt()*/ }
     }
 
     private fun Canvas.highlightVersionEyes(pixelSize: Float) {
@@ -355,7 +359,7 @@ private class QrCodeDrawableImpl(
         val size = pixelSize * 7 // Adjust size calculation if necessary
 
         val shapePath = createShapePath(size)
-        val shapePaint = createShapePaint()
+        val shapePaint = createHighlightingPaint(options.highlighting.versionEyes, size)
 
         var frameNumber = -1
 
@@ -434,6 +438,8 @@ private class QrCodeDrawableImpl(
         logoBgPaint: Paint?,
         logo: Bitmap?
     ) {
+
+
         val darkPixelPaint = options.colors.dark.createPaint(
             codeMatrix.size * pixelSize,
             codeMatrix.size * pixelSize,

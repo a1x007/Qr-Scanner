@@ -5,7 +5,7 @@ import android.graphics.*
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
-import com.ashique.qrscanner.helper.Extensions.dp
+import com.ashique.qrscanner.utils.Extensions.dp
 import kotlin.math.max
 import kotlin.math.min
 

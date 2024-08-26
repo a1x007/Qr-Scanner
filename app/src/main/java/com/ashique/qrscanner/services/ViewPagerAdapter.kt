@@ -14,6 +14,8 @@ import com.ashique.qrscanner.databinding.LayoutQrSaveBinding
 import com.ashique.qrscanner.databinding.LayoutQrShapeBinding
 import com.ashique.qrscanner.databinding.LayoutQrTextBinding
 import com.ashique.qrscanner.helper.QrUiSetup
+import com.ashique.qrscanner.ui.TextUi.textSetting
+import com.github.alexzhirkevich.customqrgenerator.QrData
 
 class ViewPagerAdapter(private val context: Context) : PagerAdapter() {
 
@@ -42,8 +44,8 @@ class ViewPagerAdapter(private val context: Context) : PagerAdapter() {
         }
 
         when (position) {
-            0 -> QrUiSetup.textSetting(binding as LayoutQrTextBinding) {
-                (context as? QrGenerator)?.updateQrCode()
+            0 -> textSetting(binding as LayoutQrTextBinding) {
+                (context as? QrGenerator)?.updateQrCode(it)
             }
             1 -> QrUiSetup.shapeSetting(binding as LayoutQrShapeBinding) {
                 (context as? QrGenerator)?.updateQrCode()

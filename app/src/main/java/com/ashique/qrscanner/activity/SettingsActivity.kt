@@ -26,11 +26,10 @@ import com.ashique.qrscanner.helper.Combine.convertToDotBinaryBitmap
 import com.ashique.qrscanner.helper.Combine.generateQrCodeWithBinaryBitmap
 import com.ashique.qrscanner.helper.GifPipeline2
 import com.ashique.qrscanner.helper.ImageEnhancer
-import com.ashique.qrscanner.helper.Prefs.initialize
-import com.ashique.qrscanner.helper.Prefs.setZxing
-import com.ashique.qrscanner.helper.Prefs.useZxing
+import com.ashique.qrscanner.utils.Prefs.initialize
+import com.ashique.qrscanner.utils.Prefs.setZxing
+import com.ashique.qrscanner.utils.Prefs.useZxing
 import com.bumptech.glide.Glide
-import com.chaquo.python.Python
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,14 +52,14 @@ class SettingsActivity : AppCompatActivity() {
             qrUri = uri
             // ui.preview.setImageBitmap(qrUri?.toBitmap(this)?.toMutableBitmap()?.let { convertToBinaryBitmap(it) })
             //  checkAndCombineImages()
-            gifBackground()
+                //gifBackground()
         }
 
     private val pickBgImage =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             bgUri = uri
             // checkAndCombineImages()
-            gifBackground()
+            //gifBackground()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -164,7 +163,7 @@ class SettingsActivity : AppCompatActivity() {
         brightness: Float = 1.0f,
         saveName: String
     ): String {
-        val python = Python.getInstance()
+      /*  val python = Python.getInstance()
         val pythonModule = python.getModule("qr_generator")
         // Convert URI to file path if it's not null
         val picturePath = pictureUri?.let { uriToFile(this, it)?.absolutePath }
@@ -198,6 +197,9 @@ class SettingsActivity : AppCompatActivity() {
             e.printStackTrace()
         }
         return file
+
+       */
+        return ""
     }
 
     private fun checkAndCombineImages() {

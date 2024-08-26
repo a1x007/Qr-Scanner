@@ -9,6 +9,7 @@ import android.graphics.RectF
 import android.util.Log
 import com.ashique.qrscanner.helper.Combine.convertToDotBinaryBitmap
 import com.ashique.qrscanner.helper.ImageEnhancer.toShapedBinaryBitmap
+import com.ashique.qrscanner.utils.Prefs
 import com.waynejo.androidndkgif.GifDecoder
 import com.waynejo.androidndkgif.GifEncoder
 import java.io.File

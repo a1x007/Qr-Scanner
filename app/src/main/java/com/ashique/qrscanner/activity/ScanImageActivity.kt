@@ -16,9 +16,9 @@ import com.ashique.qrscanner.R
 import com.ashique.qrscanner.activity.ResultActivity.Companion.EXTRA_RESULT_URL
 import com.ashique.qrscanner.custom.CropImageView
 import com.ashique.qrscanner.databinding.ActivityScanImageBinding
-import com.ashique.qrscanner.helper.Extensions.navigateTo
-import com.ashique.qrscanner.helper.Extensions.parcelable
-import com.ashique.qrscanner.helper.Extensions.showToast
+import com.ashique.qrscanner.utils.Extensions.navigateTo
+import com.ashique.qrscanner.utils.Extensions.parcelable
+import com.ashique.qrscanner.utils.Extensions.showToast
 import com.ashique.qrscanner.helper.QrScanner.scanQrBitmap
 import com.ashique.qrscanner.services.PermissionManager.isAllFilesAccessGranted
 import com.ashique.qrscanner.services.PermissionManager.requestExternalStoragePermissions
